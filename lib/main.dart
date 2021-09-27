@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() => runApp(const MyApp());
 
@@ -29,7 +30,8 @@ class MapView extends StatefulWidget {
 }
 
 class MapViewState extends State<MapView> {
-  final Completer<GoogleMapController> _controller = Completer();
+  final MapController _mapController = MapController();
+  //final Completer<GoogleMapController> _controller = Completer();
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
   final Set<Marker> _markers = <Marker>{};
   final Set<Polyline> _polylines = <Polyline>{};
@@ -43,10 +45,16 @@ class MapViewState extends State<MapView> {
 
   static const defaultZoom = 18.0;
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
+  // static const CameraPosition _kGooglePlex = CameraPosition(
+  //   target: LatLng(37.42796133580664, -122.085749655962),
+  //   zoom: 14.4746,
+  // );
+
+  @override
+  void initState() {
+    super.initState();
+    _getInitialLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +67,38 @@ class MapViewState extends State<MapView> {
       body: Stack(
         alignment: Alignment.topRight,
         children: <Widget>[
-          GoogleMap(
-            mapType: MapType.terrain,
-            myLocationButtonEnabled: false,
-            initialCameraPosition: _kGooglePlex,
-            markers: _markers,
-            polylines: _polylines,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-              _getInitialLocation();
-            },
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              center: LatLng(51.5, -0.09),
+              zoom: defaultZoom,
+              maxZoom: 18.4,
+            ),
+            layers: [
+              TileLayerOptions(
+                  urlTemplate:
+                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c']),
+              if (collectionStarted && _currentLocation != null)
+                MarkerLayerOptions(
+                  markers: [
+                    Marker(
+                      point: LatLng(_currentLocation!.latitude!,
+                          _currentLocation!.longitude!),
+                      builder: (ctx) => const Icon(Icons.location_on_sharp,
+                          size: 40.0, color: Colors.red),
+                    ),
+                  ],
+                ),
+              PolylineLayerOptions(
+                polylines: [
+                  Polyline(
+                      points: _polylineCoordinates,
+                      strokeWidth: 20.0,
+                      color: Colors.red),
+                ],
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20.0, top: 20.0),
@@ -126,11 +156,6 @@ class MapViewState extends State<MapView> {
 
     _location?.enableBackgroundMode(enable: false);
 
-    CameraPosition finalLocation = CameraPosition(
-      zoom: defaultZoom,
-      target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-    );
-
     setState(() {
       _timerWidgetController.stopTimer!.call();
     });
@@ -140,8 +165,8 @@ class MapViewState extends State<MapView> {
       MaterialPageRoute(
           builder: (context) => SummaryScreen(
               markers: _markers,
-              polylines: _polylines,
-              finalLocation: finalLocation)),
+              polylineCoordinates: _polylineCoordinates,
+              finalLocation: _currentLocation!)),
     ).then((_) => setState(() {
           collectionStarted = false;
           _polylines.clear();
@@ -153,6 +178,10 @@ class MapViewState extends State<MapView> {
 
   void _getInitialLocation() async {
     _location = Location();
+    await _location?.changeSettings(
+      accuracy: LocationAccuracy.high,
+      interval: 1500,
+    );
 
     bool serviceEnabled = await _location!.serviceEnabled();
     if (!serviceEnabled) {
@@ -170,57 +199,36 @@ class MapViewState extends State<MapView> {
       }
     }
 
-    final GoogleMapController controller = await _controller.future;
+    _currentLocation = await _location!.getLocation();
 
-    LocationData locationData = await _location!.getLocation();
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(locationData.latitude!, locationData.longitude!),
-        zoom: defaultZoom)));
+    _mapController.move(
+        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+        _mapController.zoom);
 
     listenForLocationUpdates();
   }
 
   void listenForLocationUpdates() {
-    _location!.onLocationChanged.listen((LocationData currentLocation) {
-      _currentLocation = currentLocation;
-      _updatePinOnMap();
+    _location!.onLocationChanged.listen((LocationData newLocation) {
+      _updateRouteOnMap(newLocation);
     });
   }
 
-  void _updatePinOnMap() async {
-    if (_currentLocation == null ||
-        _currentLocation!.latitude == null ||
-        _currentLocation!.longitude == null) {
+  void _updateRouteOnMap(LocationData newLocation) async {
+    if (newLocation.latitude == null || newLocation.longitude == null) {
       return;
     }
 
     var newPosition =
         LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!);
 
-    CameraPosition currentPosition = CameraPosition(
-      zoom: defaultZoom,
-      target: newPosition,
-    );
+    _mapController.move(newPosition, defaultZoom);
 
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(currentPosition));
-
-    setState(() {
-      _markers.removeWhere((m) => m.markerId.value == "sourcePin");
-
-      if (collectionStarted) {
+    if (collectionStarted) {
+      setState(() {
+        _currentLocation = newLocation;
         _polylineCoordinates.add(newPosition);
-
-        _polylines.clear();
-        _polylines.add(Polyline(
-            width: 10, // set the width of the polylines
-            polylineId: const PolylineId("poly"),
-            color: const Color.fromARGB(255, 40, 122, 198),
-            points: _polylineCoordinates));
-
-        _markers.add(Marker(
-            markerId: const MarkerId("sourcePin"), position: newPosition));
-      }
-    });
+      });
+    }
   }
 }

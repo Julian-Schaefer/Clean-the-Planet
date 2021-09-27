@@ -2,18 +2,22 @@ import 'dart:async';
 
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
 class SummaryScreen extends StatefulWidget {
-  final CameraPosition finalLocation;
+  final LocationData finalLocation;
   final Set<Marker> markers;
-  final Set<Polyline> polylines;
+  final List<LatLng> polylineCoordinates;
+
   const SummaryScreen(
       {Key? key,
       required this.finalLocation,
       required this.markers,
-      required this.polylines})
+      required this.polylineCoordinates})
       : super(key: key);
 
   @override
@@ -21,8 +25,6 @@ class SummaryScreen extends StatefulWidget {
 }
 
 class SummaryScreenState extends State<SummaryScreen> {
-  final Completer<GoogleMapController> _controller = Completer();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,15 +36,37 @@ class SummaryScreenState extends State<SummaryScreen> {
         body: SafeArea(
           child: Column(children: [
             Expanded(
-              child: GoogleMap(
-                mapType: MapType.terrain,
-                myLocationButtonEnabled: false,
-                initialCameraPosition: widget.finalLocation,
-                markers: widget.markers,
-                polylines: widget.polylines,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
+              child: FlutterMap(
+                options: MapOptions(
+                  center: LatLng(widget.finalLocation.latitude!,
+                      widget.finalLocation.longitude!),
+                  zoom: 18.0,
+                  maxZoom: 18.4,
+                ),
+                layers: [
+                  TileLayerOptions(
+                      urlTemplate:
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      subdomains: ['a', 'b', 'c']),
+                  MarkerLayerOptions(
+                    markers: [
+                      Marker(
+                        point: LatLng(widget.finalLocation.latitude!,
+                            widget.finalLocation.longitude!),
+                        builder: (ctx) => const Icon(Icons.location_on_sharp,
+                            size: 40.0, color: Colors.red),
+                      ),
+                    ],
+                  ),
+                  PolylineLayerOptions(
+                    polylines: [
+                      Polyline(
+                          points: widget.polylineCoordinates,
+                          strokeWidth: 20.0,
+                          color: Colors.red),
+                    ],
+                  ),
+                ],
               ),
             ),
             const SizedBox(

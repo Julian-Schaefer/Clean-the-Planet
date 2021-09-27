@@ -2,14 +2,6 @@ PODS:
   - camera (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - google_maps_flutter (0.0.1):
-    - Flutter
-    - GoogleMaps
-  - GoogleMaps (4.1.0):
-    - GoogleMaps/Maps (= 4.1.0)
-  - GoogleMaps/Base (4.1.0)
-  - GoogleMaps/Maps (4.1.0):
-    - GoogleMaps/Base
   - location (0.0.1):
     - Flutter
   - path_provider (0.0.1):
@@ -18,21 +10,14 @@ PODS:
 DEPENDENCIES:
   - camera (from `.symlinks/plugins/camera/ios`)
   - Flutter (from `Flutter`)
-  - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
-
-SPEC REPOS:
-  trunk:
-    - GoogleMaps
 
 EXTERNAL SOURCES:
   camera:
     :path: ".symlinks/plugins/camera/ios"
   Flutter:
     :path: Flutter
-  google_maps_flutter:
-    :path: ".symlinks/plugins/google_maps_flutter/ios"
   location:
     :path: ".symlinks/plugins/location/ios"
   path_provider:
@@ -41,8 +26,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   camera: b9eb73c055259c6f808a9da4a0d43780f6645281
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  google_maps_flutter: abdb8dee6c52d4be36ad131ee6ebfacd14417c5a
-  GoogleMaps: 008e2c80e38605b56b560e8deb73d4194ff30bef
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
 
