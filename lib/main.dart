@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:clean_the_planet/summary_screen.dart';
+import 'package:clean_the_planet/timer_widget.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,6 +30,7 @@ class MapView extends StatefulWidget {
 
 class MapViewState extends State<MapView> {
   final Completer<GoogleMapController> _controller = Completer();
+  final TimerWidgetController _timerWidgetController = TimerWidgetController();
   final Set<Marker> _markers = <Marker>{};
   final Set<Polyline> _polylines = <Polyline>{};
   final List<LatLng> _polylineCoordinates = [];
@@ -80,11 +82,8 @@ class MapViewState extends State<MapView> {
                   BoxShadow(color: Colors.grey, blurRadius: 5),
                 ],
               ),
-              child: const Center(
-                  child: Text(
-                "00:00",
-                style: TextStyle(fontSize: 26, color: Colors.white),
-              )),
+              child: Center(
+                  child: TimerWidget(controller: _timerWidgetController)),
             ),
           )
         ],
@@ -113,6 +112,7 @@ class MapViewState extends State<MapView> {
     _location!.enableBackgroundMode(enable: true);
     setState(() {
       collectionStarted = true;
+      _timerWidgetController.startTimer!.call();
     });
   }
 
@@ -131,6 +131,10 @@ class MapViewState extends State<MapView> {
       target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
     );
 
+    setState(() {
+      _timerWidgetController.stopTimer!.call();
+    });
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -143,6 +147,7 @@ class MapViewState extends State<MapView> {
           _polylines.clear();
           _markers.clear();
           _polylineCoordinates.clear();
+          _timerWidgetController.resetTimer!.call();
         }));
   }
 
