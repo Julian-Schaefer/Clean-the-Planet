@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -10,13 +8,11 @@ import 'package:location/location.dart';
 
 class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
-  final Set<Marker> markers;
   final List<LatLng> polylineCoordinates;
 
   const SummaryScreen(
       {Key? key,
       required this.finalLocation,
-      required this.markers,
       required this.polylineCoordinates})
       : super(key: key);
 
@@ -53,7 +49,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                       Marker(
                         point: LatLng(widget.finalLocation.latitude!,
                             widget.finalLocation.longitude!),
-                        builder: (ctx) => const Icon(Icons.location_on_sharp,
+                        builder: (ctx) => const Icon(Icons.location_pin,
                             size: 40.0, color: Colors.red),
                       ),
                     ],
@@ -62,7 +58,9 @@ class SummaryScreenState extends State<SummaryScreen> {
                     polylines: [
                       Polyline(
                           points: widget.polylineCoordinates,
-                          strokeWidth: 20.0,
+                          strokeWidth: 4.0,
+                          borderStrokeWidth: 26.0,
+                          borderColor: Colors.redAccent.withOpacity(0.5),
                           color: Colors.red),
                     ],
                   ),

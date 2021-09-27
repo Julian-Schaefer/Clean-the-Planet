@@ -31,12 +31,10 @@ class MapView extends StatefulWidget {
 
 class MapViewState extends State<MapView> {
   final MapController _mapController = MapController();
-  //final Completer<GoogleMapController> _controller = Completer();
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
-  final Set<Marker> _markers = <Marker>{};
-  final Set<Polyline> _polylines = <Polyline>{};
   final List<LatLng> _polylineCoordinates = [];
-  //PolylinePoints polylinePoints;
+
+  late StreamSubscription<LocationData> _locationSubscription;
 
   Location? _location;
   LocationData? _currentLocation;
@@ -44,11 +42,6 @@ class MapViewState extends State<MapView> {
   bool collectionStarted = false;
 
   static const defaultZoom = 18.0;
-
-  // static const CameraPosition _kGooglePlex = CameraPosition(
-  //   target: LatLng(37.42796133580664, -122.085749655962),
-  //   zoom: 14.4746,
-  // );
 
   @override
   void initState() {
@@ -85,7 +78,7 @@ class MapViewState extends State<MapView> {
                     Marker(
                       point: LatLng(_currentLocation!.latitude!,
                           _currentLocation!.longitude!),
-                      builder: (ctx) => const Icon(Icons.location_on_sharp,
+                      builder: (ctx) => const Icon(Icons.location_pin,
                           size: 40.0, color: Colors.red),
                     ),
                   ],
@@ -94,7 +87,9 @@ class MapViewState extends State<MapView> {
                 polylines: [
                   Polyline(
                       points: _polylineCoordinates,
-                      strokeWidth: 20.0,
+                      strokeWidth: 4.0,
+                      borderStrokeWidth: 26.0,
+                      borderColor: Colors.redAccent.withOpacity(0.5),
                       color: Colors.red),
                 ],
               ),
@@ -160,19 +155,19 @@ class MapViewState extends State<MapView> {
       _timerWidgetController.stopTimer!.call();
     });
 
+    _locationSubscription.cancel();
+
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => SummaryScreen(
-              markers: _markers,
               polylineCoordinates: _polylineCoordinates,
               finalLocation: _currentLocation!)),
     ).then((_) => setState(() {
           collectionStarted = false;
-          _polylines.clear();
-          _markers.clear();
           _polylineCoordinates.clear();
           _timerWidgetController.resetTimer!.call();
+          listenForLocationUpdates();
         }));
   }
 
@@ -209,7 +204,8 @@ class MapViewState extends State<MapView> {
   }
 
   void listenForLocationUpdates() {
-    _location!.onLocationChanged.listen((LocationData newLocation) {
+    _locationSubscription =
+        _location!.onLocationChanged.listen((LocationData newLocation) {
       _updateRouteOnMap(newLocation);
     });
   }
