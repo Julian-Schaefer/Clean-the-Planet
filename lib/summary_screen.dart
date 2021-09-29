@@ -1,4 +1,6 @@
 import 'package:clean_the_planet/take_picture_screen.dart';
+import 'package:clean_the_planet/tour.dart';
+import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -49,7 +51,9 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      addTour();
+                    },
                     child: const Text(
                       "Save",
                       style: TextStyle(color: Colors.black),
@@ -124,6 +128,26 @@ class SummaryScreenState extends State<SummaryScreen> {
             ]),
           )),
     );
+  }
+
+  void addTour() async {
+    Tour tour = Tour(polygon: pathPolygon.points);
+    try {
+      await TourService.addTour(tour);
+      Navigator.pop(context);
+    } catch (e) {
+      await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                  title: const Text('Error'),
+                  content: Text(e.toString()),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    )
+                  ]));
+    }
   }
 
   Future<bool> navigateBackDialog() async {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/calculate_polygon.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
 import 'package:flutter/material.dart';
@@ -204,16 +205,26 @@ class MapViewState extends State<MapView> {
       return;
     }
 
-    var newPosition =
+    var currentLatLng =
         LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!);
 
-    _mapController.move(newPosition, defaultZoom);
+    _mapController.move(currentLatLng, defaultZoom);
 
     if (collectionStarted) {
-      setState(() {
-        _currentLocation = newLocation;
-        _polylineCoordinates.add(newPosition);
-      });
+      bool addLatLng = false;
+      if (_polylineCoordinates.isNotEmpty) {
+        LatLng lastLatLng = _polylineCoordinates.last;
+        addLatLng = checkNecessaryDistance(lastLatLng, currentLatLng);
+      } else {
+        addLatLng = true;
+      }
+
+      if (addLatLng) {
+        setState(() {
+          _currentLocation = newLocation;
+          _polylineCoordinates.add(currentLatLng);
+        });
+      }
     }
   }
 }

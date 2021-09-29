@@ -294,3 +294,12 @@ List<LatLng> calculatePolygonFromPath(List<LatLng> path) {
 
   //return [polylineLeft, polylineRight, complexPoly];
 }
+
+bool checkNecessaryDistance(LatLng lastLatLng, LatLng currentLatLng) {
+  num requiredDistance = 5;
+  num distance = mp.SphericalUtil.computeDistanceBetween(
+      mp.LatLng(lastLatLng.latitude, lastLatLng.longitude),
+      mp.LatLng(currentLatLng.latitude, currentLatLng.longitude));
+
+  return distance >= requiredDistance;
+}
