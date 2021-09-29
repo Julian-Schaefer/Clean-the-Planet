@@ -37,18 +37,28 @@ class SummaryScreenState extends State<SummaryScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool? navigateBack = await navigateBackDialog();
-        if (navigateBack != null) {
-          return navigateBack;
-        }
-
-        return false;
+        return await navigateBackDialog();
       },
       child: Scaffold(
           appBar: AppBar(
             title: const Text('Summary'),
             backgroundColor: Colors.green,
             centerTitle: true,
+            actions: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: MaterialButton(
+                    onPressed: () {},
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    color: Colors.greenAccent,
+                  ),
+                ),
+              )
+            ],
           ),
           body: SafeArea(
             child: Column(children: [
@@ -116,8 +126,8 @@ class SummaryScreenState extends State<SummaryScreen> {
     );
   }
 
-  Future<bool?> navigateBackDialog() async {
-    return showDialog<bool>(
+  Future<bool> navigateBackDialog() async {
+    bool? navigateBack = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: const Text('Are you sure?'),
@@ -138,5 +148,11 @@ class SummaryScreenState extends State<SummaryScreen> {
                 ),
               ],
             ));
+
+    if (navigateBack != null) {
+      return navigateBack;
+    }
+
+    return false;
   }
 }
