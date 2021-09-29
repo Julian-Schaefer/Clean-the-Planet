@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/calculate_polygon.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -88,9 +89,9 @@ class MapViewState extends State<MapView> {
                   Polyline(
                       points: _polylineCoordinates,
                       strokeWidth: 4.0,
-                      borderStrokeWidth: 26.0,
+                      borderStrokeWidth: 16.0,
                       borderColor: Colors.redAccent.withOpacity(0.5),
-                      color: Colors.red),
+                      color: Colors.red.withOpacity(0.8)),
                 ],
               ),
             ],
@@ -178,6 +179,18 @@ class MapViewState extends State<MapView> {
       interval: 1500,
     );
 
+    await askForLocationPermission();
+
+    _currentLocation = await _location!.getLocation();
+
+    _mapController.move(
+        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+        _mapController.zoom);
+
+    listenForLocationUpdates();
+  }
+
+  Future<void> askForLocationPermission() async {
     bool serviceEnabled = await _location!.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await _location!.requestService();
@@ -193,14 +206,6 @@ class MapViewState extends State<MapView> {
         return;
       }
     }
-
-    _currentLocation = await _location!.getLocation();
-
-    _mapController.move(
-        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-        _mapController.zoom);
-
-    listenForLocationUpdates();
   }
 
   void listenForLocationUpdates() {

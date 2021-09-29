@@ -6,6 +6,8 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
+import 'calculate_polygon.dart';
+
 class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
   final List<LatLng> polylineCoordinates;
@@ -21,6 +23,16 @@ class SummaryScreen extends StatefulWidget {
 }
 
 class SummaryScreenState extends State<SummaryScreen> {
+  late Polygon pathPolygon;
+
+  @override
+  void initState() {
+    super.initState();
+    pathPolygon = Polygon(
+        points: calculatePolygonFromPath(widget.polylineCoordinates),
+        color: Colors.red.withOpacity(0.6));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,23 +56,22 @@ class SummaryScreenState extends State<SummaryScreen> {
                       urlTemplate:
                           "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                       subdomains: ['a', 'b', 'c']),
-                  MarkerLayerOptions(
-                    markers: [
-                      Marker(
-                        point: LatLng(widget.finalLocation.latitude!,
-                            widget.finalLocation.longitude!),
-                        builder: (ctx) => const Icon(Icons.location_pin,
-                            size: 40.0, color: Colors.red),
-                      ),
-                    ],
-                  ),
+                  // MarkerLayerOptions(
+                  //   markers: [
+                  //     Marker(
+                  //       point: LatLng(widget.finalLocation.latitude!,
+                  //           widget.finalLocation.longitude!),
+                  //       builder: (ctx) => const Icon(Icons.location_pin,
+                  //           size: 40.0, color: Colors.red),
+                  //     ),
+                  //   ],
+                  // ),
+                  PolygonLayerOptions(polygons: [pathPolygon]),
                   PolylineLayerOptions(
                     polylines: [
                       Polyline(
                           points: widget.polylineCoordinates,
-                          strokeWidth: 4.0,
-                          borderStrokeWidth: 26.0,
-                          borderColor: Colors.redAccent.withOpacity(0.5),
+                          strokeWidth: 2.0,
                           color: Colors.red),
                     ],
                   ),
