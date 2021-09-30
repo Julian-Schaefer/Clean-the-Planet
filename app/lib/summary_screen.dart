@@ -8,8 +8,6 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
-import 'calculate_polygon.dart';
-
 class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
   final List<LatLng> polylineCoordinates;
@@ -25,14 +23,12 @@ class SummaryScreen extends StatefulWidget {
 }
 
 class SummaryScreenState extends State<SummaryScreen> {
-  late Polygon pathPolygon;
+  late Polygon pathPolygon = Polygon(points: []);
 
   @override
   void initState() {
     super.initState();
-    pathPolygon = Polygon(
-        points: calculatePolygonFromPath(widget.polylineCoordinates),
-        color: Colors.red.withOpacity(0.6));
+    getTourBuffer();
   }
 
   @override
@@ -128,6 +124,15 @@ class SummaryScreenState extends State<SummaryScreen> {
             ]),
           )),
     );
+  }
+
+  void getTourBuffer() async {
+    List<LatLng> polygon =
+        await TourService.getBuffer(widget.polylineCoordinates);
+    setState(() {
+      pathPolygon =
+          Polygon(points: polygon, color: Colors.red.withOpacity(0.6));
+    });
   }
 
   void addTour() async {

@@ -16,17 +16,13 @@ class Tour {
   }
 
   Map<String, dynamic> toJson() {
-    return {'polyline': getPolylineString()};
+    return {'polyline': getPolylineString(polyline)};
   }
 
-  String? getPolygonString() {
-    if (polygon == null) {
-      return null;
-    }
-
+  static String getPolygonString(List<LatLng> polygon) {
     String polygonString = "POLYGON((";
-    LatLng firstCoord = polygon!.first;
-    for (LatLng coord in polygon!) {
+    LatLng firstCoord = polygon.first;
+    for (LatLng coord in polygon) {
       polygonString +=
           coord.latitude.toString() + " " + coord.longitude.toString() + ",";
     }
@@ -55,7 +51,7 @@ class Tour {
     return polygon;
   }
 
-  String getPolylineString() {
+  static String getPolylineString(List<LatLng> polyline) {
     String polylineString = "LINESTRING(";
     for (LatLng coord in polyline) {
       polylineString +=

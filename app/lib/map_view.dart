@@ -118,7 +118,10 @@ class MapViewState extends State<MapView> {
   }
 
   void _startCollecting() {
-    if (_location == null) {
+    if (_currentLocation == null ||
+        _currentLocation!.latitude == null ||
+        _currentLocation!.longitude == null ||
+        _location == null) {
       return;
     }
 
@@ -126,6 +129,9 @@ class MapViewState extends State<MapView> {
     setState(() {
       collectionStarted = true;
       _timerWidgetController.startTimer!.call();
+
+      _polylineCoordinates.add(
+          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!));
     });
   }
 
@@ -220,6 +226,8 @@ class MapViewState extends State<MapView> {
       } else {
         addLatLng = true;
       }
+
+      addLatLng = true;
 
       if (addLatLng) {
         setState(() {

@@ -46,3 +46,14 @@ def getTours():
         } for (id, polygon, polyline) in tours]
 
     return jsonify(results)
+
+@routes.route("/buffer", methods=["POST"])
+def getBuffer():
+    if request.is_json:
+        data = request.get_json()
+        polyline = data['polyline']
+
+        polygon = db.session.query(functions.ST_AsText(functions.ST_Buffer(functions.ST_SetSRID(functions.ST_GeomFromText(polyline),25832),0.0001))).one()
+        return jsonify({"polygon": polygon[0]})
+
+    return "Error", 400
