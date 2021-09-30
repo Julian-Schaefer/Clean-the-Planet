@@ -70,4 +70,27 @@ class TourService {
       return Future.error('Unexpected error 😢');
     }
   }
+
+  static Future<List<Tour>> getTours() async {
+    var relativeUrl = "/tour";
+    try {
+      final response =
+          await _client.get(Uri.parse(_getBaseUrl() + relativeUrl));
+
+      if (response.statusCode == 200) {
+        final parsedJson =
+            jsonDecode(response.body).cast<Map<String, dynamic>>();
+
+        return parsedJson.map<Tour>((json) => Tour.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to add Tour.');
+      }
+    } on SocketException {
+      return Future.error('No Internet connection 😑');
+    } on FormatException {
+      return Future.error('Bad response format 👎');
+    } catch (e) {
+      return Future.error('Unexpected error 😢');
+    }
+  }
 }

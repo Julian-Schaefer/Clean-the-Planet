@@ -1,3 +1,4 @@
+import 'package:clean_the_planet/my_routes_screen.dart';
 import 'package:flutter/material.dart';
 
 class MenuDrawer extends StatelessWidget {
@@ -21,6 +22,10 @@ class MenuDrawer extends StatelessWidget {
             title: const Text('My Routes'),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyRoutesScreen()));
             },
           ),
         ],

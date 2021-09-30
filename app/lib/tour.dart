@@ -10,8 +10,8 @@ class Tour {
   factory Tour.fromJson(Map<String, dynamic> json) {
     return Tour(
       id: json['id'],
-      polyline: json['polyline'],
-      polygon: json['polygon'],
+      polyline: fromPolylineString(json['polyline']),
+      polygon: fromPolygonString(json['polygon']),
     );
   }
 
@@ -38,6 +38,22 @@ class Tour {
     return polygonString;
   }
 
+  static List<LatLng> fromPolygonString(String polygonString) {
+    List<LatLng> polygon = [];
+
+    polygonString = polygonString.substring("POLYGON((".length);
+    polygonString = polygonString.substring(0, polygonString.length - 2);
+
+    for (var coord in polygonString.split(",")) {
+      List<String> coords = coord.split(" ");
+      double latitude = double.parse(coords[0]);
+      double longitude = double.parse(coords[1]);
+      polygon.add(LatLng(latitude, longitude));
+    }
+
+    return polygon;
+  }
+
   String getPolylineString() {
     String polylineString = "LINESTRING(";
     for (LatLng coord in polyline) {
@@ -48,5 +64,21 @@ class Tour {
     polylineString = polylineString.substring(0, polylineString.length - 1);
 
     return polylineString + ")";
+  }
+
+  static List<LatLng> fromPolylineString(String polylineString) {
+    List<LatLng> polyline = [];
+
+    polylineString = polylineString.substring("LINESTRING(".length);
+    polylineString = polylineString.substring(0, polylineString.length - 1);
+
+    for (var coord in polylineString.split(",")) {
+      List<String> coords = coord.split(" ");
+      double latitude = double.parse(coords[0]);
+      double longitude = double.parse(coords[1]);
+      polyline.add(LatLng(latitude, longitude));
+    }
+
+    return polyline;
   }
 }
