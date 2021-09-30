@@ -36,7 +36,7 @@ def getTours():
     userId = "testi"
 
     tours = db.session.query(
-        Tour.id, functions.ST_AsText(Tour.polygon), functions.ST_AsText(Tour.polyline)).filter_by(userId=userId)
+        Tour.id, functions.ST_AsText(functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,25832),0.0001)), functions.ST_AsText(Tour.polyline)).filter_by(userId=userId)
 
     results = [
         {
