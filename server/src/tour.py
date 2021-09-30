@@ -9,12 +9,10 @@ class Tour(db.Model):
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     userId = db.Column(db.String())
-    polygon = db.Column(Geometry('POLYGON'))
     polyline = db.Column(Geometry('LINESTRING'))
 
-    def __init__(self, userId, polygon, polyline):
+    def __init__(self, userId, polyline):
         self.userId = userId
-        self.polygon = polygon
         self.polyline = polyline
 
     def __repr__(self):

@@ -3,9 +3,9 @@ import 'package:latlong2/latlong.dart';
 class Tour {
   String? id;
   final List<LatLng> polyline;
-  final List<LatLng> polygon;
+  List<LatLng>? polygon;
 
-  Tour({this.id, required this.polyline, required this.polygon});
+  Tour({this.id, required this.polyline, this.polygon});
 
   factory Tour.fromJson(Map<String, dynamic> json) {
     return Tour(
@@ -16,16 +16,17 @@ class Tour {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'polyline': getPolylineString(),
-      'polygon': getPolygonString(),
-    };
+    return {'polyline': getPolylineString()};
   }
 
-  String getPolygonString() {
+  String? getPolygonString() {
+    if (polygon == null) {
+      return null;
+    }
+
     String polygonString = "POLYGON((";
-    LatLng firstCoord = polygon.first;
-    for (LatLng coord in polygon) {
+    LatLng firstCoord = polygon!.first;
+    for (LatLng coord in polygon!) {
       polygonString +=
           coord.latitude.toString() + " " + coord.longitude.toString() + ",";
     }

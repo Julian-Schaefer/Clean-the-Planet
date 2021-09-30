@@ -62,7 +62,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               subdomains: ['a', 'b', 'c']),
           PolygonLayerOptions(polygons: [
             Polygon(
-                points: widget.tour.polygon, color: Colors.red.withOpacity(0.6))
+                points: widget.tour.polygon!,
+                color: Colors.red.withOpacity(0.6))
           ]),
           PolylineLayerOptions(
             polylines: [
