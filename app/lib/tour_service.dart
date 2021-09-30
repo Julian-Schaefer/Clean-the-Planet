@@ -16,7 +16,7 @@ class TourService {
 
   static String _getBaseUrl() {
     if (kReleaseMode) {
-      return "https://blogify-flask.herokuapp.com/";
+      return "https://clean-the-planet.herokuapp.com/";
     } else {
       return "http://localhost:5000";
     }
