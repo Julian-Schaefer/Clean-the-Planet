@@ -16,7 +16,7 @@ def addTour():
     if request.is_json:
         data = request.get_json()
         tour = Tour(
-            userId=userId, polygon=data['polygon'], polyline=data['polygon'])
+            userId=userId, polygon=data['polygon'], polyline=data['polyline'])
         db.session.add(tour)
         
         try:

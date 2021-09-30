@@ -1,8 +1,8 @@
 """Initial migration.
 
-Revision ID: 6dd61ca76875
+Revision ID: c7ed194cd2b3
 Revises: 
-Create Date: 2021-09-29 18:13:52.905022
+Create Date: 2021-09-30 08:41:20.229220
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 import geoalchemy2
 
 # revision identifiers, used by Alembic.
-revision = '6dd61ca76875'
+revision = 'c7ed194cd2b3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,7 +23,7 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('userId', sa.String(), nullable=True),
     sa.Column('polygon', geoalchemy2.types.Geometry(geometry_type='POLYGON', from_text='ST_GeomFromEWKT', name='geometry'), nullable=True),
-    sa.Column('polyline', geoalchemy2.types.Geometry(geometry_type='POLYGON', from_text='ST_GeomFromEWKT', name='geometry'), nullable=True),
+    sa.Column('polyline', geoalchemy2.types.Geometry(geometry_type='LINESTRING', from_text='ST_GeomFromEWKT', name='geometry'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     #op.drop_table('spatial_ref_sys')

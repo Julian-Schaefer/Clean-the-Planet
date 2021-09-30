@@ -131,7 +131,8 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void addTour() async {
-    Tour tour = Tour(polygon: pathPolygon.points);
+    Tour tour =
+        Tour(polyline: widget.polylineCoordinates, polygon: pathPolygon.points);
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
