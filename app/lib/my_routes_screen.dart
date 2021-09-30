@@ -46,7 +46,12 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
                           itemBuilder: (context, index) {
                             return TourListItem(tour: snapshot.data![index]);
                           }),
-                      onRefresh: () async {})
+                      onRefresh: () async {
+                        List<Tour> tours = await TourService.getTours();
+                        setState(() {
+                          _toursFuture = Future.value(tours);
+                        });
+                      })
                   : const Center(child: CircularProgressIndicator());
             }));
   }
