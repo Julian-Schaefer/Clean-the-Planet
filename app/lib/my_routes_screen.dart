@@ -34,7 +34,9 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
         body: FutureBuilder<List<Tour>>(
             future: _toursFuture,
             builder: (context, snapshot) {
-              if (snapshot.hasError) print(snapshot.error);
+              if (snapshot.hasError) {
+                return Center(child: Text(snapshot.error.toString()));
+              }
 
               return snapshot.hasData
                   ? RefreshIndicator(
