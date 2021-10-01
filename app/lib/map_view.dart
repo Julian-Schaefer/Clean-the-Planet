@@ -39,11 +39,7 @@ class MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Clean the Planet'),
-        backgroundColor: Colors.green,
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Clean the Planet')),
       drawer: MenuDrawer(),
       body: Stack(
         alignment: Alignment.topRight,
@@ -90,7 +86,7 @@ class MapViewState extends State<MapView> {
               height: 50,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                color: Colors.green,
+                color: Theme.of(context).colorScheme.primary,
                 boxShadow: const [
                   BoxShadow(color: Colors.grey, blurRadius: 5),
                 ],
@@ -106,13 +102,13 @@ class MapViewState extends State<MapView> {
               onPressed: _startCollecting,
               label: const Text('Start collecting!'),
               icon: const Icon(Icons.shopping_bag),
-              backgroundColor: Colors.green,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             )
           : FloatingActionButton.extended(
               onPressed: _finishCollecting,
               label: const Text('Finish collecting!'),
               icon: const Icon(Icons.shopping_bag),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
     );
   }

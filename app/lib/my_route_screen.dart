@@ -24,25 +24,16 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('My Routes'),
-          backgroundColor: Colors.green,
-          centerTitle: true,
+          title: const Text('My Route'),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Overview'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Overview',
-              backgroundColor: Colors.green,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.picture_in_picture_sharp),
-              label: 'Pictures',
-              backgroundColor: Colors.green,
-            ),
+                icon: Icon(Icons.picture_in_picture_sharp), label: 'Pictures'),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.green,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
           onTap: _onItemTapped,
         ),
         body: getBody(_selectedIndex));

@@ -9,9 +9,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+          colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: Colors.green,
+        onPrimary: Colors.white,
+        primaryVariant: Colors.white,
+        secondary: Colors.lightGreen,
+        secondaryVariant: Colors.white,
+        onSecondary: Colors.white,
+        background: Colors.grey,
+        onBackground: Colors.grey,
+        surface: Colors.grey,
+        onSurface: Colors.grey,
+        error: Colors.red,
+        onError: Colors.white,
+      )),
       title: 'Clean the Planet',
-      home: MapView(),
+      home: const MapView(),
       debugShowCheckedModeBanner: false,
     );
   }

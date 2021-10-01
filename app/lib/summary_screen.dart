@@ -40,8 +40,6 @@ class SummaryScreenState extends State<SummaryScreen> {
       child: Scaffold(
           appBar: AppBar(
             title: const Text('Summary'),
-            backgroundColor: Colors.green,
-            centerTitle: true,
             actions: [
               Center(
                 child: Padding(
@@ -50,11 +48,12 @@ class SummaryScreenState extends State<SummaryScreen> {
                     onPressed: () {
                       addTour();
                     },
-                    child: const Text(
+                    child: Text(
                       "Save",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary),
                     ),
-                    color: Colors.greenAccent,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               )
@@ -75,16 +74,6 @@ class SummaryScreenState extends State<SummaryScreen> {
                         urlTemplate:
                             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                         subdomains: ['a', 'b', 'c']),
-                    // MarkerLayerOptions(
-                    //   markers: [
-                    //     Marker(
-                    //       point: LatLng(widget.finalLocation.latitude!,
-                    //           widget.finalLocation.longitude!),
-                    //       builder: (ctx) => const Icon(Icons.location_pin,
-                    //           size: 40.0, color: Colors.red),
-                    //     ),
-                    //   ],
-                    // ),
                     PolygonLayerOptions(polygons: [pathPolygon]),
                     PolylineLayerOptions(
                       polylines: [

@@ -8,11 +8,11 @@ class MenuDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
+          DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.lightGreen,
+              color: Theme.of(context).colorScheme.secondary,
             ),
-            child: Center(
+            child: const Center(
                 child: Text(
               'Menu',
               style: TextStyle(color: Colors.white, fontSize: 24),

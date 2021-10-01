@@ -26,11 +26,7 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('My Routes'),
-          backgroundColor: Colors.green,
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: const Text('My Routes')),
         body: FutureBuilder<List<Tour>>(
             future: _toursFuture,
             builder: (context, snapshot) {

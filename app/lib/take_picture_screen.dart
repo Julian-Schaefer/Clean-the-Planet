@@ -41,10 +41,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Take a picture'),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text('Take a picture')),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -90,10 +87,7 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Display the Picture'),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text('Display the Picture')),
       body: Image.file(File(imagePath)),
     );
   }
