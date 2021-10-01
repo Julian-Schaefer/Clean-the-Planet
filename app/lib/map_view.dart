@@ -60,6 +60,9 @@ class MapViewState extends State<MapView> {
                 MarkerLayerOptions(
                   markers: [
                     Marker(
+                      width: 40.0,
+                      height: 40.0,
+                      anchorPos: AnchorPos.exactly(Anchor(20, 5)),
                       point: LatLng(_currentLocation!.latitude!,
                           _currentLocation!.longitude!),
                       builder: (ctx) => const Icon(Icons.location_pin,
@@ -101,13 +104,13 @@ class MapViewState extends State<MapView> {
           ? FloatingActionButton.extended(
               onPressed: _startCollecting,
               label: const Text('Start collecting!'),
-              icon: const Icon(Icons.shopping_bag),
+              icon: const Icon(Icons.map_outlined),
               backgroundColor: Theme.of(context).colorScheme.primary,
             )
           : FloatingActionButton.extended(
               onPressed: _finishCollecting,
               label: const Text('Finish collecting!'),
-              icon: const Icon(Icons.shopping_bag),
+              icon: const Icon(Icons.map_outlined),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
     );
@@ -164,17 +167,9 @@ class MapViewState extends State<MapView> {
   void _getInitialLocation() async {
     _location = Location();
     await _location?.changeSettings(
-      accuracy: LocationAccuracy.high,
-      interval: 1500,
-    );
+        accuracy: LocationAccuracy.high, interval: 1500, distanceFilter: 5);
 
     await askForLocationPermission();
-
-    _currentLocation = await _location!.getLocation();
-
-    _mapController.move(
-        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-        _mapController.zoom);
 
     listenForLocationUpdates();
   }
@@ -209,28 +204,17 @@ class MapViewState extends State<MapView> {
       return;
     }
 
+    _currentLocation = newLocation;
     var currentLatLng =
         LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!);
 
     _mapController.move(currentLatLng, defaultZoom);
 
     if (collectionStarted) {
-      bool addLatLng = false;
-      if (_polylineCoordinates.isNotEmpty) {
-        LatLng lastLatLng = _polylineCoordinates.last;
-        addLatLng = checkNecessaryDistance(lastLatLng, currentLatLng);
-      } else {
-        addLatLng = true;
-      }
-
-      addLatLng = true;
-
-      if (addLatLng) {
-        setState(() {
-          _currentLocation = newLocation;
-          _polylineCoordinates.add(currentLatLng);
-        });
-      }
+      setState(() {
+        _currentLocation = newLocation;
+        _polylineCoordinates.add(currentLatLng);
+      });
     }
   }
 }
