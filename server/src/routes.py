@@ -3,13 +3,23 @@ import sqlalchemy
 from geoalchemy2 import functions
 import logging
 import boto3
-from io import BytesIO
 from botocore.exceptions import ClientError
+import pathlib
+import uuid
 
 from database import db
 from tour import Tour
 
 routes = Blueprint('Routes', __name__)
+
+ACCESS_KEY = '123'
+SECRET_KEY = 'abc'
+bucket = "clean-the-planet"
+s3_client = boto3.resource('s3',
+                           endpoint_url="http://0.0.0.0:4566/",
+                           aws_access_key_id=ACCESS_KEY,
+                           aws_secret_access_key=SECRET_KEY,
+                           use_ssl=False)
 
 
 @routes.route("/tour", methods=["POST"])
@@ -78,33 +88,19 @@ def upload_file():
     file = request.files['files']
     file_content = file.read()
 
-    ACCESS_KEY = '123'
-    SECRET_KEY = 'abc'
-    bucket = "clean-the-planet"
-    s3_client = boto3.resource('s3',
-                               endpoint_url="http://0.0.0.0:4566/",
-                               aws_access_key_id=ACCESS_KEY,
-                               aws_secret_access_key=SECRET_KEY,
-                               use_ssl=False)
+    picture_keys = []
     try:
-        s3_client.Object(bucket, file.filename).put(Body=file_content)
+        file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
+        s3_client.Object(bucket, file_name).put(Body=file_content)
+        picture_keys.append(file_name)
     except ClientError as e:
         logging.error(e)
-        return False
-    return True
+        return "Error", 400
+    return {"picture_keys": picture_keys}
 
 
 @routes.route("/pictures", methods=["GET"])
 def downloadFile():
-    ACCESS_KEY = '123'
-    SECRET_KEY = 'abc'
-    bucket = "clean-the-planet"
-    s3_client = boto3.client('s3',
-                             endpoint_url="http://0.0.0.0:4566/",
-                             aws_access_key_id=ACCESS_KEY,
-                             aws_secret_access_key=SECRET_KEY,
-                             use_ssl=False)
-
     return s3_client.generate_presigned_url(
         'get_object',
         Params={
