@@ -11,6 +11,8 @@ flask-sqlalchemy = "*"
 geoalchemy2 = "*"
 psycopg2-binary = "*"
 gunicorn = "*"
+boto3 = "*"
+werkzeug = "*"
 
 [dev-packages]
 

@@ -7,6 +7,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+
 import 'package:http_interceptor/http_interceptor.dart';
 
 class TourService {
@@ -16,9 +19,9 @@ class TourService {
 
   static String _getBaseUrl() {
     if (kReleaseMode) {
-      return "https://clean-the-planet.herokuapp.com/";
+      return "https://clean-the-planet.herokuapp.com";
     } else {
-      return "http://localhost:5000";
+      return "https://clean-the-planet.loca.lt";
     }
   }
 
@@ -78,12 +81,25 @@ class TourService {
       } else {
         throw Exception('Failed to get Buffer.');
       }
-    } on SocketException {
+    } on SocketException catch (e) {
       return Future.error('No Internet connection 😑');
     } on FormatException {
       return Future.error('Bad response format 👎');
     } catch (e) {
       return Future.error('Unexpected error 😢');
     }
+  }
+
+  static Future<String> uploadPhotos(List<String> paths) async {
+    MultipartRequest request =
+        MultipartRequest('POST', Uri.parse(_getBaseUrl() + '/pictures'));
+    for (String path in paths) {
+      request.files.add(await MultipartFile.fromPath('files', path));
+    }
+
+    StreamedResponse response = await request.send();
+    var responseBytes = await response.stream.toBytes();
+    var responseString = utf8.decode(responseBytes);
+    return responseString;
   }
 }

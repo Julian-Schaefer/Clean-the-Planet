@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     super.initState();
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.veryHigh,
+      ResolutionPreset.high,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -89,6 +90,11 @@ class DisplayPictureScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Display the Picture')),
       body: Image.file(File(imagePath)),
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: () async {
+            await TourService.uploadPhotos([imagePath]);
+          },
+          label: const Text("Add")),
     );
   }
 }

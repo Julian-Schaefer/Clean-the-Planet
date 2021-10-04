@@ -1,6 +1,10 @@
 from flask import Blueprint, request, jsonify
 import sqlalchemy
 from geoalchemy2 import functions
+import logging
+import boto3
+from io import BytesIO
+from botocore.exceptions import ClientError
 
 from database import db
 from tour import Tour
@@ -15,17 +19,19 @@ def addTour():
 
     if request.is_json:
         data = request.get_json()
-        tour = Tour(
-            userId=userId, polyline=data['polyline'])
+        tour = Tour(userId=userId, polyline=data['polyline'])
         db.session.add(tour)
-        
+
         try:
             db.session.commit()
         except sqlalchemy.exc.InternalError as err:
             print(err)
             return {"error": "Could not insert Tour into database."}, 400
 
-        return {"message": f"Tour {tour.id} for User {tour.userId} has been created successfully."}
+        return {
+            "message":
+            f"Tour {tour.id} for User {tour.userId} has been created successfully."
+        }
     else:
         return {"error": "The request payload is not in JSON format"}, 400
 
@@ -36,16 +42,20 @@ def getTours():
     userId = "testi"
 
     tours = db.session.query(
-        Tour.id, functions.ST_AsText(functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,25832),0.0001)), functions.ST_AsText(Tour.polyline)).filter_by(userId=userId)
+        Tour.id,
+        functions.ST_AsText(
+            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,
+                                                     25832), 0.0001)),
+        functions.ST_AsText(Tour.polyline)).filter_by(userId=userId)
 
-    results = [
-        {
-            "id": id,
-            "polygon": polygon,
-            "polyline": polyline
-        } for (id, polygon, polyline) in tours]
+    results = [{
+        "id": id,
+        "polygon": polygon,
+        "polyline": polyline
+    } for (id, polygon, polyline) in tours]
 
     return jsonify(results)
+
 
 @routes.route("/buffer", methods=["POST"])
 def getBuffer():
@@ -53,7 +63,52 @@ def getBuffer():
         data = request.get_json()
         polyline = data['polyline']
 
-        polygon = db.session.query(functions.ST_AsText(functions.ST_Buffer(functions.ST_SetSRID(functions.ST_GeomFromText(polyline),25832),0.0001))).one()
+        polygon = db.session.query(
+            functions.ST_AsText(
+                functions.ST_Buffer(
+                    functions.ST_SetSRID(functions.ST_GeomFromText(polyline),
+                                         25832), 0.0001))).one()
         return jsonify({"polygon": polygon[0]})
 
     return "Error", 400
+
+
+@routes.route("/pictures", methods=["POST"])
+def upload_file():
+    file = request.files['files']
+    file_content = file.read()
+
+    ACCESS_KEY = '123'
+    SECRET_KEY = 'abc'
+    bucket = "clean-the-planet"
+    s3_client = boto3.resource('s3',
+                               endpoint_url="http://0.0.0.0:4566/",
+                               aws_access_key_id=ACCESS_KEY,
+                               aws_secret_access_key=SECRET_KEY,
+                               use_ssl=False)
+    try:
+        s3_client.Object(bucket, file.filename).put(Body=file_content)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+
+@routes.route("/pictures", methods=["GET"])
+def downloadFile():
+    ACCESS_KEY = '123'
+    SECRET_KEY = 'abc'
+    bucket = "clean-the-planet"
+    s3_client = boto3.client('s3',
+                             endpoint_url="http://0.0.0.0:4566/",
+                             aws_access_key_id=ACCESS_KEY,
+                             aws_secret_access_key=SECRET_KEY,
+                             use_ssl=False)
+
+    return s3_client.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': bucket,
+            'Key': "CAP_EAC11C74-C707-4CD7-B021-EAC2B209A391.jpg"
+        },
+        ExpiresIn=60)
