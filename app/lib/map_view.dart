@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clean_the_planet/calculate_polygon.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
@@ -40,7 +39,7 @@ class MapViewState extends State<MapView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Clean the Planet')),
-      drawer: MenuDrawer(),
+      drawer: const MenuDrawer(),
       body: Stack(
         alignment: Alignment.topRight,
         children: <Widget>[

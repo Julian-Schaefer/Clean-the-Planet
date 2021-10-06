@@ -29,7 +29,9 @@ def addTour():
 
     if request.is_json:
         data = request.get_json()
-        tour = Tour(userId=userId, polyline=data['polyline'])
+        tour = Tour(userId=userId,
+                    polyline=data['polyline'],
+                    result_picture_keys=data["picture_keys"])
         db.session.add(tour)
 
         try:
@@ -85,18 +87,23 @@ def getBuffer():
 
 @routes.route("/pictures", methods=["POST"])
 def upload_file():
-    file = request.files['files']
-    file_content = file.read()
+    files = request.files.getlist("files")
 
     picture_keys = []
-    try:
-        file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
-        s3_client.Object(bucket, file_name).put(Body=file_content)
-        picture_keys.append(file_name)
-    except ClientError as e:
-        logging.error(e)
-        return "Error", 400
-    return {"picture_keys": picture_keys}
+    for file in files:
+        try:
+            file_content = file.read()
+            file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
+            s3_client.Object(bucket, file_name).put(Body=file_content)
+            picture_keys.append(file_name)
+        except ClientError as e:
+            logging.error(e)
+            return "Error", 400
+
+    if len(picture_keys) > 0:
+        return {"picture_keys": picture_keys}
+
+    return "Error", 400
 
 
 @routes.route("/pictures", methods=["GET"])

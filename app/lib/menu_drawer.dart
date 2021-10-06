@@ -2,6 +2,8 @@ import 'package:clean_the_planet/my_routes_screen.dart';
 import 'package:flutter/material.dart';
 
 class MenuDrawer extends StatelessWidget {
+  const MenuDrawer({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Drawer(

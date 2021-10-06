@@ -24,6 +24,7 @@ class SummaryScreen extends StatefulWidget {
 
 class SummaryScreenState extends State<SummaryScreen> {
   late Polygon pathPolygon = Polygon(points: []);
+  List<String> resultPictures = [];
 
   @override
   void initState() {
@@ -45,9 +46,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: MaterialButton(
-                    onPressed: () {
-                      addTour();
-                    },
+                    onPressed: addTour,
                     child: Text(
                       "Save",
                       style: TextStyle(
@@ -94,19 +93,9 @@ class SummaryScreenState extends State<SummaryScreen> {
                 height: 60,
                 child: Row(
                   children: [
-                    const Text("Add Photo"),
+                    const Text("Add Picture"),
                     TextButton(
-                        onPressed: () async {
-                          final cameras = await availableCameras();
-                          final firstCamera = cameras.first;
-
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      TakePictureScreen(camera: firstCamera)));
-                        },
-                        child: const Text("Add Photo"))
+                        onPressed: addPicture, child: const Text("Add Picture"))
                   ],
                 ),
               )
@@ -125,7 +114,8 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void addTour() async {
-    Tour tour = Tour(polyline: widget.polylineCoordinates);
+    Tour tour = Tour(
+        polyline: widget.polylineCoordinates, resultPictures: resultPictures);
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
@@ -172,5 +162,19 @@ class SummaryScreenState extends State<SummaryScreen> {
     }
 
     return false;
+  }
+
+  void addPicture() async {
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    String? imagePath = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TakePictureScreen(camera: firstCamera)));
+
+    if (imagePath != null) {
+      resultPictures.add(imagePath);
+    }
   }
 }

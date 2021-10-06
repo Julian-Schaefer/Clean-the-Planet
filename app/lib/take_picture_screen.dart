@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -60,13 +59,17 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             final image = await _controller.takePicture();
 
-            await Navigator.of(context).push(
+            String? imagePath = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DisplayPictureScreen(
                   imagePath: image.path,
                 ),
               ),
             );
+
+            if (imagePath != null) {
+              Navigator.pop(context, imagePath);
+            }
           } catch (e) {
             if (kDebugMode) {
               print(e);
@@ -88,11 +91,11 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
+      appBar: AppBar(title: const Text('Add the Picture')),
       body: Image.file(File(imagePath)),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
-            await TourService.uploadPhotos([imagePath]);
+            Navigator.pop(context, imagePath);
           },
           label: const Text("Add")),
     );

@@ -7,9 +7,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 
-import 'package:path/path.dart';
-import 'package:async/async.dart';
-
 import 'package:http_interceptor/http_interceptor.dart';
 
 class TourService {
@@ -28,6 +25,11 @@ class TourService {
   static Future<void> addTour(Tour tour) async {
     var relativeUrl = "/tour";
     try {
+      if (tour.resultPictures != null && tour.resultPictures!.isNotEmpty) {
+        var pictureKeys = await _uploadPictures(tour.resultPictures!);
+        tour.resultPictures = pictureKeys;
+      }
+
       final response = await _client
           .post(Uri.parse(_getBaseUrl() + relativeUrl), body: jsonEncode(tour));
 
@@ -81,7 +83,7 @@ class TourService {
       } else {
         throw Exception('Failed to get Buffer.');
       }
-    } on SocketException catch (e) {
+    } on SocketException {
       return Future.error('No Internet connection 😑');
     } on FormatException {
       return Future.error('Bad response format 👎');
@@ -90,7 +92,7 @@ class TourService {
     }
   }
 
-  static Future<String> uploadPhotos(List<String> paths) async {
+  static Future<List<String>> _uploadPictures(List<String> paths) async {
     MultipartRequest request =
         MultipartRequest('POST', Uri.parse(_getBaseUrl() + '/pictures'));
     for (String path in paths) {
@@ -98,8 +100,15 @@ class TourService {
     }
 
     StreamedResponse response = await request.send();
-    var responseBytes = await response.stream.toBytes();
-    var responseString = utf8.decode(responseBytes);
-    return responseString;
+
+    if (response.statusCode == 200) {
+      var responseBytes = await response.stream.toBytes();
+      var responseBody = utf8.decode(responseBytes);
+      final parsedJson = jsonDecode(responseBody);
+      List<String> pictureKeys = List<String>.from(parsedJson["picture_keys"]);
+      return pictureKeys;
+    } else {
+      throw Exception('Failed to upload Pictures.');
+    }
   }
 }

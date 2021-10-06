@@ -4,8 +4,9 @@ class Tour {
   String? id;
   final List<LatLng> polyline;
   List<LatLng>? polygon;
+  List<String>? resultPictures;
 
-  Tour({this.id, required this.polyline, this.polygon});
+  Tour({this.id, required this.polyline, this.polygon, this.resultPictures});
 
   factory Tour.fromJson(Map<String, dynamic> json) {
     return Tour(
@@ -16,7 +17,10 @@ class Tour {
   }
 
   Map<String, dynamic> toJson() {
-    return {'polyline': getPolylineString(polyline)};
+    return {
+      'polyline': getPolylineString(polyline),
+      'picture_keys': resultPictures
+    };
   }
 
   static String getPolygonString(List<LatLng> polygon) {
