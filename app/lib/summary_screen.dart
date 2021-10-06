@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_service.dart';
@@ -59,8 +61,9 @@ class SummaryScreenState extends State<SummaryScreen> {
             ],
           ),
           body: SafeArea(
-            child: Column(children: [
-              Expanded(
+            child: ListView(children: [
+              SizedBox(
+                height: 300,
                 child: FlutterMap(
                   options: MapOptions(
                     center: LatLng(widget.finalLocation.latitude!,
@@ -88,6 +91,15 @@ class SummaryScreenState extends State<SummaryScreen> {
               const SizedBox(
                 child: Text("Good job! You've done it."),
                 height: 60,
+              ),
+              GridView.count(
+                crossAxisCount: 2,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                children: [
+                  for (var path in resultPictures) Image.file(File(path)),
+                  const Icon(Icons.photo, size: 60.0)
+                ],
               ),
               SizedBox(
                 height: 60,
@@ -174,7 +186,9 @@ class SummaryScreenState extends State<SummaryScreen> {
             builder: (context) => TakePictureScreen(camera: firstCamera)));
 
     if (imagePath != null) {
-      resultPictures.add(imagePath);
+      setState(() {
+        resultPictures.add(imagePath);
+      });
     }
   }
 }
