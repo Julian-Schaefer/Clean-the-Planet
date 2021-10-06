@@ -15,11 +15,17 @@ routes = Blueprint('Routes', __name__)
 ACCESS_KEY = '123'
 SECRET_KEY = 'abc'
 bucket = "clean-the-planet"
-s3_client = boto3.resource('s3',
-                           endpoint_url="http://0.0.0.0:4566/",
-                           aws_access_key_id=ACCESS_KEY,
-                           aws_secret_access_key=SECRET_KEY,
-                           use_ssl=False)
+s3_resource = boto3.resource(
+    's3',
+    endpoint_url="https://clean-the-planet-s3.loca.lt/",
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
+    use_ssl=False)
+s3_client = boto3.client('s3',
+                         endpoint_url="https://clean-the-planet-s3.loca.lt/",
+                         aws_access_key_id=ACCESS_KEY,
+                         aws_secret_access_key=SECRET_KEY,
+                         use_ssl=False)
 
 
 @routes.route("/tour", methods=["POST"])
@@ -56,15 +62,17 @@ def getTours():
     tours = db.session.query(
         Tour.id,
         functions.ST_AsText(
-            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,
-                                                     25832), 0.0001)),
-        functions.ST_AsText(Tour.polyline)).filter_by(userId=userId)
+            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline, 25832),
+                                0.0001)), functions.ST_AsText(Tour.polyline),
+        Tour.result_picture_keys).filter_by(userId=userId)
 
     results = [{
         "id": id,
         "polygon": polygon,
-        "polyline": polyline
-    } for (id, polygon, polyline) in tours]
+        "polyline": polyline,
+        "picture_keys": picture_keys,
+        "result_pictures": get_urls_from_picture_key(picture_keys)
+    } for (id, polygon, polyline, picture_keys) in tours]
 
     return jsonify(results)
 
@@ -94,7 +102,7 @@ def upload_file():
         try:
             file_content = file.read()
             file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
-            s3_client.Object(bucket, file_name).put(Body=file_content)
+            s3_resource.Object(bucket, file_name).put(Body=file_content)
             picture_keys.append(file_name)
         except ClientError as e:
             logging.error(e)
@@ -106,12 +114,17 @@ def upload_file():
     return "Error", 400
 
 
-@routes.route("/pictures", methods=["GET"])
-def downloadFile():
-    return s3_client.generate_presigned_url(
-        'get_object',
-        Params={
-            'Bucket': bucket,
-            'Key': "CAP_EAC11C74-C707-4CD7-B021-EAC2B209A391.jpg"
-        },
-        ExpiresIn=60)
+def get_urls_from_picture_key(picture_keys):
+    if not picture_keys:
+        return
+
+    pictures = []
+    for picture_key in picture_keys:
+        pictures.append(
+            s3_client.generate_presigned_url('get_object',
+                                             Params={
+                                                 'Bucket': bucket,
+                                                 'Key': picture_key
+                                             },
+                                             ExpiresIn=60))
+    return pictures

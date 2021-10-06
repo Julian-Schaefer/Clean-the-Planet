@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -41,29 +42,53 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
 
   Widget getBody(int selectedIndex) {
     if (selectedIndex == 0) {
-      return FlutterMap(
-        options: MapOptions(
-          center: widget.tour.polyline[0],
-          zoom: 18.0,
-          maxZoom: 18.4,
-        ),
-        layers: [
-          TileLayerOptions(
-              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-              subdomains: ['a', 'b', 'c']),
-          PolygonLayerOptions(polygons: [
-            Polygon(
-                points: widget.tour.polygon!,
-                color: Colors.red.withOpacity(0.6))
-          ]),
-          PolylineLayerOptions(
-            polylines: [
-              Polyline(
-                  points: widget.tour.polyline,
-                  strokeWidth: 2.0,
-                  color: Colors.red),
-            ],
+      return ListView(
+        children: [
+          SizedBox(
+            height: 400,
+            child: FlutterMap(
+              options: MapOptions(
+                center: widget.tour.polyline[0],
+                zoom: 18.0,
+                maxZoom: 18.4,
+              ),
+              layers: [
+                TileLayerOptions(
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c']),
+                PolygonLayerOptions(polygons: [
+                  Polygon(
+                      points: widget.tour.polygon!,
+                      color: Colors.red.withOpacity(0.6))
+                ]),
+                PolylineLayerOptions(
+                  polylines: [
+                    Polyline(
+                        points: widget.tour.polyline,
+                        strokeWidth: 2.0,
+                        color: Colors.red),
+                  ],
+                ),
+              ],
+            ),
           ),
+          if (widget.tour.resultPictures != null)
+            GridView.count(
+              crossAxisCount: 2,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              children: [
+                for (var url in widget.tour.resultPictures!)
+                  CachedNetworkImage(
+                    imageUrl: url,
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  )
+              ],
+            ),
         ],
       );
     } else {

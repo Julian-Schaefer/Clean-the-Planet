@@ -127,7 +127,7 @@ class SummaryScreenState extends State<SummaryScreen> {
 
   void addTour() async {
     Tour tour = Tour(
-        polyline: widget.polylineCoordinates, resultPictures: resultPictures);
+        polyline: widget.polylineCoordinates, resultPictureKeys: resultPictures);
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);

@@ -25,9 +25,9 @@ class TourService {
   static Future<void> addTour(Tour tour) async {
     var relativeUrl = "/tour";
     try {
-      if (tour.resultPictures != null && tour.resultPictures!.isNotEmpty) {
-        var pictureKeys = await _uploadPictures(tour.resultPictures!);
-        tour.resultPictures = pictureKeys;
+      if (tour.resultPictureKeys != null && tour.resultPictureKeys!.isNotEmpty) {
+        var pictureKeys = await _uploadPictures(tour.resultPictureKeys!);
+        tour.resultPictureKeys = pictureKeys;
       }
 
       final response = await _client
@@ -59,7 +59,7 @@ class TourService {
 
         return parsedJson.map<Tour>((json) => Tour.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to add Tour.');
+        throw Exception('Failed to get Tour.');
       }
     } on SocketException {
       return Future.error('No Internet connection 😑');

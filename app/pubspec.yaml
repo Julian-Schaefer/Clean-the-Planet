@@ -34,6 +34,7 @@ dependencies:
   path: ^1.8.0
   maps_toolkit: ^2.0.0
   http_interceptor: ^1.0.2
+  cached_network_image: ^3.1.0
 
   flutter_map: ^0.14.0
   location: ^4.3.0
