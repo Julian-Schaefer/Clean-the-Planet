@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clean_the_planet/removable_image.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -75,18 +75,12 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           ),
           if (widget.tour.resultPictures != null)
             GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: 3,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: [
                 for (var url in widget.tour.resultPictures!)
-                  CachedNetworkImage(
-                    imageUrl: url,
-                    placeholder: (context, url) =>
-                        const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  )
+                  NetworkImagePreview(imageUrl: url)
               ],
             ),
         ],

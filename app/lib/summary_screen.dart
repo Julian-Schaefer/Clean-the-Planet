@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clean_the_planet/removable_image.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_service.dart';
@@ -93,11 +94,20 @@ class SummaryScreenState extends State<SummaryScreen> {
                 height: 60,
               ),
               GridView.count(
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 children: [
-                  for (var path in resultPictures) Image.file(File(path)),
+                  for (var path in resultPictures)
+                    ImagePreview(
+                      path: path,
+                      onRemove: () async {
+                        await File(path).delete();
+                        setState(() {
+                          resultPictures.remove(path);
+                        });
+                      },
+                    ),
                   const Icon(Icons.photo, size: 60.0)
                 ],
               ),
@@ -127,7 +137,8 @@ class SummaryScreenState extends State<SummaryScreen> {
 
   void addTour() async {
     Tour tour = Tour(
-        polyline: widget.polylineCoordinates, resultPictureKeys: resultPictures);
+        polyline: widget.polylineCoordinates,
+        resultPictureKeys: resultPictures);
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
