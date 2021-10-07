@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/summary_screen.dart';
@@ -99,19 +100,7 @@ class MapViewState extends State<MapView> {
           )
         ],
       ),
-      floatingActionButton: !collectionStarted
-          ? FloatingActionButton.extended(
-              onPressed: _startCollecting,
-              label: const Text('Start collecting!'),
-              icon: const Icon(Icons.map_outlined),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            )
-          : FloatingActionButton.extended(
-              onPressed: _finishCollecting,
-              label: const Text('Finish collecting!'),
-              icon: const Icon(Icons.map_outlined),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+      floatingActionButton: _getFloatingActionButton(),
     );
   }
 
@@ -123,7 +112,10 @@ class MapViewState extends State<MapView> {
       return;
     }
 
-    _location!.enableBackgroundMode(enable: true);
+    if (Platform.isIOS) {
+      _location!.enableBackgroundMode(enable: true);
+    }
+
     setState(() {
       collectionStarted = true;
       _timerWidgetController.startTimer!.call();
@@ -141,7 +133,9 @@ class MapViewState extends State<MapView> {
       return;
     }
 
-    _location?.enableBackgroundMode(enable: false);
+    if (Platform.isIOS) {
+      _location!.enableBackgroundMode(enable: false);
+    }
 
     setState(() {
       _timerWidgetController.stopTimer!.call();
@@ -165,20 +159,26 @@ class MapViewState extends State<MapView> {
 
   void _getInitialLocation() async {
     _location = Location();
-    await _location?.changeSettings(
-        accuracy: LocationAccuracy.high, interval: 1500, distanceFilter: 5);
 
-    await askForLocationPermission();
+    //TODO: Remove once fixed
+    await Future.delayed(const Duration(seconds: 5));
 
-    listenForLocationUpdates();
+    bool permissionsGranted = await askForLocationPermission();
+
+    if (permissionsGranted) {
+      await _location?.changeSettings(
+          accuracy: LocationAccuracy.high, interval: 1500, distanceFilter: 5);
+
+      listenForLocationUpdates();
+    }
   }
 
-  Future<void> askForLocationPermission() async {
+  Future<bool> askForLocationPermission() async {
     bool serviceEnabled = await _location!.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await _location!.requestService();
       if (!serviceEnabled) {
-        return;
+        return false;
       }
     }
 
@@ -186,9 +186,11 @@ class MapViewState extends State<MapView> {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await _location!.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
-        return;
+        return false;
       }
     }
+
+    return true;
   }
 
   void listenForLocationUpdates() {
@@ -203,17 +205,39 @@ class MapViewState extends State<MapView> {
       return;
     }
 
-    _currentLocation = newLocation;
-    var currentLatLng =
-        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!);
+    var newLatLng = LatLng(newLocation.latitude!, newLocation.longitude!);
 
-    _mapController.move(currentLatLng, defaultZoom);
+    _mapController.move(newLatLng, defaultZoom);
 
-    if (collectionStarted) {
-      setState(() {
-        _currentLocation = newLocation;
-        _polylineCoordinates.add(currentLatLng);
-      });
+    setState(() {
+      _currentLocation = newLocation;
+      if (collectionStarted) {
+        _polylineCoordinates.add(newLatLng);
+      }
+    });
+  }
+
+  Widget _getFloatingActionButton() {
+    if (_currentLocation == null) {
+      return const FloatingActionButton.extended(
+          onPressed: null,
+          label: Text('Retrieving Location...'),
+          icon: Icon(Icons.location_disabled));
+    }
+
+    if (!collectionStarted) {
+      return FloatingActionButton.extended(
+        onPressed: _startCollecting,
+        label: const Text('Start collecting!'),
+        icon: const Icon(Icons.map_outlined),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      );
+    } else {
+      return FloatingActionButton.extended(
+          onPressed: _finishCollecting,
+          label: const Text('Finish collecting!'),
+          icon: const Icon(Icons.map_outlined),
+          backgroundColor: Theme.of(context).colorScheme.error);
     }
   }
 }
