@@ -19,14 +19,16 @@ if not (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_REGION):
     USE_SSL = False
 
 bucket = "clean-the-planet"
+signature_config = Config(signature_version='v4')
+
 s3_resource = boto3.resource('s3',
                              endpoint_url=ENDPOINT_URL,
                              aws_access_key_id=AWS_ACCESS_KEY_ID,
                              aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                              region_name=AWS_REGION,
-                             use_ssl=USE_SSL)
+                             use_ssl=USE_SSL,
+                             config=signature_config)
 
-signature_config = Config(signature_version='v4')
 s3_client = boto3.client('s3',
                          endpoint_url=ENDPOINT_URL,
                          aws_access_key_id=AWS_ACCESS_KEY_ID,
