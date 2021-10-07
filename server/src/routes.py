@@ -2,30 +2,14 @@ from flask import Blueprint, request, jsonify
 import sqlalchemy
 from geoalchemy2 import functions
 import logging
-import boto3
 from botocore.exceptions import ClientError
 import pathlib
 import uuid
 
-from database import db
+from utils import db, s3_client, s3_resource, BUCKET
 from tour import Tour
 
 routes = Blueprint('Routes', __name__)
-
-ACCESS_KEY = '123'
-SECRET_KEY = 'abc'
-bucket = "clean-the-planet"
-s3_resource = boto3.resource(
-    's3',
-    endpoint_url="https://clean-the-planet-s3.loca.lt/",
-    aws_access_key_id=ACCESS_KEY,
-    aws_secret_access_key=SECRET_KEY,
-    use_ssl=False)
-s3_client = boto3.client('s3',
-                         endpoint_url="https://clean-the-planet-s3.loca.lt/",
-                         aws_access_key_id=ACCESS_KEY,
-                         aws_secret_access_key=SECRET_KEY,
-                         use_ssl=False)
 
 
 @routes.route("/tour", methods=["POST"])
@@ -102,7 +86,7 @@ def upload_file():
         try:
             file_content = file.read()
             file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
-            s3_resource.Object(bucket, file_name).put(Body=file_content)
+            s3_resource.Object(BUCKET, file_name).put(Body=file_content)
             picture_keys.append(file_name)
         except ClientError as e:
             logging.error(e)
@@ -123,7 +107,7 @@ def get_urls_from_picture_key(picture_keys):
         pictures.append(
             s3_client.generate_presigned_url('get_object',
                                              Params={
-                                                 'Bucket': bucket,
+                                                 'Bucket': BUCKET,
                                                  'Key': picture_key
                                              },
                                              ExpiresIn=60))

@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from routes import routes
-from database import db
+from utils import db
 from flask_migrate import Migrate
 
 # Connect to Firebase

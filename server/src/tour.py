@@ -1,4 +1,4 @@
-from database import db
+from utils import db
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
