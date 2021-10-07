@@ -1,6 +1,7 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 import boto3
+from botocore.config import Config
 
 db = SQLAlchemy()
 
@@ -9,7 +10,7 @@ ENDPOINT_URL = None
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
 USE_SSL = True
-if not (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID):
+if not (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY):
     ENDPOINT_URL = "https://clean-the-planet-s3.loca.lt/"
     AWS_ACCESS_KEY_ID = '123'
     AWS_SECRET_ACCESS_KEY = 'abc'
@@ -22,8 +23,10 @@ s3_resource = boto3.resource('s3',
                              aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                              use_ssl=USE_SSL)
 
+signature_config = Config(signature_version='v4')
 s3_client = boto3.client('s3',
                          endpoint_url=ENDPOINT_URL,
                          aws_access_key_id=AWS_ACCESS_KEY_ID,
                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                         use_ssl=USE_SSL)
+                         use_ssl=USE_SSL,
+                         config=signature_config)
