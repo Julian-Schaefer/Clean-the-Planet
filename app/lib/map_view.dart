@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:background_location/background_location.dart' as geo;
 
 class MapView extends StatefulWidget {
   const MapView({Key? key}) : super(key: key);
@@ -17,6 +18,9 @@ class MapView extends StatefulWidget {
 }
 
 class MapViewState extends State<MapView> {
+  static const int interval = 1500;
+  static const double distanceFilter = 5.0;
+
   final MapController _mapController = MapController();
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
   final List<LatLng> _polylineCoordinates = [];
@@ -34,6 +38,12 @@ class MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     _getInitialLocation();
+  }
+
+  @override
+  void dispose() {
+    geo.BackgroundLocation.stopLocationService();
+    super.dispose();
   }
 
   @override
@@ -114,6 +124,9 @@ class MapViewState extends State<MapView> {
 
     if (Platform.isIOS) {
       _location!.enableBackgroundMode(enable: true);
+    } else if (Platform.isAndroid) {
+      _locationSubscription.cancel();
+      _startAndroidBackgroundLocationService();
     }
 
     setState(() {
@@ -134,14 +147,16 @@ class MapViewState extends State<MapView> {
     }
 
     if (Platform.isIOS) {
+      _locationSubscription.cancel();
       _location!.enableBackgroundMode(enable: false);
+    } else if (Platform.isAndroid) {
+      geo.BackgroundLocation.stopLocationService();
     }
 
     setState(() {
+      collectionStarted = false;
       _timerWidgetController.stopTimer!.call();
     });
-
-    _locationSubscription.cancel();
 
     Navigator.push(
       context,
@@ -150,7 +165,6 @@ class MapViewState extends State<MapView> {
               polylineCoordinates: _polylineCoordinates,
               finalLocation: _currentLocation!)),
     ).then((_) => setState(() {
-          collectionStarted = false;
           _polylineCoordinates.clear();
           _timerWidgetController.resetTimer!.call();
           listenForLocationUpdates();
@@ -161,13 +175,15 @@ class MapViewState extends State<MapView> {
     _location = Location();
 
     //TODO: Remove once fixed
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 3));
 
     bool permissionsGranted = await askForLocationPermission();
 
     if (permissionsGranted) {
       await _location?.changeSettings(
-          accuracy: LocationAccuracy.high, interval: 1500, distanceFilter: 5);
+          accuracy: LocationAccuracy.high,
+          interval: interval,
+          distanceFilter: distanceFilter);
 
       listenForLocationUpdates();
     }
@@ -191,6 +207,20 @@ class MapViewState extends State<MapView> {
     }
 
     return true;
+  }
+
+  void _startAndroidBackgroundLocationService() async {
+    geo.BackgroundLocation.setAndroidNotification(
+      title: "Clean the Planet: Collecting",
+      message: "We are using your location while you collect.",
+      icon: "@mipmap/ic_launcher",
+    );
+    await geo.BackgroundLocation.setAndroidConfiguration(interval);
+    geo.BackgroundLocation.startLocationService(distanceFilter: distanceFilter);
+    geo.BackgroundLocation.getLocationUpdates((location) {
+      _updateRouteOnMap(LocationData.fromMap(
+          {"latitude": location.latitude, "longitude": location.longitude}));
+    });
   }
 
   void listenForLocationUpdates() {
