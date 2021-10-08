@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:clean_the_planet/removable_image.dart';
+import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_service.dart';
@@ -64,7 +65,7 @@ class SummaryScreenState extends State<SummaryScreen> {
           body: SafeArea(
             child: ListView(children: [
               SizedBox(
-                height: 300,
+                height: 400,
                 child: FlutterMap(
                   options: MapOptions(
                     center: LatLng(widget.finalLocation.latitude!,
@@ -99,27 +100,31 @@ class SummaryScreenState extends State<SummaryScreen> {
                 shrinkWrap: true,
                 children: [
                   for (var path in resultPictures)
-                    ImagePreview(
-                      path: path,
-                      onRemove: () async {
-                        await File(path).delete();
-                        setState(() {
-                          resultPictures.remove(path);
-                        });
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PictureScreen(
+                                  imagePath: path, heroTag: "picture_screen"),
+                            ));
                       },
+                      child: Hero(
+                          child: ImagePreview(
+                            path: path,
+                            onRemove: () async {
+                              await File(path).delete();
+                              setState(() {
+                                resultPictures.remove(path);
+                              });
+                            },
+                          ),
+                          tag: "picture_screen"),
                     ),
-                  const Icon(Icons.photo, size: 60.0)
+                  IconButton(
+                      onPressed: addPicture,
+                      icon: const Icon(Icons.add_a_photo_outlined, size: 60.0))
                 ],
-              ),
-              SizedBox(
-                height: 60,
-                child: Row(
-                  children: [
-                    const Text("Add Picture"),
-                    TextButton(
-                        onPressed: addPicture, child: const Text("Add Picture"))
-                  ],
-                ),
               )
             ]),
           )),

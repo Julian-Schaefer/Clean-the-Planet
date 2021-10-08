@@ -1,4 +1,5 @@
-import 'package:clean_the_planet/removable_image.dart';
+import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -80,7 +81,19 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               shrinkWrap: true,
               children: [
                 for (var url in widget.tour.resultPictures!)
-                  NetworkImagePreview(imageUrl: url)
+                  GestureDetector(
+                    child: Hero(
+                        child: NetworkImagePreview(imageUrl: url),
+                        tag: "picture_screen"),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PictureScreen(
+                                imageUrl: url, heroTag: "picture_screen"),
+                          ));
+                    },
+                  )
               ],
             ),
         ],
