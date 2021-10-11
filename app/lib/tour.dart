@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 
 class Tour {
   String? id;
   final List<LatLng> polyline;
-  List<LatLng>? polygon;
+  Polygon? polygon;
   List<String>? resultPictureKeys;
   List<String>? resultPictures;
 
@@ -41,36 +43,63 @@ class Tour {
     };
   }
 
-  static String getPolygonString(List<LatLng> polygon) {
-    String polygonString = "POLYGON((";
-    LatLng firstCoord = polygon.first;
-    for (LatLng coord in polygon) {
-      polygonString +=
-          coord.latitude.toString() + " " + coord.longitude.toString() + ",";
-    }
+  // static String getPolygonString(List<LatLng> polygon) {
+  //   String polygonString = "POLYGON((";
+  //   LatLng firstCoord = polygon.first;
+  //   for (LatLng coord in polygon) {
+  //     polygonString +=
+  //         coord.latitude.toString() + " " + coord.longitude.toString() + ",";
+  //   }
 
-    polygonString += firstCoord.latitude.toString() +
-        " " +
-        firstCoord.longitude.toString() +
-        "))";
+  //   polygonString += firstCoord.latitude.toString() +
+  //       " " +
+  //       firstCoord.longitude.toString() +
+  //       "))";
 
-    return polygonString;
-  }
+  //   return polygonString;
+  // }
 
-  static List<LatLng> fromPolygonString(String polygonString) {
-    List<LatLng> polygon = [];
+  static Polygon fromPolygonString(String polygonString) {
+    List<LatLng> points = [];
 
-    polygonString = polygonString.substring("POLYGON((".length);
-    polygonString = polygonString.substring(0, polygonString.length - 2);
+    List<String> polygonParts = polygonString.split("),(");
+    String pointsString = polygonParts[0];
+    pointsString = pointsString.substring("POLYGON((".length);
+    pointsString = pointsString.substring(0, pointsString.length - 2);
 
-    for (var coord in polygonString.split(",")) {
+    for (var coord in pointsString.split(",")) {
       List<String> coords = coord.split(" ");
       double latitude = double.parse(coords[0]);
       double longitude = double.parse(coords[1]);
-      polygon.add(LatLng(latitude, longitude));
+      points.add(LatLng(latitude, longitude));
     }
 
-    return polygon;
+    List<List<LatLng>>? holePointsList;
+    if (polygonParts.length > 1) {
+      holePointsList = [];
+    }
+
+    for (int i = 1; i < polygonParts.length; i++) {
+      String holeString = polygonParts[i];
+      if (holeString.contains("))")) {
+        holeString = holeString.substring(0, holeString.length - 2);
+      }
+
+      List<LatLng> holes = [];
+      for (var coord in holeString.split(",")) {
+        List<String> coords = coord.split(" ");
+        double latitude = double.parse(coords[0]);
+        double longitude = double.parse(coords[1]);
+        holes.add(LatLng(latitude, longitude));
+      }
+
+      holePointsList!.add(holes);
+    }
+
+    return Polygon(
+        points: points,
+        holePointsList: holePointsList,
+        color: Colors.red.withOpacity(0.6));
   }
 
   static String getPolylineString(List<LatLng> polyline) {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:clean_the_planet/json_interceptor.dart';
 import 'package:clean_the_planet/tour.dart';
+import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -25,7 +26,8 @@ class TourService {
   static Future<void> addTour(Tour tour) async {
     var relativeUrl = "/tour";
     try {
-      if (tour.resultPictureKeys != null && tour.resultPictureKeys!.isNotEmpty) {
+      if (tour.resultPictureKeys != null &&
+          tour.resultPictureKeys!.isNotEmpty) {
         var pictureKeys = await _uploadPictures(tour.resultPictureKeys!);
         tour.resultPictureKeys = pictureKeys;
       }
@@ -70,7 +72,7 @@ class TourService {
     }
   }
 
-  static Future<List<LatLng>> getBuffer(List<LatLng> polyline) async {
+  static Future<Polygon> getBuffer(List<LatLng> polyline) async {
     var relativeUrl = "/buffer";
     try {
       final response = await _client.post(

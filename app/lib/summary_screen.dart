@@ -132,11 +132,9 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void getTourBuffer() async {
-    List<LatLng> polygon =
-        await TourService.getBuffer(widget.polylineCoordinates);
+    Polygon polygon = await TourService.getBuffer(widget.polylineCoordinates);
     setState(() {
-      pathPolygon =
-          Polygon(points: polygon, color: Colors.red.withOpacity(0.6));
+      pathPolygon = polygon;
     });
   }
 

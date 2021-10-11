@@ -58,11 +58,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                     urlTemplate:
                         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     subdomains: ['a', 'b', 'c']),
-                PolygonLayerOptions(polygons: [
-                  Polygon(
-                      points: widget.tour.polygon!,
-                      color: Colors.red.withOpacity(0.6))
-                ]),
+                PolygonLayerOptions(polygons: [widget.tour.polygon!]),
                 PolylineLayerOptions(
                   polylines: [
                     Polyline(
