@@ -6,6 +6,7 @@ class Tour {
   String? id;
   final List<LatLng> polyline;
   Polygon? polygon;
+  DateTime? dateTime;
   List<String>? resultPictureKeys;
   List<String>? resultPictures;
 
@@ -13,6 +14,7 @@ class Tour {
       {this.id,
       required this.polyline,
       this.polygon,
+      this.dateTime,
       this.resultPictureKeys,
       this.resultPictures});
 
@@ -31,6 +33,7 @@ class Tour {
       id: json['id'],
       polyline: fromPolylineString(json['polyline']),
       polygon: fromPolygonString(json['polygon']),
+      dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
       resultPictures: resultPictures,
     );

@@ -1,6 +1,7 @@
 from utils import db
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.sql import func
 import uuid
 
 
@@ -9,6 +10,7 @@ class Tour(db.Model):
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     userId = db.Column(db.String())
+    datetime = db.Column(db.DateTime(), default=func.now())
     polyline = db.Column(Geometry('LINESTRING'))
     result_picture_keys = db.Column(JSONB)
 

@@ -3,6 +3,7 @@ import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:intl/intl.dart';
 
 import 'my_route_screen.dart';
 
@@ -60,13 +61,16 @@ class TourListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         child: Card(
             child: InkWell(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(tour.id!),
+            child: Text(DateFormat.yMd(locale.languageCode)
+                .add_jm()
+                .format(tour.dateTime!.toLocal())),
           ),
           onTap: () {
             Navigator.push(
