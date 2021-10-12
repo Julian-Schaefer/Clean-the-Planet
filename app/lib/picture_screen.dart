@@ -31,10 +31,25 @@ class PictureScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(),
         body: SafeArea(
+            child: LayoutBuilder(
+          builder: (context, constraints) => Draggable(
+            feedback: SizedBox(
+              child: body!,
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+            ),
+            childWhenDragging: Container(),
             child: Center(
                 child: Hero(
-          child: body!,
-          tag: heroTag,
-        ))));
+              child: body,
+              tag: heroTag,
+            )),
+            onDragEnd: (details) {
+              if (details.offset.distance > constraints.maxWidth / 2) {
+                Navigator.pop(context);
+              }
+            },
+          ),
+        )));
   }
 }

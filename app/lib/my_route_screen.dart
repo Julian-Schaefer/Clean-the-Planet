@@ -80,7 +80,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                   GestureDetector(
                     child: Hero(
                         child: NetworkImagePreview(imageUrl: url),
-                        tag: "picture_screen"),
+                        tag: "picture_screen_" + url),
                     onTap: () {
                       Navigator.push(
                           context,

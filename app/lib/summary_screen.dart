@@ -106,7 +106,8 @@ class SummaryScreenState extends State<SummaryScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PictureScreen(
-                                  imagePath: path, heroTag: "picture_screen"),
+                                  imagePath: path,
+                                  heroTag: "picture_screen_" + path),
                             ));
                       },
                       child: Hero(
