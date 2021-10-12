@@ -162,8 +162,10 @@ class MapViewState extends State<MapView> {
       context,
       MaterialPageRoute(
           builder: (context) => SummaryScreen(
-              polylineCoordinates: _polylineCoordinates,
-              finalLocation: _currentLocation!)),
+                polylineCoordinates: _polylineCoordinates,
+                finalLocation: _currentLocation!,
+                duration: _timerWidgetController.duration,
+              )),
     ).then((_) => setState(() {
           _polylineCoordinates.clear();
           _timerWidgetController.resetTimer!.call();

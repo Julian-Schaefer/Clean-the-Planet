@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/tour.dart';
 import 'package:flutter/material.dart';
 
 class TimerWidgetController {
+  Duration duration = const Duration();
   VoidCallback? startTimer;
   VoidCallback? stopTimer;
   VoidCallback? resetTimer;
@@ -24,7 +26,6 @@ class TimerWidget extends StatefulWidget {
 }
 
 class TimerWidgetState extends State<TimerWidget> {
-  Duration duration = const Duration();
   Timer? timer;
 
   @override
@@ -40,11 +41,7 @@ class TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    final timeString = hours + ":" + minutes + ":" + seconds;
+    final timeString = Tour.getDurationString(widget.controller.duration);
     return Text(timeString,
         style: const TextStyle(fontSize: 26, color: Colors.white));
   }
@@ -61,8 +58,9 @@ class TimerWidgetState extends State<TimerWidget> {
 
   void addTime() {
     setState(() {
+      Duration duration = widget.controller.duration;
       final seconds = duration.inSeconds + 1;
-      duration = Duration(seconds: seconds);
+      widget.controller.duration = Duration(seconds: seconds);
     });
   }
 
@@ -75,7 +73,7 @@ class TimerWidgetState extends State<TimerWidget> {
       if (timer != null && timer!.isActive) {
         timer!.cancel();
       }
-      duration = const Duration();
+      widget.controller.duration = const Duration();
     });
   }
 }

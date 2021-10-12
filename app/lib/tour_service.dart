@@ -19,7 +19,7 @@ class TourService {
     if (kReleaseMode) {
       return "https://clean-the-planet.herokuapp.com";
     } else {
-      return "https://clean-the-planet.loca.lt";
+      return "http://10.0.2.2:5000";
     }
   }
 
@@ -63,9 +63,9 @@ class TourService {
       } else {
         throw Exception('Failed to get Tour.');
       }
-    } on SocketException {
+    } on SocketException catch (_) {
       return Future.error('No Internet connection 😑');
-    } on FormatException {
+    } on FormatException catch (_) {
       return Future.error('Bad response format 👎');
     } catch (e) {
       return Future.error('Unexpected error 😢');

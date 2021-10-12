@@ -62,15 +62,18 @@ class TourListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Locale locale = Localizations.localeOf(context);
+    String titleString = DateFormat.yMd(locale.languageCode)
+            .add_jm()
+            .format(tour.dateTime!.toLocal()) +
+        " , Duration: " +
+        Tour.getDurationString(tour.duration);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         child: Card(
             child: InkWell(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(DateFormat.yMd(locale.languageCode)
-                .add_jm()
-                .format(tour.dateTime!.toLocal())),
+            child: Text(titleString),
           ),
           onTap: () {
             Navigator.push(

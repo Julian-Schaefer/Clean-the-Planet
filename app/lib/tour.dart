@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 class Tour {
   String? id;
   final List<LatLng> polyline;
+  final Duration duration;
   Polygon? polygon;
   DateTime? dateTime;
   List<String>? resultPictureKeys;
@@ -13,6 +14,7 @@ class Tour {
   Tour(
       {this.id,
       required this.polyline,
+      required this.duration,
       this.polygon,
       this.dateTime,
       this.resultPictureKeys,
@@ -33,6 +35,7 @@ class Tour {
       id: json['id'],
       polyline: fromPolylineString(json['polyline']),
       polygon: fromPolygonString(json['polygon']),
+      duration: parseDuration(json['duration']),
       dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
       resultPictures: resultPictures,
@@ -42,6 +45,7 @@ class Tour {
   Map<String, dynamic> toJson() {
     return {
       'polyline': getPolylineString(polyline),
+      'duration': duration.toString(),
       'picture_keys': resultPictureKeys
     };
   }
@@ -131,5 +135,28 @@ class Tour {
     }
 
     return polyline;
+  }
+
+  static Duration parseDuration(String s) {
+    int hours = 0;
+    int minutes = 0;
+    int micros;
+    List<String> parts = s.split(':');
+    if (parts.length > 2) {
+      hours = int.parse(parts[parts.length - 3]);
+    }
+    if (parts.length > 1) {
+      minutes = int.parse(parts[parts.length - 2]);
+    }
+    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
+    return Duration(hours: hours, minutes: minutes, microseconds: micros);
+  }
+
+  static String getDurationString(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return hours + ":" + minutes + ":" + seconds;
   }
 }

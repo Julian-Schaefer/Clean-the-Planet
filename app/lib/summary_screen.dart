@@ -15,11 +15,13 @@ import 'package:location/location.dart';
 class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
   final List<LatLng> polylineCoordinates;
+  final Duration duration;
 
   const SummaryScreen(
       {Key? key,
       required this.finalLocation,
-      required this.polylineCoordinates})
+      required this.polylineCoordinates,
+      required this.duration})
       : super(key: key);
 
   @override
@@ -94,6 +96,10 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Text("Good job! You've done it."),
                 height: 60,
               ),
+              SizedBox(
+                child: Text("Duration:" + widget.duration.toString()),
+                height: 60,
+              ),
               GridView.count(
                 crossAxisCount: 3,
                 physics: const NeverScrollableScrollPhysics(),
@@ -142,6 +148,7 @@ class SummaryScreenState extends State<SummaryScreen> {
   void addTour() async {
     Tour tour = Tour(
         polyline: widget.polylineCoordinates,
+        duration: widget.duration,
         resultPictureKeys: resultPictures);
     try {
       await TourService.addTour(tour);
