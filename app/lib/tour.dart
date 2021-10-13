@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
 class Tour {
@@ -162,5 +163,15 @@ class Tour {
     final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return hours + ":" + minutes + ":" + seconds;
+  }
+
+  String getLocalAmountString(Locale locale) {
+    return NumberFormat.decimalPattern(locale.languageCode).format(amount);
+  }
+
+  static double toLocalDecimalAmount(String amount, Locale locale) {
+    return NumberFormat.decimalPattern(locale.languageCode)
+        .parse(amount)
+        .toDouble();
   }
 }

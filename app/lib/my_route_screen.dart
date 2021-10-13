@@ -3,6 +3,7 @@ import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 
 class MyRouteScreen extends StatefulWidget {
   final Tour tour;
@@ -15,6 +16,7 @@ class MyRouteScreen extends StatefulWidget {
 
 class _MyRouteScreenState extends State<MyRouteScreen> {
   int _selectedIndex = 0;
+  late Locale locale;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -24,9 +26,12 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    locale = Localizations.localeOf(context);
+    String dateString = DateFormat.yMd(locale.languageCode)
+        .format(widget.tour.dateTime!.toLocal());
     return Scaffold(
         appBar: AppBar(
-          title: const Text('My Route'),
+          title: Text('My Route on ' + dateString),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -70,28 +75,69 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               ],
             ),
           ),
-          if (widget.tour.resultPictures != null)
-            GridView.count(
-              crossAxisCount: 3,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              children: [
-                for (var url in widget.tour.resultPictures!)
-                  GestureDetector(
-                    child: Hero(
-                        child: NetworkImagePreview(imageUrl: url),
-                        tag: "picture_screen_" + url),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PictureScreen(
-                                imageUrl: url, heroTag: "picture_screen"),
-                          ));
-                    },
-                  )
-              ],
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Duration:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              Tour.getDurationString(widget.tour.duration),
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Amount (in litres):",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              widget.tour.getLocalAmountString(locale),
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+          const Divider(),
+          if (widget.tour.resultPictures != null &&
+              widget.tour.resultPictures!.isNotEmpty)
+            Row(children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Pictures of Collection:",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ),
+              GridView.count(
+                crossAxisCount: 3,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                children: [
+                  for (var url in widget.tour.resultPictures!)
+                    GestureDetector(
+                      child: Hero(
+                          child: NetworkImagePreview(imageUrl: url),
+                          tag: "picture_screen_" + url),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PictureScreen(
+                                  imageUrl: url,
+                                  heroTag: "picture_screen_" + url),
+                            ));
+                      },
+                    )
+                ],
+              )
+            ]),
         ],
       );
     } else {

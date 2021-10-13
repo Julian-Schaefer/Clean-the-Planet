@@ -69,7 +69,7 @@ class SummaryScreenState extends State<SummaryScreen> {
           body: SafeArea(
             child: ListView(children: [
               SizedBox(
-                height: 400,
+                height: 360,
                 child: FlutterMap(
                   options: MapOptions(
                     center: LatLng(widget.finalLocation.latitude!,
@@ -94,24 +94,48 @@ class SummaryScreenState extends State<SummaryScreen> {
                   ],
                 ),
               ),
-              const SizedBox(
-                child: Text("Good job! You've done it."),
-                height: 60,
+              const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Good job! You've done it.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
+                  )),
+              const Divider(),
+              const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text("Duration:",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w500))),
+              Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                  child: Text(Tour.getDurationString(widget.duration),
+                      style: const TextStyle(fontSize: 18))),
+              const Divider(),
+              const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text("Amount (in litres):",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w500))),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter the amount in litres'),
+                  keyboardType: const TextInputType.numberWithOptions(
+                      signed: false, decimal: true),
+                  onChanged: (text) {
+                    amount = text;
+                  },
+                ),
               ),
-              SizedBox(
-                child: Text("Duration:" + widget.duration.toString()),
-                height: 60,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter the amount in litres'),
-                keyboardType: const TextInputType.numberWithOptions(
-                    signed: false, decimal: true),
-                onChanged: (text) {
-                  amount = text;
-                },
-              ),
+              const Divider(),
+              const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text("Add Pictures of the result:",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w500))),
               GridView.count(
                 crossAxisCount: 3,
                 physics: const NeverScrollableScrollPhysics(),
@@ -138,7 +162,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                               });
                             },
                           ),
-                          tag: "picture_screen"),
+                          tag: "picture_screen_" + path),
                     ),
                   IconButton(
                       onPressed: addPicture,
@@ -167,9 +191,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     Tour tour = Tour(
         polyline: widget.polylineCoordinates,
         duration: widget.duration,
-        amount: NumberFormat.decimalPattern(locale.languageCode)
-            .parse(amount!)
-            .toDouble(),
+        amount: Tour.toLocalDecimalAmount(amount!, locale),
         resultPictureKeys: resultPictures);
 
     try {
