@@ -107,37 +107,37 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           const Divider(),
           if (widget.tour.resultPictures != null &&
               widget.tour.resultPictures!.isNotEmpty)
-            Row(children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  "Pictures of Collection:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                "Pictures of Collection:",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
-              GridView.count(
-                crossAxisCount: 3,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                children: [
-                  for (var url in widget.tour.resultPictures!)
-                    GestureDetector(
-                      child: Hero(
-                          child: NetworkImagePreview(imageUrl: url),
-                          tag: "picture_screen_" + url),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PictureScreen(
-                                  imageUrl: url,
-                                  heroTag: "picture_screen_" + url),
-                            ));
-                      },
-                    )
-                ],
-              )
-            ]),
+            ),
+          if (widget.tour.resultPictures != null &&
+              widget.tour.resultPictures!.isNotEmpty)
+            GridView.count(
+              crossAxisCount: 3,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              children: [
+                for (var url in widget.tour.resultPictures!)
+                  GestureDetector(
+                    child: Hero(
+                        child: NetworkImagePreview(imageUrl: url),
+                        tag: "picture_screen_" + url),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PictureScreen(
+                                imageUrl: url,
+                                heroTag: "picture_screen_" + url),
+                          ));
+                    },
+                  )
+              ],
+            )
         ],
       );
     } else {
