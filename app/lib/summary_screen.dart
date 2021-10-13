@@ -106,7 +106,8 @@ class SummaryScreenState extends State<SummaryScreen> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter the amount in litres'),
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                    signed: false, decimal: true),
                 onChanged: (text) {
                   amount = text;
                 },
