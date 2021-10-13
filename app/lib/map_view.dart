@@ -10,14 +10,14 @@ import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:background_location/background_location.dart' as geo;
 
-class MapView extends StatefulWidget {
-  const MapView({Key? key}) : super(key: key);
+class MapScreen extends StatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
 
   @override
-  State<MapView> createState() => MapViewState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class MapViewState extends State<MapView> {
+class MapScreenState extends State<MapScreen> {
   static const int interval = 1500;
   static const double distanceFilter = 5.0;
 
@@ -42,7 +42,10 @@ class MapViewState extends State<MapView> {
 
   @override
   void dispose() {
-    geo.BackgroundLocation.stopLocationService();
+    _locationSubscription.cancel();
+    if (Platform.isAndroid) {
+      geo.BackgroundLocation.stopLocationService();
+    }
     super.dispose();
   }
 
@@ -57,10 +60,10 @@ class MapViewState extends State<MapView> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: LatLng(51.5, -0.09),
-              zoom: defaultZoom,
-              maxZoom: 18.4,
-            ),
+                center: LatLng(51.5, -0.09),
+                zoom: defaultZoom,
+                maxZoom: 18.4,
+                minZoom: 5.0),
             layers: [
               TileLayerOptions(
                   urlTemplate:
@@ -114,7 +117,7 @@ class MapViewState extends State<MapView> {
     );
   }
 
-  void _startCollecting() {
+  void _startCollecting() async {
     if (_currentLocation == null ||
         _currentLocation!.latitude == null ||
         _currentLocation!.longitude == null ||
@@ -125,7 +128,7 @@ class MapViewState extends State<MapView> {
     if (Platform.isIOS) {
       _location!.enableBackgroundMode(enable: true);
     } else if (Platform.isAndroid) {
-      _locationSubscription.cancel();
+      await _locationSubscription.cancel();
       _startAndroidBackgroundLocationService();
     }
 
@@ -138,7 +141,7 @@ class MapViewState extends State<MapView> {
     });
   }
 
-  void _finishCollecting() {
+  void _finishCollecting() async {
     if (_currentLocation == null ||
         _currentLocation!.latitude == null ||
         _currentLocation!.longitude == null ||
@@ -147,7 +150,7 @@ class MapViewState extends State<MapView> {
     }
 
     if (Platform.isIOS) {
-      _locationSubscription.cancel();
+      await _locationSubscription.cancel();
       _location!.enableBackgroundMode(enable: false);
     } else if (Platform.isAndroid) {
       geo.BackgroundLocation.stopLocationService();
@@ -239,9 +242,8 @@ class MapViewState extends State<MapView> {
 
     var newLatLng = LatLng(newLocation.latitude!, newLocation.longitude!);
 
-    _mapController.move(newLatLng, defaultZoom);
-
     setState(() {
+      _mapController.move(newLatLng, defaultZoom);
       _currentLocation = newLocation;
       if (collectionStarted) {
         _polylineCoordinates.add(newLatLng);

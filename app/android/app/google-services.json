@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1071361725650",
+    "project_id": "clean-the-planet-2cd13",
+    "storage_bucket": "clean-the-planet-2cd13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071361725650:android:89af1712666b9c2ad6090b",
+        "android_client_info": {
+          "package_name": "org.sheeper.clean_the_planet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1071361725650-oejdq87ghdoi74l64fn0pdg6u1jo4k94.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.sheeper.clean_the_planet",
+            "certificate_hash": "69160e41765251475d479c36ae563f8cb1cc2751"
+          }
+        },
+        {
+          "client_id": "1071361725650-mb6h0vdhsgguatdu209ffab73d2ck4eo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDurNUFPnOSd_iITrrMCt_CMRPXZ-yeO0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1071361725650-mb6h0vdhsgguatdu209ffab73d2ck4eo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
