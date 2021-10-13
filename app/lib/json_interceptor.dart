@@ -1,11 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 class JsonInterceptor implements InterceptorContract {
   @override
   Future<RequestData> interceptRequest({required RequestData data}) async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      throw Exception("User is not logged in.");
+    }
+
+    var token = await currentUser.getIdToken();
+    data.headers["Authorization"] = "Bearer " + token;
     data.headers[HttpHeaders.contentTypeHeader] =
         'application/json; charset=utf-8';
 

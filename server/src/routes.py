@@ -14,8 +14,7 @@ routes = Blueprint('Routes', __name__)
 
 @routes.route("/tour", methods=["POST"])
 def addTour():
-    #userId = request.user['user_id']
-    userId = "testi"
+    userId = request.user['user_id']
 
     if request.is_json:
         data = request.get_json()
@@ -42,8 +41,7 @@ def addTour():
 
 @routes.route("/tour", methods=["GET"])
 def getTours():
-    #userId = request.user['user_id']
-    userId = "testi"
+    userId = request.user['user_id']
 
     tours = db.session.query(
         Tour.id,
