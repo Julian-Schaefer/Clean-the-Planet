@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'map_view.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,12 +13,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    initializeDateFormatting();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,6 +32,11 @@ class _MyAppState extends State<MyApp> {
         error: Colors.red,
         onError: Colors.white,
       )),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
       title: 'Clean the Planet',
       home: const MapView(),
       debugShowCheckedModeBanner: false,

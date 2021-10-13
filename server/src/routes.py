@@ -22,6 +22,7 @@ def addTour():
         tour = Tour(userId=userId,
                     polyline=data['polyline'],
                     duration=data['duration'],
+                    amount=data['amount'],
                     result_picture_keys=data["picture_keys"])
         db.session.add(tour)
 
@@ -50,7 +51,7 @@ def getTours():
             functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,
                                                      25832), 0.0001)),
         functions.ST_AsText(Tour.polyline), Tour.datetime, Tour.duration,
-        Tour.result_picture_keys).filter_by(userId=userId)
+        Tour.amount, Tour.result_picture_keys).filter_by(userId=userId)
 
     results = [{
         "id": id,
@@ -58,9 +59,11 @@ def getTours():
         "polyline": polyline,
         "datetime": datetime.strftime('%Y-%m-%dT%H:%M:%S.%f'),
         "duration": str(duration),
+        "amount": amount,
         "picture_keys": picture_keys,
         "result_pictures": get_urls_from_picture_key(picture_keys)
-    } for (id, polygon, polyline, datetime, duration, picture_keys) in tours]
+    } for (id, polygon, polyline, datetime, duration, amount,
+           picture_keys) in tours]
 
     return jsonify(results)
 

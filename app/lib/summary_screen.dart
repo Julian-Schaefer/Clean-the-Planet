@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
@@ -31,6 +32,7 @@ class SummaryScreen extends StatefulWidget {
 class SummaryScreenState extends State<SummaryScreen> {
   late Polygon pathPolygon = Polygon(points: []);
   List<String> resultPictures = [];
+  String? amount;
 
   @override
   void initState() {
@@ -100,6 +102,15 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Text("Duration:" + widget.duration.toString()),
                 height: 60,
               ),
+              TextField(
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter the amount in litres'),
+                keyboardType: TextInputType.number,
+                onChanged: (text) {
+                  amount = text;
+                },
+              ),
               GridView.count(
                 crossAxisCount: 3,
                 physics: const NeverScrollableScrollPhysics(),
@@ -146,10 +157,20 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void addTour() async {
+    if (amount == null) {
+      return;
+    }
+
+    Locale locale = Localizations.localeOf(context);
+
     Tour tour = Tour(
         polyline: widget.polylineCoordinates,
         duration: widget.duration,
+        amount: NumberFormat.decimalPattern(locale.languageCode)
+            .parse(amount!)
+            .toDouble(),
         resultPictureKeys: resultPictures);
+
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);

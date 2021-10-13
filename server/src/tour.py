@@ -12,13 +12,16 @@ class Tour(db.Model):
     userId = db.Column(db.String())
     datetime = db.Column(db.DateTime(), default=func.now())
     duration = db.Column(db.Interval())
+    amount = db.Column(db.Float())
     polyline = db.Column(Geometry('LINESTRING'))
     result_picture_keys = db.Column(JSONB)
 
-    def __init__(self, userId, polyline, duration, result_picture_keys):
+    def __init__(self, userId, polyline, duration, amount,
+                 result_picture_keys):
         self.userId = userId
         self.polyline = polyline
         self.duration = duration
+        self.amount = amount
         self.result_picture_keys = result_picture_keys
 
     def __repr__(self):
