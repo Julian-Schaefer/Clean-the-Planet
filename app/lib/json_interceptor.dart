@@ -7,16 +7,8 @@ import 'package:http_interceptor/http_interceptor.dart';
 class JsonInterceptor implements InterceptorContract {
   @override
   Future<RequestData> interceptRequest({required RequestData data}) async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      throw Exception("User is not logged in.");
-    }
-
-    var token = await currentUser.getIdToken();
-    data.headers["Authorization"] = "Bearer " + token;
-    data.headers[HttpHeaders.contentTypeHeader] =
-        'application/json; charset=utf-8';
-
+    Map<String, String> headers = await getHeaders();
+    data.headers.addAll(headers);
     return data;
   }
 
@@ -35,5 +27,21 @@ class JsonInterceptor implements InterceptorContract {
     }
 
     return data;
+  }
+
+  static Future<Map<String, String>> getHeaders() async {
+    Map<String, String> headers = {};
+
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      throw Exception("User is not logged in.");
+    }
+
+    var token = await currentUser.getIdToken();
+
+    headers["Authorization"] = "Bearer " + token;
+    headers[HttpHeaders.contentTypeHeader] = 'application/json; charset=utf-8';
+
+    return headers;
   }
 }

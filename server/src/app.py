@@ -44,10 +44,10 @@ def authenticateUser():
 
     authHeader = request.headers.get("Authorization")
     if not authHeader:
-        return {"message": "No Token provided."}, 400
+        return {"message": "No Token provided."}, 401
     try:
         token = authHeader.split()[1]
         user = auth.verify_id_token(token)
         request.user = user
     except:
-        return {"message": "Invalid Token provided."}, 400
+        return {"message": "Invalid Token provided."}, 401

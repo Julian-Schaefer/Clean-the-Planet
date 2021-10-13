@@ -40,7 +40,7 @@ class TourService {
       } else {
         throw Exception('Failed to add Tour.');
       }
-    } on SocketException {
+    } on SocketException catch (_) {
       return Future.error('No Internet connection 😑');
     } on FormatException {
       return Future.error('Bad response format 👎');
@@ -100,6 +100,9 @@ class TourService {
     for (String path in paths) {
       request.files.add(await MultipartFile.fromPath('files', path));
     }
+
+    Map<String, String> headers = await JsonInterceptor.getHeaders();
+    request.headers.addAll(headers);
 
     StreamedResponse response = await request.send();
 
