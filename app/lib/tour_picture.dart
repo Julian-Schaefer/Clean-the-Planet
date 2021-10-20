@@ -18,6 +18,7 @@ class TourPicture {
     return TourPicture(
         id: json['id'],
         location: fromPointString(json['location']),
+        imageKey: json['imageKey'],
         imageUrl: json['imageUrl'],
         comment: json['comment']);
   }

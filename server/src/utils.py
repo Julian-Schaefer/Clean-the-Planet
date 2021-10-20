@@ -12,7 +12,7 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
 AWS_REGION = os.environ.get('AWS_REGION', None)
 USE_SSL = True
 if not (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_REGION):
-    ENDPOINT_URL = "https://clean-the-planet-s3.loca.lt/"
+    ENDPOINT_URL = os.environ.get("LOCALSTACK_URL")
     AWS_ACCESS_KEY_ID = '123'
     AWS_SECRET_ACCESS_KEY = 'abc'
     AWS_REGION = None
