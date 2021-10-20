@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/summary_screen.dart';
+import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
+import 'package:clean_the_planet/tour_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
@@ -30,6 +33,8 @@ class MapScreenState extends State<MapScreen> {
   Location? _location;
   LocationData? _currentLocation;
 
+  final List<TourPicture> _tourPictures = [];
+
   bool collectionStarted = false;
 
   static const defaultZoom = 18.0;
@@ -52,69 +57,90 @@ class MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Clean the Planet')),
-      drawer: const MenuDrawer(),
-      body: Stack(
-        alignment: Alignment.topRight,
-        children: <Widget>[
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-                center: LatLng(51.5, -0.09),
-                zoom: defaultZoom,
-                maxZoom: 18.4,
-                minZoom: 5.0),
-            layers: [
-              TileLayerOptions(
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c']),
-              if (collectionStarted && _currentLocation != null)
-                MarkerLayerOptions(
-                  markers: [
-                    Marker(
-                      width: 40.0,
-                      height: 40.0,
-                      anchorPos: AnchorPos.exactly(Anchor(20, 5)),
-                      point: LatLng(_currentLocation!.latitude!,
-                          _currentLocation!.longitude!),
-                      builder: (ctx) => const Icon(Icons.location_pin,
-                          size: 40.0, color: Colors.red),
-                    ),
+        appBar: AppBar(title: const Text('Clean the Planet')),
+        drawer: const MenuDrawer(),
+        body: Stack(
+          alignment: Alignment.topRight,
+          children: <Widget>[
+            FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                  center: LatLng(51.5, -0.09),
+                  zoom: defaultZoom,
+                  maxZoom: 18.4,
+                  minZoom: 4.0),
+              layers: [
+                TileLayerOptions(
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: ['a', 'b', 'c']),
+                if (collectionStarted && _currentLocation != null)
+                  MarkerLayerOptions(
+                    markers: [
+                      Marker(
+                        width: 40.0,
+                        height: 40.0,
+                        anchorPos: AnchorPos.exactly(Anchor(20, 5)),
+                        point: LatLng(_currentLocation!.latitude!,
+                            _currentLocation!.longitude!),
+                        builder: (ctx) => const Icon(Icons.location_pin,
+                            size: 40.0, color: Colors.red),
+                      ),
+                      for (var picture in _tourPictures)
+                        Marker(
+                          width: 36.0,
+                          height: 36.0,
+                          anchorPos: AnchorPos.exactly(Anchor(18, 18)),
+                          point: picture.location,
+                          builder: (ctx) => const Icon(Icons.photo_camera,
+                              size: 36.0, color: Colors.red),
+                        ),
+                    ],
+                  ),
+                PolylineLayerOptions(
+                  polylines: [
+                    Polyline(
+                        points: _polylineCoordinates,
+                        strokeWidth: 4.0,
+                        borderStrokeWidth: 16.0,
+                        borderColor: Colors.redAccent.withOpacity(0.5),
+                        color: Colors.red.withOpacity(0.8)),
                   ],
                 ),
-              PolylineLayerOptions(
-                polylines: [
-                  Polyline(
-                      points: _polylineCoordinates,
-                      strokeWidth: 4.0,
-                      borderStrokeWidth: 16.0,
-                      borderColor: Colors.redAccent.withOpacity(0.5),
-                      color: Colors.red.withOpacity(0.8)),
-                ],
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0, top: 20.0),
-            child: Container(
-              width: 170,
-              height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: Theme.of(context).colorScheme.primary,
-                boxShadow: const [
-                  BoxShadow(color: Colors.grey, blurRadius: 5),
-                ],
-              ),
-              child: Center(
-                  child: TimerWidget(controller: _timerWidgetController)),
+              ],
             ),
-          )
-        ],
-      ),
-      floatingActionButton: _getFloatingActionButton(),
-    );
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0, top: 20.0),
+              child: Container(
+                width: 170,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Theme.of(context).colorScheme.primary,
+                  boxShadow: const [
+                    BoxShadow(color: Colors.grey, blurRadius: 5),
+                  ],
+                ),
+                child: Center(
+                    child: TimerWidget(controller: _timerWidgetController)),
+              ),
+            )
+          ],
+        ),
+        floatingActionButton: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (collectionStarted)
+                FloatingActionButton.extended(
+                  onPressed: _takePicture,
+                  label: const Text("Take picture"),
+                  icon: const Icon(Icons.photo_camera),
+                  heroTag: "picture_fab",
+                ),
+              const SizedBox(height: 20),
+              _getFloatingActionButton()
+            ]));
   }
 
   void _startCollecting() async {
@@ -168,8 +194,10 @@ class MapScreenState extends State<MapScreen> {
                 polylineCoordinates: _polylineCoordinates,
                 finalLocation: _currentLocation!,
                 duration: _timerWidgetController.duration,
+                tourPictures: _tourPictures,
               )),
     ).then((_) => setState(() {
+          _tourPictures.clear();
           _polylineCoordinates.clear();
           _timerWidgetController.resetTimer!.call();
           listenForLocationUpdates();
@@ -252,11 +280,13 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Widget _getFloatingActionButton() {
+    const String heroTag = "controller_fab";
     if (_currentLocation == null) {
       return const FloatingActionButton.extended(
           onPressed: null,
           label: Text('Retrieving Location...'),
-          icon: Icon(Icons.location_disabled));
+          icon: Icon(Icons.location_disabled),
+          heroTag: heroTag);
     }
 
     if (!collectionStarted) {
@@ -265,13 +295,41 @@ class MapScreenState extends State<MapScreen> {
         label: const Text('Start collecting!'),
         icon: const Icon(Icons.map_outlined),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        heroTag: heroTag,
       );
     } else {
       return FloatingActionButton.extended(
-          onPressed: _finishCollecting,
-          label: const Text('Finish collecting!'),
-          icon: const Icon(Icons.map_outlined),
-          backgroundColor: Theme.of(context).colorScheme.error);
+        onPressed: _finishCollecting,
+        label: const Text('Finish collecting!'),
+        icon: const Icon(Icons.map_outlined),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        heroTag: heroTag,
+      );
+    }
+  }
+
+  void _takePicture() async {
+    if (_currentLocation == null ||
+        _currentLocation!.latitude == null ||
+        _currentLocation!.longitude == null) {
+      return;
+    }
+
+    LocationData location = _currentLocation!;
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    String? imagePath = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TakePictureScreen(camera: firstCamera)));
+
+    if (imagePath != null) {
+      setState(() {
+        _tourPictures.add(TourPicture(
+            location: LatLng(location.latitude!, location.longitude!),
+            imageKey: imagePath));
+      });
     }
   }
 }

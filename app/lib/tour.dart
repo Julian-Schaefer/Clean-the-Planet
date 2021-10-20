@@ -1,3 +1,4 @@
+import 'package:clean_the_planet/tour_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,8 @@ class Tour {
   Polygon? polygon;
   DateTime? dateTime;
   List<String>? resultPictureKeys;
-  List<String>? resultPictures;
+  List<String>? resultPicturesUrls;
+  List<TourPicture>? tourPictures;
 
   Tour(
       {this.id,
@@ -21,17 +23,18 @@ class Tour {
       this.polygon,
       this.dateTime,
       this.resultPictureKeys,
-      this.resultPictures});
+      this.resultPicturesUrls,
+      this.tourPictures});
 
   factory Tour.fromJson(Map<String, dynamic> json) {
     List<String>? resultPictureKeys;
-    if (json['picture_keys'] != null) {
-      resultPictureKeys = List<String>.from(json['picture_keys']);
+    if (json['result_picture_keys'] != null) {
+      resultPictureKeys = List<String>.from(json['result_picture_keys']);
     }
 
     List<String>? resultPictures;
-    if (json['result_pictures'] != null) {
-      resultPictures = List<String>.from(json['result_pictures']);
+    if (json['result_picture_urls'] != null) {
+      resultPictures = List<String>.from(json['result_picture_urls']);
     }
 
     return Tour(
@@ -42,7 +45,10 @@ class Tour {
       amount: json['amount'],
       dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
-      resultPictures: resultPictures,
+      resultPicturesUrls: resultPictures,
+      tourPictures: json['tour_pictures']
+          .map<TourPicture>((json) => TourPicture.fromJson(json))
+          .toList(),
     );
   }
 
@@ -51,7 +57,8 @@ class Tour {
       'polyline': getPolylineString(polyline),
       'duration': duration.toString(),
       'amount': amount.toString(),
-      'picture_keys': resultPictureKeys
+      'result_picture_keys': resultPictureKeys,
+      "tour_pictures": tourPictures
     };
   }
 

@@ -72,6 +72,18 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                         color: Colors.red),
                   ],
                 ),
+                if (widget.tour.tourPictures != null)
+                  MarkerLayerOptions(markers: [
+                    for (var picture in widget.tour.tourPictures!)
+                      Marker(
+                        width: 36.0,
+                        height: 36.0,
+                        anchorPos: AnchorPos.exactly(Anchor(18, 18)),
+                        point: picture.location,
+                        builder: (ctx) => const Icon(Icons.photo_camera,
+                            size: 36.0, color: Colors.red),
+                      )
+                  ])
               ],
             ),
           ),
@@ -105,8 +117,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             ),
           ),
           const Divider(),
-          if (widget.tour.resultPictures != null &&
-              widget.tour.resultPictures!.isNotEmpty)
+          if (widget.tour.resultPicturesUrls != null &&
+              widget.tour.resultPicturesUrls!.isNotEmpty)
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
@@ -114,14 +126,14 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
-          if (widget.tour.resultPictures != null &&
-              widget.tour.resultPictures!.isNotEmpty)
+          if (widget.tour.resultPicturesUrls != null &&
+              widget.tour.resultPicturesUrls!.isNotEmpty)
             GridView.count(
               crossAxisCount: 3,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: [
-                for (var url in widget.tour.resultPictures!)
+                for (var url in widget.tour.resultPicturesUrls!)
                   GestureDetector(
                     child: Hero(
                         child: NetworkImagePreview(imageUrl: url),

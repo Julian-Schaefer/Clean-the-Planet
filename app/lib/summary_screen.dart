@@ -4,12 +4,12 @@ import 'package:clean_the_planet/image_preview.dart';
 import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
+import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
@@ -17,12 +17,14 @@ class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
   final List<LatLng> polylineCoordinates;
   final Duration duration;
+  final List<TourPicture> tourPictures;
 
   const SummaryScreen(
       {Key? key,
       required this.finalLocation,
       required this.polylineCoordinates,
-      required this.duration})
+      required this.duration,
+      required this.tourPictures})
       : super(key: key);
 
   @override
@@ -37,14 +39,14 @@ class SummaryScreenState extends State<SummaryScreen> {
   @override
   void initState() {
     super.initState();
-    getTourBuffer();
+    _getTourBuffer();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return await navigateBackDialog();
+        return await _navigateBackDialog();
       },
       child: Scaffold(
           appBar: AppBar(
@@ -91,6 +93,17 @@ class SummaryScreenState extends State<SummaryScreen> {
                             color: Colors.red),
                       ],
                     ),
+                    MarkerLayerOptions(markers: [
+                      for (var picture in widget.tourPictures)
+                        Marker(
+                          width: 36.0,
+                          height: 36.0,
+                          anchorPos: AnchorPos.exactly(Anchor(18, 18)),
+                          point: picture.location,
+                          builder: (ctx) => const Icon(Icons.photo_camera,
+                              size: 36.0, color: Colors.red),
+                        )
+                    ])
                   ],
                 ),
               ),
@@ -174,7 +187,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     );
   }
 
-  void getTourBuffer() async {
+  void _getTourBuffer() async {
     Polygon polygon = await TourService.getBuffer(widget.polylineCoordinates);
     setState(() {
       pathPolygon = polygon;
@@ -192,7 +205,8 @@ class SummaryScreenState extends State<SummaryScreen> {
         polyline: widget.polylineCoordinates,
         duration: widget.duration,
         amount: Tour.toLocalDecimalAmount(amount!, locale),
-        resultPictureKeys: resultPictures);
+        resultPictureKeys: resultPictures,
+        tourPictures: widget.tourPictures);
 
     try {
       await TourService.addTour(tour);
@@ -212,7 +226,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     }
   }
 
-  Future<bool> navigateBackDialog() async {
+  Future<bool> _navigateBackDialog() async {
     bool? navigateBack = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
