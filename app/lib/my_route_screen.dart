@@ -216,6 +216,14 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     if (deleteTour != null && deleteTour) {
       await TourService.deleteTour(widget.tour);
       Navigator.pop(context, true);
+      final snackBar = SnackBar(
+        content: const Text(
+          'Success! Selected Tour has been deleted.',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }
