@@ -32,9 +32,9 @@ class Tour {
       resultPictureKeys = List<String>.from(json['result_picture_keys']);
     }
 
-    List<String>? resultPictures;
+    List<String>? resultPictureUrls;
     if (json['result_picture_urls'] != null) {
-      resultPictures = List<String>.from(json['result_picture_urls']);
+      resultPictureUrls = List<String>.from(json['result_picture_urls']);
     }
 
     return Tour(
@@ -45,7 +45,7 @@ class Tour {
       amount: json['amount'],
       dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
-      resultPicturesUrls: resultPictures,
+      resultPicturesUrls: resultPictureUrls,
       tourPictures: json['tour_pictures']
           .map<TourPicture>((json) => TourPicture.fromJson(json))
           .toList(),

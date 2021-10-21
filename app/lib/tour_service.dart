@@ -80,6 +80,26 @@ class TourService {
     }
   }
 
+  static Future<void> deleteTour(Tour tour) async {
+    var relativeUrl = "/tour";
+    try {
+      final response = await _client
+          .delete(Uri.parse(_getBaseUrl() + relativeUrl + "?id=" + tour.id!));
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw Exception('Failed to get Tour.');
+      }
+    } on SocketException catch (_) {
+      return Future.error('No Internet connection 😑');
+    } on FormatException catch (_) {
+      return Future.error('Bad response format 👎');
+    } catch (e) {
+      return Future.error('Unexpected error 😢');
+    }
+  }
+
   static Future<Polygon> getBuffer(List<LatLng> polyline) async {
     var relativeUrl = "/buffer";
     try {

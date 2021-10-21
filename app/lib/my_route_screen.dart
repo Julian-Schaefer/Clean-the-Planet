@@ -2,6 +2,7 @@ import 'package:clean_the_planet/image_preview.dart';
 import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
+import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
@@ -36,6 +37,9 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('My Route on ' + dateString),
+          actions: [
+            IconButton(onPressed: _deleteTour, icon: const Icon(Icons.delete))
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -184,6 +188,34 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
       );
     } else {
       return const Center(child: Text("Picture Page"));
+    }
+  }
+
+  Future<void> _deleteTour() async {
+    bool? deleteTour = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('Are you sure?'),
+              content: const Text('Do you really want to delete this Tour?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
+                ),
+                MaterialButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  color: Colors.red,
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ));
+
+    if (deleteTour != null && deleteTour) {
+      await TourService.deleteTour(widget.tour);
+      Navigator.pop(context, true);
     }
   }
 }

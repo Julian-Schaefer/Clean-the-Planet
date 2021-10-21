@@ -41,23 +41,30 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
                           itemCount: snapshot.data!.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            return TourListItem(tour: snapshot.data![index]);
+                            return TourListItem(
+                              tour: snapshot.data![index],
+                              onRefresh: _refresh,
+                            );
                           }),
-                      onRefresh: () async {
-                        List<Tour> tours = await TourService.getTours();
-                        setState(() {
-                          _toursFuture = Future.value(tours);
-                        });
-                      })
+                      onRefresh: _refresh)
                   : const Center(child: CircularProgressIndicator());
             }));
+  }
+
+  Future<void> _refresh() async {
+    List<Tour> tours = await TourService.getTours();
+    setState(() {
+      _toursFuture = Future.value(tours);
+    });
   }
 }
 
 class TourListItem extends StatelessWidget {
   final Tour tour;
+  final VoidCallback onRefresh;
 
-  const TourListItem({Key? key, required this.tour}) : super(key: key);
+  const TourListItem({Key? key, required this.tour, required this.onRefresh})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +82,17 @@ class TourListItem extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(titleString),
           ),
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            bool? refresh = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MyRouteScreen(tour: tour),
               ),
             );
+
+            if (refresh != null && refresh) {
+              onRefresh();
+            }
           },
         )));
   }

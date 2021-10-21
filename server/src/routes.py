@@ -89,7 +89,7 @@ def getTours():
             amount,
             "result_picture_keys":
             result_picture_keys,
-            "result_pictures_urls":
+            "result_picture_urls":
             get_urls_from_picture_keys(result_picture_keys),
             "tour_pictures": [{
                 "id":
@@ -104,6 +104,35 @@ def getTours():
         })
 
     return jsonify(tours)
+
+
+@routes.route("/tour", methods=["DELETE"])
+def deleteTour():
+    userId = request.user['user_id']
+    tourId = request.args.get('id')
+
+    try:
+        tours_query = db.session.query(Tour).filter_by(userId=userId,
+                                                       id=tourId).one()
+    except:
+        return {'message': 'Could not find appropriate Tour.'}, 400
+
+    for result_picture_key in tours_query.result_picture_keys:
+        s3_resource.Object(BUCKET, result_picture_key).delete()
+
+    tour_pictures_query = db.session.query(TourPicture).filter_by(
+        tour_id=tourId)
+
+    for tour_picture in tour_pictures_query:
+        s3_resource.Object(BUCKET, tour_picture.picture_key).delete()
+
+    db.session.delete(tours_query)
+    db.session.commit()
+
+    return {
+        "message":
+        f"Tour {tourId} for User {userId} has been deleted successfully."
+    }
 
 
 @routes.route("/buffer", methods=["POST"])
