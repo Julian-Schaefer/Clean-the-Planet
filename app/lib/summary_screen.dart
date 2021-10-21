@@ -35,6 +35,7 @@ class SummaryScreenState extends State<SummaryScreen> {
   late Polygon pathPolygon = Polygon(points: []);
   List<String> resultPictures = [];
   String? amount;
+  bool _savingTourInProgress = false;
 
   @override
   void initState() {
@@ -56,13 +57,23 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: MaterialButton(
-                    onPressed: addTour,
-                    child: Text(
-                      "Save",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondary),
-                    ),
+                    onPressed: !_savingTourInProgress ? addTour : null,
+                    child: !_savingTourInProgress
+                        ? Text(
+                            "Save",
+                            style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary),
+                          )
+                        : const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
                     color: Theme.of(context).colorScheme.secondary,
+                    disabledColor: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               )
@@ -199,6 +210,10 @@ class SummaryScreenState extends State<SummaryScreen> {
       return;
     }
 
+    setState(() {
+      _savingTourInProgress = true;
+    });
+
     Locale locale = Localizations.localeOf(context);
 
     Tour tour = Tour(
@@ -211,6 +226,14 @@ class SummaryScreenState extends State<SummaryScreen> {
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
+      final snackBar = SnackBar(
+        content: const Text(
+          'Success! Tour has been saved.',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
       await showDialog(
           context: context,
@@ -224,6 +247,10 @@ class SummaryScreenState extends State<SummaryScreen> {
                     )
                   ]));
     }
+
+    setState(() {
+      _savingTourInProgress = false;
+    });
   }
 
   Future<bool> _navigateBackDialog() async {
