@@ -6,9 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({
-    Key? key,
-  }) : super(key: key);
+  final bool allowComment;
+
+  const TakePictureScreen({Key? key, this.allowComment = false})
+      : super(key: key);
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
@@ -127,16 +128,17 @@ class TakePictureScreenState extends State<TakePictureScreen>
 
       final image = await _controller.takePicture();
 
-      String? imagePath = await Navigator.of(context).push(
+      List<String?>? result = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => DisplayPictureScreen(
             imagePath: image.path,
+            allowComment: widget.allowComment,
           ),
         ),
       );
 
-      if (imagePath != null) {
-        Navigator.pop(context, imagePath);
+      if (result != null) {
+        Navigator.pop(context, result);
       } else {
         setState(() {
           takingPicture = false;
@@ -150,34 +152,72 @@ class TakePictureScreenState extends State<TakePictureScreen>
   }
 }
 
-class DisplayPictureScreen extends StatelessWidget {
+class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
+  final bool allowComment;
 
-  const DisplayPictureScreen({Key? key, required this.imagePath})
+  const DisplayPictureScreen(
+      {Key? key, required this.imagePath, required this.allowComment})
       : super(key: key);
 
   @override
+  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
+}
+
+class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
+  final commentController = TextEditingController();
+
+  @override
+  void dispose() {
+    commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add the Picture')),
-      body: Stack(children: [
-        Image.file(File(imagePath)),
-        Positioned(
-            bottom: 15,
-            left: 20,
-            right: 20,
-            child: const Card(
-              child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Enter a comment'),
-              ),
-            ))
-      ]),
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            Navigator.pop(context, imagePath);
-          },
-          label: const Text("Add")),
-    );
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          image: Image.file(File(widget.imagePath)).image,
+          fit: BoxFit.cover,
+        )),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: const Text('Add the Picture'),
+            backgroundColor:
+                Theme.of(context).colorScheme.primary.withOpacity(0.7),
+          ),
+          body: Stack(children: [
+            if (widget.allowComment)
+              Positioned(
+                  bottom: 12,
+                  left: 15,
+                  right: 100,
+                  child: Card(
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      controller: commentController,
+                      maxLines: null,
+                      minLines: 5,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter a comment (optional)'),
+                    ),
+                  ))
+          ]),
+          floatingActionButton: FloatingActionButton.extended(
+              onPressed: () async {
+                if (commentController.text.trim().isNotEmpty) {
+                  Navigator.pop(context,
+                      [widget.imagePath, commentController.text.trim()]);
+                } else {
+                  Navigator.pop(context, [widget.imagePath, null]);
+                }
+              },
+              label: const Text("Add")),
+        ));
   }
 }

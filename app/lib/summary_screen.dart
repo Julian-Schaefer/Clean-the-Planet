@@ -283,12 +283,12 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void addPicture() async {
-    String? imagePath = await Navigator.push(context,
+    List<String?>? result = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => const TakePictureScreen()));
 
-    if (imagePath != null) {
+    if (result != null) {
       setState(() {
-        resultPictures.add(imagePath);
+        resultPictures.add(result[0]!);
       });
     }
   }

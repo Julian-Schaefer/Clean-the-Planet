@@ -316,14 +316,17 @@ class MapScreenState extends State<MapScreen> {
 
     LocationData location = _currentLocation!;
 
-    String? imagePath = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const TakePictureScreen()));
+    List<String?>? result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const TakePictureScreen(allowComment: true)));
 
-    if (imagePath != null) {
+    if (result != null) {
       setState(() {
         _tourPictures.add(TourPicture(
             location: LatLng(location.latitude!, location.longitude!),
-            imageKey: imagePath));
+            imageKey: result[0],
+            comment: result[1]));
       });
     }
   }
