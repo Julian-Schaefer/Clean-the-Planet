@@ -40,11 +40,13 @@ class TourPicture(db.Model):
                         primary_key=True)
     location = db.Column(Geometry('POINT'))
     picture_key = db.Column(db.String())
+    comment = db.Column(db.String())
 
-    def __init__(self, tour_id, location, picture_key):
+    def __init__(self, tour_id, location, picture_key, comment):
         self.tour_id = tour_id
         self.location = location
         self.picture_key = picture_key
+        self.comment = comment
 
     def __repr__(self):
-        return f"<Tour-Picture {self.id},  {self.location}>"
+        return f"<Tour-Picture {self.id},  {self.location}, {self.comment}>"

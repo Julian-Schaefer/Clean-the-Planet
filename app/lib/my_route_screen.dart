@@ -107,17 +107,32 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                 ),
                 if (selectedTourPicture != null)
                   Center(
-                      child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: NetworkImagePreview(
-                      imageUrl: selectedTourPicture!.imageUrl!,
-                      onRemove: () {
-                        setState(() {
-                          selectedTourPicture = null;
-                        });
-                      },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Card(
+                        child: Column(children: [
+                          Expanded(
+                            child: NetworkImagePreview(
+                              imageUrl: selectedTourPicture!.imageUrl!,
+                              onRemove: () {
+                                setState(() {
+                                  selectedTourPicture = null;
+                                });
+                              },
+                            ),
+                          ),
+                          if (selectedTourPicture!.comment != null)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Comment: " + selectedTourPicture!.comment!,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            )
+                        ]),
+                      ),
                     ),
-                  ))
+                  )
               ],
             ),
           ),

@@ -28,7 +28,8 @@ def addTour():
                 tour_picture = TourPicture(
                     tour_id=id,
                     location=tour_picture_json['location'],
-                    picture_key=tour_picture_json['imageKey'])
+                    picture_key=tour_picture_json['imageKey'],
+                    comment=tour_picture_json['comment'])
                 tour_pictures.append(tour_picture)
 
         tour = Tour(id=id,
@@ -99,7 +100,7 @@ def getTours():
                 "imageUrl":
                 get_url_from_picture_key(tour_picture.picture_key),
                 "comment":
-                None
+                tour_picture.comment
             } for (tour_picture, location) in tour_pictures_query]
         })
 
