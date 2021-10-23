@@ -7,7 +7,6 @@ import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/tour_service.dart';
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
@@ -284,13 +283,8 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void addPicture() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-
-    String? imagePath = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => TakePictureScreen(camera: firstCamera)));
+    String? imagePath = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const TakePictureScreen()));
 
     if (imagePath != null) {
       setState(() {

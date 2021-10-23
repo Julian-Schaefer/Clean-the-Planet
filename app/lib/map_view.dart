@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
@@ -316,13 +315,9 @@ class MapScreenState extends State<MapScreen> {
     }
 
     LocationData location = _currentLocation!;
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
 
-    String? imagePath = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => TakePictureScreen(camera: firstCamera)));
+    String? imagePath = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const TakePictureScreen()));
 
     if (imagePath != null) {
       setState(() {
