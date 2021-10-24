@@ -17,22 +17,29 @@ class MyRouteScreen extends StatefulWidget {
 }
 
 class _MyRouteScreenState extends State<MyRouteScreen> {
-  final MapController _mapController = MapController();
-
   int _selectedIndex = 0;
-  late Locale locale;
+  Locale? locale;
   TourPicture? selectedTourPicture;
+  late MapController _mapController;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _mapController = MapController();
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    locale = Localizations.localeOf(context);
-    String dateString = DateFormat.yMd(locale.languageCode)
+    locale ??= Localizations.localeOf(context);
+
+    String dateString = DateFormat.yMd(locale!.languageCode)
         .format(widget.tour.dateTime!.toLocal());
     return Scaffold(
         appBar: AppBar(
@@ -92,12 +99,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                             anchorPos: AnchorPos.exactly(Anchor(18, 18)),
                             point: picture.location,
                             builder: (ctx) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _mapController.move(picture.location, 18.0);
-                                  selectedTourPicture = picture;
-                                });
-                              },
+                              onTap: () => _selectTourPicture(picture),
                               child: const Icon(Icons.photo_camera,
                                   size: 36.0, color: Colors.red),
                             ),
@@ -161,7 +163,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              widget.tour.getLocalAmountString(locale),
+              widget.tour.getLocalAmountString(locale!),
               style: const TextStyle(fontSize: 18),
             ),
           ),
@@ -204,6 +206,13 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     } else {
       return const Center(child: Text("Picture Page"));
     }
+  }
+
+  void _selectTourPicture(TourPicture picture) {
+    setState(() {
+      _mapController.move(picture.location, 18.0);
+      selectedTourPicture = picture;
+    });
   }
 
   Future<void> _deleteTour() async {
