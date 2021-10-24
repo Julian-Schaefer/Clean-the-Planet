@@ -27,11 +27,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          colorScheme: const ColorScheme(
+          colorScheme: ColorScheme(
         brightness: Brightness.light,
         primary: Colors.green,
         onPrimary: Colors.white,
-        primaryVariant: Colors.white,
+        primaryVariant: Colors.green.shade900,
         secondary: Colors.lightGreen,
         secondaryVariant: Colors.white,
         onSecondary: Colors.white,
