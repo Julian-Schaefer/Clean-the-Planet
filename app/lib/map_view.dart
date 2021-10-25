@@ -12,6 +12,8 @@ import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:background_location/background_location.dart' as geo;
 
+import 'image_preview.dart';
+
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
 
@@ -34,6 +36,7 @@ class MapScreenState extends State<MapScreen> {
 
   final List<TourPicture> _tourPictures = [];
 
+  bool takePictureAvailable = false;
   bool collectionStarted = false;
 
   static const defaultZoom = 18.0;
@@ -73,6 +76,16 @@ class MapScreenState extends State<MapScreen> {
                     urlTemplate:
                         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     subdomains: ['a', 'b', 'c']),
+                PolylineLayerOptions(
+                  polylines: [
+                    Polyline(
+                        points: _polylineCoordinates,
+                        strokeWidth: 4.0,
+                        borderStrokeWidth: 16.0,
+                        borderColor: Colors.redAccent.withOpacity(0.5),
+                        color: Colors.red.withOpacity(0.8)),
+                  ],
+                ),
                 if (collectionStarted && _currentLocation != null)
                   MarkerLayerOptions(
                     markers: [
@@ -91,21 +104,14 @@ class MapScreenState extends State<MapScreen> {
                           height: 36.0,
                           anchorPos: AnchorPos.exactly(Anchor(18, 18)),
                           point: picture.location,
-                          builder: (ctx) => const Icon(Icons.photo_camera,
-                              size: 36.0, color: Colors.red),
-                        ),
+                          builder: (ctx) => GestureDetector(
+                            onTap: () => _selectTourPicture(picture),
+                            child: const Icon(Icons.photo_camera,
+                                size: 36.0, color: Colors.red),
+                          ),
+                        )
                     ],
                   ),
-                PolylineLayerOptions(
-                  polylines: [
-                    Polyline(
-                        points: _polylineCoordinates,
-                        strokeWidth: 4.0,
-                        borderStrokeWidth: 16.0,
-                        borderColor: Colors.redAccent.withOpacity(0.5),
-                        color: Colors.red.withOpacity(0.8)),
-                  ],
-                ),
               ],
             ),
             Padding(
@@ -123,14 +129,14 @@ class MapScreenState extends State<MapScreen> {
                 child: Center(
                     child: TimerWidget(controller: _timerWidgetController)),
               ),
-            )
+            ),
           ],
         ),
         floatingActionButton: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (collectionStarted)
+              if (collectionStarted && takePictureAvailable)
                 FloatingActionButton.extended(
                   onPressed: _takePicture,
                   label: const Text("Take picture"),
@@ -158,6 +164,7 @@ class MapScreenState extends State<MapScreen> {
     }
 
     setState(() {
+      takePictureAvailable = true;
       collectionStarted = true;
       _timerWidgetController.startTimer!.call();
 
@@ -330,4 +337,83 @@ class MapScreenState extends State<MapScreen> {
       });
     }
   }
+
+  void _selectTourPicture(TourPicture tourPicture) async {
+    setState(() {
+      takePictureAvailable = false;
+    });
+    await Navigator.of(context)
+        .push(TourPictureDialog(tourPicture: tourPicture));
+    setState(() {
+      takePictureAvailable = true;
+    });
+  }
+}
+
+class TourPictureDialog extends PopupRoute {
+  final TourPicture tourPicture;
+
+  TourPictureDialog({required this.tourPicture}) : super();
+
+  @override
+  Color get barrierColor => Colors.black.withOpacity(0.4);
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String get barrierLabel => "";
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return Transform.scale(
+      scale: animation.value,
+      child: Opacity(
+        opacity: animation.value,
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
+    return SafeArea(
+      child: Padding(
+        padding:
+            const EdgeInsets.only(top: 140, bottom: 80, left: 15, right: 15),
+        child: Card(
+          child: Column(children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {},
+                    color: Colors.black,
+                    icon: const Icon(Icons.edit)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
+              ],
+            ),
+            Expanded(
+              child: ImagePreview(
+                path: tourPicture.imageKey!,
+              ),
+            ),
+            if (tourPicture.comment != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Comment: " + tourPicture.comment!,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              )
+          ]),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
 }
