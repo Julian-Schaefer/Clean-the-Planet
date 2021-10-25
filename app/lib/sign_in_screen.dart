@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -76,12 +78,13 @@ class SignInScreen extends StatelessWidget {
             onPressed: () async => await signInWithGoogle(),
           ),
           const SizedBox(height: 30),
-          SignInButton(
-            icon: FontAwesomeIcons.apple,
-            text: "Sign in with Apple",
-            color: Colors.black,
-            onPressed: () async => await signInWithGoogle(),
-          ),
+          if (Platform.isIOS)
+            SignInButton(
+              icon: FontAwesomeIcons.apple,
+              text: "Sign in with Apple",
+              color: Colors.black,
+              onPressed: () async => await signInWithGoogle(),
+            ),
         ],
       )),
     );
