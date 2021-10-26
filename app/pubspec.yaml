@@ -50,6 +50,7 @@ dependencies:
   google_sign_in: "^5.1.1"
   flutter_dotenv: ^5.0.2
   font_awesome_flutter: ^9.2.0
+  twitter_login: ^4.0.1
 
 dev_dependencies:
   flutter_test:

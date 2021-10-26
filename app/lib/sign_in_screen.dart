@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:twitter_login/twitter_login.dart';
 
 class SignInButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -46,9 +48,14 @@ class SignInButton extends StatelessWidget {
   }
 }
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +82,7 @@ class SignInScreen extends StatelessWidget {
             icon: FontAwesomeIcons.twitter,
             text: "Sign in with Twitter",
             color: Colors.blue,
-            onPressed: () async => await signInWithGoogle(),
+            onPressed: () async => await signInWithTwitter(),
           ),
           const SizedBox(height: 30),
           if (Platform.isIOS)
@@ -90,7 +97,7 @@ class SignInScreen extends StatelessWidget {
     );
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     final GoogleSignInAuthentication? googleAuth =
@@ -101,6 +108,45 @@ class SignInScreen extends StatelessWidget {
       idToken: googleAuth?.idToken,
     );
 
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await signInWithCredential(credential);
+  }
+
+  Future<UserCredential?> signInWithTwitter() async {
+    ;
+    final twitterLogin = TwitterLogin(
+        apiKey: dotenv.env['TWITTER_API_KEY']!,
+        apiSecretKey: dotenv.env['TWITTER_API_SECRET_KEY']!,
+        redirectURI: dotenv.env['TWITTER_REDIRECT_URI']!);
+
+    final authResult = await twitterLogin.login();
+    if (authResult.status == TwitterLoginStatus.loggedIn) {
+      final twitterAuthCredential = TwitterAuthProvider.credential(
+        accessToken: authResult.authToken!,
+        secret: authResult.authTokenSecret!,
+      );
+
+      return await signInWithCredential(twitterAuthCredential);
+    }
+  }
+
+  Future<UserCredential?> signInWithCredential(
+      AuthCredential credential) async {
+    try {
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "account-exists-with-different-credential") {
+        final snackBar = SnackBar(
+          content: Text(
+            'Error! You have already signed in using a different provider. Please use this provider again.',
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onError),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
   }
 }

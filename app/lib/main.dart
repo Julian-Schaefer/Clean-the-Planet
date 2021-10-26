@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
         onBackground: Colors.grey,
         surface: Colors.grey,
         onSurface: Colors.grey,
-        error: Colors.red,
+        error: Colors.red.shade800,
         onError: Colors.white,
       )),
       localizationsDelegates: const [
@@ -72,11 +72,13 @@ class _MyAppState extends State<MyApp> {
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!.providerData.length == 1) {
-            // logged in using email and password
-            return snapshot.data!.emailVerified
-                // ignore: prefer_const_constructors
-                ? MapScreen()
-                : Container(); //VerifyEmailPage(user: snapshot.data);
+            if (snapshot.data!.providerData[0].providerId == "password" &&
+                !snapshot.data!.emailVerified) {
+              // logged in using email and password
+              return Container(); //VerifyEmailPage(user: snapshot.data);
+            }
+            // ignore: prefer_const_constructors
+            return MapScreen();
           } else {
             // logged in using other providers
             // ignore: prefer_const_constructors
