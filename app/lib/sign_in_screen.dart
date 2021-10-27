@@ -1,14 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/twitter_login.dart';
 
 class SignInButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final IconData icon;
   final String text;
   final Color color;
@@ -43,10 +47,13 @@ class SignInButton extends StatelessWidget {
         ]),
         onPressed: onPressed,
         color: color,
+        disabledColor: color.withOpacity(0.7),
       ),
     );
   }
 }
+
+enum Provider { password, google, facebook, twitter, apple }
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -56,6 +63,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  bool buttonsDisabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,21 +77,27 @@ class _SignInScreenState extends State<SignInScreen> {
             icon: FontAwesomeIcons.google,
             text: "Sign in with Google",
             color: Colors.red.shade800,
-            onPressed: () async => await signInWithGoogle(),
+            onPressed: buttonsDisabled
+                ? null
+                : () async => await signIn(Provider.google),
           ),
           const SizedBox(height: 30),
           SignInButton(
             icon: FontAwesomeIcons.facebook,
             text: "Sign in with Facebook",
             color: Colors.blue.shade800,
-            onPressed: () async => await signInWithGoogle(),
+            onPressed: buttonsDisabled
+                ? null
+                : () async => await signIn(Provider.facebook),
           ),
           const SizedBox(height: 30),
           SignInButton(
             icon: FontAwesomeIcons.twitter,
             text: "Sign in with Twitter",
             color: Colors.blue,
-            onPressed: () async => await signInWithTwitter(),
+            onPressed: buttonsDisabled
+                ? null
+                : () async => await signIn(Provider.twitter),
           ),
           const SizedBox(height: 30),
           if (Platform.isIOS)
@@ -90,11 +105,44 @@ class _SignInScreenState extends State<SignInScreen> {
               icon: FontAwesomeIcons.apple,
               text: "Sign in with Apple",
               color: Colors.black,
-              onPressed: () async => await signInWithGoogle(),
+              onPressed: buttonsDisabled
+                  ? null
+                  : () async => await signIn(Provider.apple),
             ),
         ],
       )),
     );
+  }
+
+  Future<UserCredential?> signIn(Provider provider) async {
+    setState(() {
+      buttonsDisabled = true;
+    });
+
+    UserCredential? user;
+    switch (provider) {
+      case Provider.password:
+        //user = await signInWithGoogle();
+        break;
+      case Provider.google:
+        user = await signInWithGoogle();
+        break;
+      case Provider.facebook:
+        //user = await signInWithGoogle();
+        break;
+      case Provider.twitter:
+        user = await signInWithTwitter();
+        break;
+      case Provider.apple:
+        // TODO: Handle this case.
+        break;
+    }
+
+    setState(() {
+      buttonsDisabled = false;
+    });
+
+    return user;
   }
 
   Future<UserCredential?> signInWithGoogle() async {
@@ -103,16 +151,20 @@ class _SignInScreenState extends State<SignInScreen> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
+    if (googleAuth == null ||
+        googleAuth.accessToken == null && googleAuth.idToken == null) {
+      return null;
+    }
+
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
 
     return await signInWithCredential(credential);
   }
 
   Future<UserCredential?> signInWithTwitter() async {
-    ;
     final twitterLogin = TwitterLogin(
         apiKey: dotenv.env['TWITTER_API_KEY']!,
         apiSecretKey: dotenv.env['TWITTER_API_SECRET_KEY']!,
