@@ -11,6 +11,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:background_location/background_location.dart' as geo;
+import 'package:slidable_button/slidable_button.dart';
 
 import 'image_preview.dart';
 
@@ -56,11 +57,79 @@ class MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  Widget _getTimer() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0, top: 20.0),
+      child: Container(
+        width: 170,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: Theme.of(context).colorScheme.primary,
+          boxShadow: const [
+            BoxShadow(color: Colors.grey, blurRadius: 5),
+          ],
+        ),
+        child: Center(child: TimerWidget(controller: _timerWidgetController)),
+      ),
+    );
+  }
+
+  Widget _getFinishButton() {
+    var buttonWidth = 50.0;
+    var left = 20.0;
+    return Positioned(
+      bottom: MediaQuery.of(context).padding.bottom + 30,
+      left: left,
+      child: PhysicalModel(
+        elevation: 8,
+        color: Colors.transparent,
+        shadowColor: Colors.black,
+        borderRadius: BorderRadius.circular(30),
+        child: SlidableButton(
+          width: MediaQuery.of(context).size.width - (left * 2),
+          buttonWidth: buttonWidth,
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
+          color: Theme.of(context).colorScheme.primary,
+          buttonColor: Colors.red.shade800,
+          dismissible: false,
+          label: const Center(
+              child: Icon(
+            Icons.map_outlined,
+            color: Colors.white,
+          )),
+          child: Padding(
+            padding: EdgeInsets.only(left: buttonWidth),
+            child: const Center(
+                child: Text(
+              "Slide to finish!",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontStyle: FontStyle.italic),
+            )),
+          ),
+          height: 60,
+          onChanged: (position) {
+            setState(() {
+              if (position == SlidableButtonPosition.right) {
+                print('Button is on the right');
+                _finishCollecting();
+              } else {
+                print('Button is on the left');
+              }
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Clean the Planet')),
-        drawer: const MenuDrawer(),
+        drawer: !collectionStarted ? const MenuDrawer() : null,
         body: Stack(
           alignment: Alignment.topRight,
           children: <Widget>[
@@ -114,22 +183,8 @@ class MapScreenState extends State<MapScreen> {
                   ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, top: 20.0),
-              child: Container(
-                width: 170,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Theme.of(context).colorScheme.primary,
-                  boxShadow: const [
-                    BoxShadow(color: Colors.grey, blurRadius: 5),
-                  ],
-                ),
-                child: Center(
-                    child: TimerWidget(controller: _timerWidgetController)),
-              ),
-            ),
+            _getTimer(),
+            if (collectionStarted) _getFinishButton()
           ],
         ),
         floatingActionButton: Column(
@@ -137,11 +192,14 @@ class MapScreenState extends State<MapScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (collectionStarted && takePictureAvailable)
-                FloatingActionButton.extended(
-                  onPressed: _takePicture,
-                  label: const Text("Take picture"),
-                  icon: const Icon(Icons.photo_camera),
-                  heroTag: "picture_fab",
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 80.0),
+                  child: FloatingActionButton.extended(
+                    onPressed: _takePicture,
+                    label: const Text("Take picture"),
+                    icon: const Icon(Icons.photo_camera),
+                    heroTag: "picture_fab",
+                  ),
                 ),
               const SizedBox(height: 20),
               _getFloatingActionButton()
@@ -304,13 +362,7 @@ class MapScreenState extends State<MapScreen> {
         heroTag: heroTag,
       );
     } else {
-      return FloatingActionButton.extended(
-        onPressed: _finishCollecting,
-        label: const Text('Finish collecting!'),
-        icon: const Icon(Icons.map_outlined),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        heroTag: heroTag,
-      );
+      return Container();
     }
   }
 
