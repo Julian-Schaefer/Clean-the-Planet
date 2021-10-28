@@ -90,7 +90,7 @@ class MapScreenState extends State<MapScreen> {
           width: MediaQuery.of(context).size.width - (left * 2),
           buttonWidth: buttonWidth,
           borderRadius: const BorderRadius.all(Radius.circular(30)),
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
           buttonColor: Colors.red.shade800,
           dismissible: false,
           label: const Center(
@@ -98,27 +98,17 @@ class MapScreenState extends State<MapScreen> {
             Icons.map_outlined,
             color: Colors.white,
           )),
-          child: Padding(
-            padding: EdgeInsets.only(left: buttonWidth),
-            child: const Center(
-                child: Text(
-              "Slide to finish!",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontStyle: FontStyle.italic),
-            )),
-          ),
+          child: const Center(
+              child: Text(
+            "Slide to finish!",
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontStyle: FontStyle.italic),
+          )),
           height: 60,
           onChanged: (position) {
-            setState(() {
-              if (position == SlidableButtonPosition.right) {
-                print('Button is on the right');
-                _finishCollecting();
-              } else {
-                print('Button is on the left');
-              }
-            });
+            if (position == SlidableButtonPosition.right) {
+              _finishCollecting();
+            }
           },
         ),
       ),
