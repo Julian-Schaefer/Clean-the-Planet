@@ -90,7 +90,7 @@ class MapScreenState extends State<MapScreen> {
           width: MediaQuery.of(context).size.width - (left * 2),
           buttonWidth: buttonWidth,
           borderRadius: const BorderRadius.all(Radius.circular(30)),
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.85),
           buttonColor: Colors.red.shade800,
           dismissible: false,
           label: const Center(

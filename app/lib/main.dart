@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:clean_the_planet/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,9 +12,21 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'map_view.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load(fileName: ".env");
+
+    await Firebase.initializeApp();
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+    if (kDebugMode) {
+      // Force disable Crashlytics collection while doing every day development.
+      // Temporarily toggle this to true if you want to test crash reporting in your app.
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    }
+
+    runApp(const MyApp());
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 
 class MyApp extends StatefulWidget {
@@ -21,8 +37,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -48,20 +62,7 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
       title: 'Clean the Planet',
-      home: FutureBuilder(
-        future: _initialization,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: " + snapshot.error!.toString()));
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return _getLandingPage();
-          }
-
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+      home: _getLandingPage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -72,6 +73,8 @@ class _MyAppState extends State<MyApp> {
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!.providerData.length == 1) {
+            FirebaseCrashlytics.instance.setUserIdentifier(snapshot.data!.uid);
+
             if (snapshot.data!.providerData[0].providerId == "password" &&
                 !snapshot.data!.emailVerified) {
               // logged in using email and password
