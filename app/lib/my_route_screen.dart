@@ -3,6 +3,7 @@ import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/tour_service.dart';
+import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
@@ -240,14 +241,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     if (deleteTour != null && deleteTour) {
       await TourService.deleteTour(widget.tour);
       Navigator.pop(context, true);
-      final snackBar = SnackBar(
-        content: const Text(
-          'Success! Selected Tour has been deleted.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      showSnackBar(context, 'Success! Selected Tour has been deleted.');
     }
   }
 }

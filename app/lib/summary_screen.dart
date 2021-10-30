@@ -6,6 +6,7 @@ import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/tour_service.dart';
+import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -198,10 +199,14 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   void _getTourBuffer() async {
-    Polygon polygon = await TourService.getBuffer(widget.polylineCoordinates);
-    setState(() {
-      pathPolygon = polygon;
-    });
+    try {
+      Polygon polygon = await TourService.getBuffer(widget.polylineCoordinates);
+      setState(() {
+        pathPolygon = polygon;
+      });
+    } catch (e) {
+      showSnackBar(context, "Error: " + e.toString(), isError: true);
+    }
   }
 
   void addTour() async {
@@ -225,14 +230,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
-      final snackBar = SnackBar(
-        content: const Text(
-          'Success! Tour has been saved.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      showSnackBar(context, 'Success! Tour has been saved.');
     } catch (e) {
       await showDialog(
           context: context,

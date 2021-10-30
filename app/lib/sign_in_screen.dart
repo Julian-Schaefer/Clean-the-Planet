@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clean_the_planet/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -183,17 +184,9 @@ class _SignInScreenState extends State<SignInScreen> {
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == "account-exists-with-different-credential") {
-        final snackBar = SnackBar(
-          content: Text(
+        showSnackBar(context,
             'Error! You have already signed in using a different provider. Please use this provider again.',
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onError),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            isError: true);
       }
     }
   }
