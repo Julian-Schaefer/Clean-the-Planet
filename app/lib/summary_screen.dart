@@ -36,6 +36,7 @@ class SummaryScreenState extends State<SummaryScreen> {
   List<String> resultPictures = [];
   String? amount;
   bool _savingTourInProgress = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -136,22 +137,31 @@ class SummaryScreenState extends State<SummaryScreen> {
                   child: Text(Tour.getDurationString(widget.duration),
                       style: const TextStyle(fontSize: 18))),
               const Divider(),
-              const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("Amount (in litres):",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500))),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter the amount in litres'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                      signed: false, decimal: true),
-                  onChanged: (text) {
-                    amount = text;
-                  },
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Amount (in litres):",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w500))),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter the amount in litres'),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            signed: false, decimal: true),
+                        onChanged: (text) {
+                          amount = text;
+                        },
+                        validator: _validateAmount,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const Divider(),
@@ -209,8 +219,26 @@ class SummaryScreenState extends State<SummaryScreen> {
     }
   }
 
+  String? _validateAmount(value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the amount.';
+    }
+
+    try {
+      Locale locale = Localizations.localeOf(context);
+      double amount = Tour.toLocalDecimalAmount(value, locale);
+
+      if (amount <= 0) {
+        throw Exception();
+      }
+    } catch (e) {
+      return 'Please enter a valid number.';
+    }
+    return null;
+  }
+
   void addTour() async {
-    if (amount == null) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
