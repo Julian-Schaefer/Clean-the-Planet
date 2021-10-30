@@ -205,7 +205,30 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
         ],
       );
     } else {
-      return const Center(child: Text("Picture Page"));
+      if (widget.tour.tourPictures != null &&
+          widget.tour.tourPictures!.isNotEmpty) {
+        return ListView.builder(
+          itemBuilder: (context, index) {
+            TourPicture picture = widget.tour.tourPictures![index];
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                child: Row(
+                  children: [
+                    NetworkImagePreview(imageUrl: picture.imageUrl!),
+                    if (picture.comment != null) Text(picture.comment!)
+                  ],
+                ),
+              ),
+            );
+          },
+          itemCount: widget.tour.tourPictures!.length,
+        );
+      } else {
+        return const Center(
+          child: Text("No Tour Pictures."),
+        );
+      }
     }
   }
 
