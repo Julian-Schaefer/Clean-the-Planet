@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:clean_the_planet/permission_util.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
@@ -14,8 +15,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:background_location/background_location.dart' as geo;
 import 'package:slidable_button/slidable_button.dart';
 
-import 'image_preview.dart';
-
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
 
@@ -23,7 +22,7 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => MapScreenState();
 }
 
-class MapScreenState extends State<MapScreen> {
+class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   static const int interval = 1500;
   static const double distanceFilter = 5.0;
 
@@ -40,13 +39,31 @@ class MapScreenState extends State<MapScreen> {
 
   bool takePictureAvailable = false;
   bool collectionStarted = false;
+  bool isActive = false;
 
   static const defaultZoom = 18.0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
+    isActive = true;
     _getInitialLocation();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        isActive = true;
+        _moveCameraToLocation();
+      });
+      if (_location == null) {
+        _getInitialLocation();
+      }
+    } else {
+      isActive = false;
+    }
   }
 
   @override
@@ -55,6 +72,7 @@ class MapScreenState extends State<MapScreen> {
     if (Platform.isAndroid) {
       geo.BackgroundLocation.stopLocationService();
     }
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -209,6 +227,10 @@ class MapScreenState extends State<MapScreen> {
       return;
     }
 
+    if (!(await PermissionUtil.askForBatteryOptimizationPermission())) {
+      return;
+    }
+
     if (Platform.isIOS) {
       _location!.enableBackgroundMode(enable: true);
     } else if (Platform.isAndroid) {
@@ -266,7 +288,8 @@ class MapScreenState extends State<MapScreen> {
     //TODO: Remove once fixed
     await Future.delayed(const Duration(seconds: 3));
 
-    bool permissionsGranted = await askForLocationPermission();
+    bool permissionsGranted =
+        await PermissionUtil.askForLocationPermission(_location);
 
     if (permissionsGranted) {
       await _location?.changeSettings(
@@ -276,26 +299,6 @@ class MapScreenState extends State<MapScreen> {
 
       listenForLocationUpdates();
     }
-  }
-
-  Future<bool> askForLocationPermission() async {
-    bool serviceEnabled = await _location!.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await _location!.requestService();
-      if (!serviceEnabled) {
-        return false;
-      }
-    }
-
-    PermissionStatus permissionGranted = await _location!.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _location!.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   void _startAndroidBackgroundLocationService() async {
@@ -326,13 +329,25 @@ class MapScreenState extends State<MapScreen> {
 
     var newLatLng = LatLng(newLocation.latitude!, newLocation.longitude!);
 
-    setState(() {
-      _mapController.move(newLatLng, defaultZoom);
-      _currentLocation = newLocation;
-      if (collectionStarted) {
-        _polylineCoordinates.add(newLatLng);
-      }
-    });
+    if (collectionStarted) {
+      _polylineCoordinates.add(newLatLng);
+    }
+
+    _currentLocation = newLocation;
+
+    if (isActive) {
+      setState(() {
+        _moveCameraToLocation();
+      });
+    }
+  }
+
+  void _moveCameraToLocation() {
+    if (_locationReady()) {
+      _mapController.move(
+          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+          defaultZoom);
+    }
   }
 
   Widget _getFloatingActionButton() {
