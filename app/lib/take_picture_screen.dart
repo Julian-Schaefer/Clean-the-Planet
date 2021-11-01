@@ -76,9 +76,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
     try {
       await _controller!.initialize();
     } on CameraException catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      debugPrint(e.toString());
     }
 
     if (mounted) {
@@ -191,7 +189,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        debugPrint(e.toString());
       }
     }
   }
