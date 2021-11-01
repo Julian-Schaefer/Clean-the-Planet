@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,10 @@ class TakePictureScreen extends StatefulWidget {
 
 class TakePictureScreenState extends State<TakePictureScreen>
     with WidgetsBindingObserver {
-  late CameraController _controller;
+  static const enableAudio = false;
+  static const resolution = ResolutionPreset.high;
+
+  CameraController? _controller;
   Future<void>? _initializeControllerFuture;
   bool takingPicture = false;
 
@@ -31,94 +35,135 @@ class TakePictureScreenState extends State<TakePictureScreen>
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) {
-      _controller.dispose();
-    } else {
-      initCamera();
+    // App state changed before we got the chance to initialize.
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      _controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_controller != null) {
+        onNewCameraSelected(_controller!.description);
+      }
+    }
+  }
+
+  void onNewCameraSelected(CameraDescription cameraDescription) async {
+    if (_controller != null) {
+      await _controller!.dispose();
+    }
+    _controller = CameraController(
+      cameraDescription,
+      resolution,
+      enableAudio: enableAudio,
+    );
+
+    // If the controller is updated then update the UI.
+    _controller!.addListener(() {
+      if (mounted) setState(() {});
+      if (_controller!.value.hasError) {
+        showSnackBar(
+            context, 'Camera error ${_controller!.value.errorDescription}');
+      }
+    });
+
+    try {
+      await _controller!.initialize();
+    } on CameraException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+
+    if (mounted) {
+      setState(() {});
     }
   }
 
   Future<void> initCamera() async {
     final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-    _controller = CameraController(firstCamera, ResolutionPreset.high);
-    setState(() {
-      _initializeControllerFuture = _controller.initialize();
+    _controller =
+        CameraController(cameras[0], resolution, enableAudio: enableAudio);
+    _controller!.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
     });
   }
 
   Widget _cameraWidget(context) {
-    var camera = _controller.value;
+    var camera = _controller!.value;
     final size = MediaQuery.of(context).size;
     var scale = size.aspectRatio * camera.aspectRatio;
     if (scale < 1) scale = 1 / scale;
     return Transform.scale(
-        scale: scale, child: Center(child: CameraPreview(_controller)));
+        scale: scale, child: Center(child: CameraPreview(_controller!)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Stack(children: [
-              _cameraWidget(context),
-              SafeArea(
-                child: Container(
-                  margin: const EdgeInsets.only(left: 0.0, top: 15.0),
-                  child: RawMaterialButton(
-                    fillColor: Theme.of(context).colorScheme.primary,
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    padding: const EdgeInsets.all(15.0),
-                    shape: const CircleBorder(),
-                  ),
-                ),
+    Widget? content;
+    if (_controller != null && _controller!.value.isInitialized) {
+      content = Stack(children: [
+        _cameraWidget(context),
+        SafeArea(
+          child: Container(
+            margin: const EdgeInsets.only(left: 0.0, top: 15.0),
+            child: RawMaterialButton(
+              fillColor: Theme.of(context).colorScheme.primary,
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  color: Theme.of(context).colorScheme.primary,
-                  child: SizedBox(
-                      width: double.infinity,
-                      child: MaterialButton(
-                        onPressed: !takingPicture ? _takePicture : null,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox.fromSize(
-                            size: const Size.fromRadius(22),
-                            child: const FittedBox(
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+              onPressed: () => Navigator.pop(context),
+              padding: const EdgeInsets.all(15.0),
+              shape: const CircleBorder(),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: Theme.of(context).colorScheme.primary,
+            child: SizedBox(
+                width: double.infinity,
+                child: MaterialButton(
+                  onPressed: !takingPicture ? _takePicture : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox.fromSize(
+                      size: const Size.fromRadius(22),
+                      child: const FittedBox(
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
                         ),
-                      )),
-                ),
-              )
-            ]);
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
+                      ),
+                    ),
+                  ),
+                )),
+          ),
+        )
+      ]);
+    } else {
+      content = const Center(child: CircularProgressIndicator());
+    }
+
+    return Scaffold(body: content);
   }
 
   Future<void> _takePicture() async {
+    if (_controller == null) {
+      return;
+    }
+
     try {
       setState(() {
         takingPicture = true;
@@ -126,7 +171,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
 
       await _initializeControllerFuture;
 
-      final image = await _controller.takePicture();
+      final image = await _controller!.takePicture();
 
       List<String?>? result = await Navigator.of(context).push(
         MaterialPageRoute(
