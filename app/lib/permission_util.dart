@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:location/location.dart' as loc;
+import 'package:notification_troubleshoot/notification_troubleshoot.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionUtil {
@@ -18,6 +19,15 @@ class PermissionUtil {
       } else {
         ignoreBatteryOptimizationsStatus =
             await Permission.ignoreBatteryOptimizations.request();
+      }
+    }
+
+    final List<NotificationTroubleshootActions> availableActions =
+        await NotificationTroubleshoot.availableActions;
+    for (var availableAction in availableActions) {
+      if (availableAction ==
+          NotificationTroubleshootActions.actionPowersaving) {
+        NotificationTroubleshoot.startIntent(availableAction);
       }
     }
 

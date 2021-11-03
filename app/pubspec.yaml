@@ -57,6 +57,7 @@ dependencies:
   flutter_native_splash: ^1.3.1
   #TODO: Check for update to API 31
   permission_handler: 8.1.6
+  notification_troubleshoot: ^0.0.2+2
 
 dev_dependencies:
   flutter_test:
