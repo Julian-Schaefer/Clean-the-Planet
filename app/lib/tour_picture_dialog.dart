@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 
 class TourPictureDialog extends PopupRoute {
   final TourPicture tourPicture;
+  final VoidCallback? onDelete;
 
-  TourPictureDialog({required this.tourPicture}) : super();
+  TourPictureDialog({required this.tourPicture, this.onDelete}) : super();
 
   @override
-  Color get barrierColor => Colors.black.withOpacity(0.4);
+  Color get barrierColor => Colors.black.withOpacity(0.5);
 
   @override
   bool get barrierDismissible => true;
@@ -34,33 +35,63 @@ class TourPictureDialog extends PopupRoute {
     return SafeArea(
       child: Padding(
         padding:
-            const EdgeInsets.only(top: 140, bottom: 80, left: 15, right: 15),
-        child: Card(
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    color: Colors.black,
-                    icon: const Icon(Icons.edit)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
-              ],
+            const EdgeInsets.only(top: 140, bottom: 100, left: 20, right: 20),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Card(
+              color: Colors.white.withOpacity(1),
+              child: Column(children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ImagePreview(
+                          path: tourPicture.imageKey!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (tourPicture.comment != null)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          "Comment: ",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          tourPicture.comment!,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  )
+              ]),
             ),
-            Expanded(
-              child: ImagePreview(
-                path: tourPicture.imageKey!,
+            Positioned(
+              right: -32,
+              top: -16,
+              child: RawMaterialButton(
+                onPressed: onDelete,
+                elevation: 2.0,
+                fillColor: Colors.red.shade800,
+                child: const Icon(
+                  Icons.delete,
+                  size: 30,
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.all(10.0),
+                shape: const CircleBorder(),
               ),
             ),
-            if (tourPicture.comment != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Comment: " + tourPicture.comment!,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              )
-          ]),
+          ],
         ),
       ),
     );

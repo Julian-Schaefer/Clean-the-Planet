@@ -5,6 +5,7 @@ import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
+import 'package:clean_the_planet/tour_picture_dialog.dart';
 import 'package:clean_the_planet/tour_service.dart';
 import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
@@ -112,8 +113,11 @@ class SummaryScreenState extends State<SummaryScreen> {
                           height: 36.0,
                           anchorPos: AnchorPos.exactly(Anchor(18, 18)),
                           point: picture.location,
-                          builder: (ctx) => const Icon(Icons.photo_camera,
-                              size: 36.0, color: Colors.red),
+                          builder: (ctx) => GestureDetector(
+                            onTap: () => _selectTourPicture(picture),
+                            child: const Icon(Icons.photo_camera,
+                                size: 36.0, color: Colors.red),
+                          ),
                         )
                     ])
                   ],
@@ -198,9 +202,21 @@ class SummaryScreenState extends State<SummaryScreen> {
                           ),
                           tag: "picture_screen_" + path),
                     ),
-                  IconButton(
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: RawMaterialButton(
                       onPressed: addPicture,
-                      icon: const Icon(Icons.add_a_photo_outlined, size: 60.0))
+                      elevation: 3.0,
+                      fillColor: Theme.of(context).colorScheme.secondary,
+                      child: const Icon(
+                        Icons.add_a_photo_outlined,
+                        size: 55.0,
+                        color: Colors.white,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                    ),
+                  )
                 ],
               )
             ]),
@@ -317,5 +333,18 @@ class SummaryScreenState extends State<SummaryScreen> {
         resultPictures.add(result[0]!);
       });
     }
+  }
+
+  void _selectTourPicture(TourPicture tourPicture) async {
+    await Navigator.of(context).push(
+      TourPictureDialog(
+          tourPicture: tourPicture,
+          onDelete: () {
+            Navigator.pop(context);
+            setState(() {
+              widget.tourPictures.remove(tourPicture);
+            });
+          }),
+    );
   }
 }

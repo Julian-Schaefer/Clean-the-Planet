@@ -399,8 +399,12 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     setState(() {
       takePictureAvailable = false;
     });
-    await Navigator.of(context)
-        .push(TourPictureDialog(tourPicture: tourPicture));
+    await Navigator.of(context).push(TourPictureDialog(
+        tourPicture: tourPicture,
+        onDelete: () {
+          Navigator.pop(context);
+          _tourPictures.remove(tourPicture);
+        }));
     setState(() {
       takePictureAvailable = true;
     });
