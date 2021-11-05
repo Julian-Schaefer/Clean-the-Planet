@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:clean_the_planet/dialogs/huawei_battery_help_dialog.dart';
+import 'package:clean_the_planet/dialogs/samsung_battery_help_dialog.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:location/location.dart' as loc;
-import 'package:notification_troubleshoot/notification_troubleshoot.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,7 +12,8 @@ class PermissionUtil {
   static const String batteryOptimizationAskedKey =
       "BATTERY_OPTIMIZATION_ASKED";
 
-  static Future<bool> askForBatteryOptimizationPermission() async {
+  static Future<bool> askForBatteryOptimizationPermission(
+      BuildContext context) async {
     if (!Platform.isAndroid) {
       return true;
     }
@@ -30,13 +34,16 @@ class PermissionUtil {
     bool? alreadyAskedBattery =
         sharedPreferences.getBool(batteryOptimizationAskedKey);
     if (alreadyAskedBattery == null || !alreadyAskedBattery) {
-      final List<NotificationTroubleshootActions> availableActions =
-          await NotificationTroubleshoot.availableActions;
-      for (var availableAction in availableActions) {
-        if (availableAction ==
-            NotificationTroubleshootActions.actionPowersaving) {
-          NotificationTroubleshoot.startIntent(availableAction);
-          sharedPreferences.setBool(batteryOptimizationAskedKey, true);
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      if (androidInfo.manufacturer != null) {
+        switch (androidInfo.manufacturer) {
+          case "samsung":
+            await _showSamsungBatteryOptimizationHelp(context);
+            break;
+          case "huawei":
+            await _showHuaweiBatteryOptimizationHelp(context);
+            break;
         }
       }
     }
@@ -64,5 +71,23 @@ class PermissionUtil {
     }
 
     return true;
+  }
+
+  static Future<void> _showSamsungBatteryOptimizationHelp(
+      BuildContext context) async {
+    await Navigator.of(context).push(
+      SamsungBatteryHelpDialog(onComplete: () {
+        Navigator.pop(context);
+      }),
+    );
+  }
+
+  static Future<void> _showHuaweiBatteryOptimizationHelp(
+      BuildContext context) async {
+    await Navigator.of(context).push(
+      HuaweiBatteryHelpDialog(onComplete: () {
+        Navigator.pop(context);
+      }),
+    );
   }
 }

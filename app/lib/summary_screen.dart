@@ -5,7 +5,7 @@ import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
-import 'package:clean_the_planet/tour_picture_dialog.dart';
+import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
 import 'package:clean_the_planet/tour_service.dart';
 import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
