@@ -111,37 +111,41 @@ class TakePictureScreenState extends State<TakePictureScreen>
     if (_controller != null && _controller!.value.isInitialized) {
       content = Stack(children: [
         _cameraWidget(context),
-        SafeArea(
-          child: Container(
-            margin: const EdgeInsets.only(left: 0.0, top: 15.0),
-            child: RawMaterialButton(
-              fillColor: Theme.of(context).colorScheme.primary,
-              child: const Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onPressed: () => Navigator.pop(context),
-              padding: const EdgeInsets.all(15.0),
-              shape: const CircleBorder(),
+        Container(
+          margin: EdgeInsets.only(
+              left: 0.0, top: MediaQuery.of(context).padding.top + 15.0),
+          child: RawMaterialButton(
+            fillColor: Theme.of(context).colorScheme.primary,
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
             ),
+            onPressed: () => Navigator.pop(context),
+            padding: const EdgeInsets.all(15.0),
+            shape: const CircleBorder(),
           ),
         ),
         Align(
           alignment: Alignment.bottomCenter,
           child: Container(
             color: Theme.of(context).colorScheme.primary,
+            height: const Size.fromRadius(36).height +
+                MediaQuery.of(context).padding.bottom,
             child: SizedBox(
                 width: double.infinity,
                 child: MaterialButton(
                   onPressed: !takingPicture ? _takePicture : null,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox.fromSize(
-                      size: const Size.fromRadius(22),
-                      child: const FittedBox(
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: SizedBox.fromSize(
+                        size: const Size.fromRadius(24),
+                        child: const FittedBox(
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -231,25 +235,27 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
           appBar: AppBar(
             title: const Text('Add the Picture'),
             backgroundColor:
-                Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                Theme.of(context).colorScheme.primary.withOpacity(0.8),
           ),
           body: Stack(children: [
             if (widget.allowComment)
               Positioned(
-                  bottom: 12,
-                  left: 15,
-                  right: 100,
-                  child: Card(
-                    child: TextField(
-                      keyboardType: TextInputType.multiline,
-                      controller: commentController,
-                      maxLines: null,
-                      minLines: 5,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Enter a comment (optional)'),
-                    ),
-                  ))
+                bottom: MediaQuery.of(context).padding.bottom + 12,
+                left: 15,
+                right: 100,
+                child: Card(
+                  child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    controller: commentController,
+                    textInputAction: TextInputAction.done,
+                    maxLines: null,
+                    minLines: 5,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter a comment (optional)'),
+                  ),
+                ),
+              )
           ]),
           floatingActionButton: FloatingActionButton.extended(
               onPressed: () async {
