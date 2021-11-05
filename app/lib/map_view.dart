@@ -136,83 +136,88 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Clean the Planet')),
-        drawer: !collectionStarted ? const MenuDrawer() : null,
-        body: Stack(
-          alignment: Alignment.topRight,
-          children: <Widget>[
-            FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                  center: LatLng(51.5, -0.09),
-                  zoom: defaultZoom,
-                  maxZoom: 18.4,
-                  minZoom: 4.0),
-              layers: [
-                TileLayerOptions(
-                    urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c']),
-                PolylineLayerOptions(
-                  polylines: [
-                    Polyline(
-                        points: _polylineCoordinates,
-                        strokeWidth: 4.0,
-                        borderStrokeWidth: 16.0,
-                        borderColor: Colors.redAccent.withOpacity(0.5),
-                        color: Colors.red.withOpacity(0.8)),
-                  ],
-                ),
-                if (collectionStarted && _currentLocation != null)
-                  MarkerLayerOptions(
-                    markers: [
-                      Marker(
-                        width: 40.0,
-                        height: 40.0,
-                        anchorPos: AnchorPos.exactly(Anchor(20, 5)),
-                        point: LatLng(_currentLocation!.latitude!,
-                            _currentLocation!.longitude!),
-                        builder: (ctx) => const Icon(Icons.location_pin,
-                            size: 40.0, color: Colors.red),
-                      ),
-                      for (var picture in _tourPictures)
-                        Marker(
-                          width: 36.0,
-                          height: 36.0,
-                          anchorPos: AnchorPos.exactly(Anchor(18, 18)),
-                          point: picture.location,
-                          builder: (ctx) => GestureDetector(
-                            onTap: () => _selectTourPicture(picture),
-                            child: const Icon(Icons.photo_camera,
-                                size: 36.0, color: Colors.red),
-                          ),
-                        )
+    return WillPopScope(
+      onWillPop: () async {
+        return !collectionStarted;
+      },
+      child: Scaffold(
+          appBar: AppBar(title: const Text('Clean the Planet')),
+          drawer: !collectionStarted ? const MenuDrawer() : null,
+          body: Stack(
+            alignment: Alignment.topRight,
+            children: <Widget>[
+              FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                    center: LatLng(51.5, -0.09),
+                    zoom: defaultZoom,
+                    maxZoom: 18.4,
+                    minZoom: 4.0),
+                layers: [
+                  TileLayerOptions(
+                      urlTemplate:
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      subdomains: ['a', 'b', 'c']),
+                  PolylineLayerOptions(
+                    polylines: [
+                      Polyline(
+                          points: _polylineCoordinates,
+                          strokeWidth: 4.0,
+                          borderStrokeWidth: 16.0,
+                          borderColor: Colors.redAccent.withOpacity(0.5),
+                          color: Colors.red.withOpacity(0.8)),
                     ],
                   ),
-              ],
-            ),
-            _getTimer(),
-            if (collectionStarted) _getFinishButton()
-          ],
-        ),
-        floatingActionButton: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (collectionStarted && takePictureAvailable)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 80.0),
-                  child: FloatingActionButton.extended(
-                    onPressed: _takePicture,
-                    label: const Text("Take picture"),
-                    icon: const Icon(Icons.photo_camera),
-                    heroTag: "picture_fab",
+                  if (collectionStarted && _currentLocation != null)
+                    MarkerLayerOptions(
+                      markers: [
+                        Marker(
+                          width: 40.0,
+                          height: 40.0,
+                          anchorPos: AnchorPos.exactly(Anchor(20, 5)),
+                          point: LatLng(_currentLocation!.latitude!,
+                              _currentLocation!.longitude!),
+                          builder: (ctx) => const Icon(Icons.location_pin,
+                              size: 40.0, color: Colors.red),
+                        ),
+                        for (var picture in _tourPictures)
+                          Marker(
+                            width: 36.0,
+                            height: 36.0,
+                            anchorPos: AnchorPos.exactly(Anchor(18, 18)),
+                            point: picture.location,
+                            builder: (ctx) => GestureDetector(
+                              onTap: () => _selectTourPicture(picture),
+                              child: const Icon(Icons.photo_camera,
+                                  size: 36.0, color: Colors.red),
+                            ),
+                          )
+                      ],
+                    ),
+                ],
+              ),
+              _getTimer(),
+              if (collectionStarted) _getFinishButton()
+            ],
+          ),
+          floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (collectionStarted && takePictureAvailable)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 80.0),
+                    child: FloatingActionButton.extended(
+                      onPressed: _takePicture,
+                      label: const Text("Take picture"),
+                      icon: const Icon(Icons.photo_camera),
+                      heroTag: "picture_fab",
+                    ),
                   ),
-                ),
-              const SizedBox(height: 20),
-              _getFloatingActionButton()
-            ]));
+                const SizedBox(height: 20),
+                _getFloatingActionButton()
+              ])),
+    );
   }
 
   bool _locationReady() {
