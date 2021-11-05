@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:location/location.dart' as loc;
 import 'package:notification_troubleshoot/notification_troubleshoot.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PermissionUtil {
+  static const String batteryOptimizationAskedKey =
+      "BATTERY_OPTIMIZATION_ASKED";
+
   static Future<bool> askForBatteryOptimizationPermission() async {
     if (!Platform.isAndroid) {
       return true;
@@ -22,12 +26,18 @@ class PermissionUtil {
       }
     }
 
-    final List<NotificationTroubleshootActions> availableActions =
-        await NotificationTroubleshoot.availableActions;
-    for (var availableAction in availableActions) {
-      if (availableAction ==
-          NotificationTroubleshootActions.actionPowersaving) {
-        NotificationTroubleshoot.startIntent(availableAction);
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    bool? alreadyAskedBattery =
+        sharedPreferences.getBool(batteryOptimizationAskedKey);
+    if (alreadyAskedBattery == null || !alreadyAskedBattery) {
+      final List<NotificationTroubleshootActions> availableActions =
+          await NotificationTroubleshoot.availableActions;
+      for (var availableAction in availableActions) {
+        if (availableAction ==
+            NotificationTroubleshootActions.actionPowersaving) {
+          NotificationTroubleshoot.startIntent(availableAction);
+          sharedPreferences.setBool(batteryOptimizationAskedKey, true);
+        }
       }
     }
 
