@@ -30,7 +30,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
   final List<LatLng> _polylineCoordinates = [];
 
-  late StreamSubscription<LocationData> _locationSubscription;
+  StreamSubscription<LocationData>? _locationSubscription;
 
   Location? _location;
   LocationData? _currentLocation;
@@ -60,6 +60,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       });
       if (_location == null) {
         _getInitialLocation();
+      } else {
+        _refreshCurrentLocation();
       }
     } else {
       isActive = false;
@@ -68,7 +70,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _locationSubscription.cancel();
+    _locationSubscription?.cancel();
     if (Platform.isAndroid) {
       geo.BackgroundLocation.stopLocationService();
     }
@@ -239,7 +241,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     if (Platform.isIOS) {
       _location!.enableBackgroundMode(enable: true);
     } else if (Platform.isAndroid) {
-      await _locationSubscription.cancel();
+      await _locationSubscription!.cancel();
       _startAndroidBackgroundLocationService();
     }
 
@@ -248,8 +250,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       collectionStarted = true;
       _timerWidgetController.startTimer!.call();
 
-      _polylineCoordinates.add(
-          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!));
+      _polylineCoordinates
+          .add(LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!));
     });
   }
 
@@ -259,7 +261,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     }
 
     if (Platform.isIOS) {
-      await _locationSubscription.cancel();
+      await _locationSubscription!.cancel();
       _location!.enableBackgroundMode(enable: false);
     } else if (Platform.isAndroid) {
       geo.BackgroundLocation.stopLocationService();
@@ -291,7 +293,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     _location = Location();
 
     //TODO: Remove once fixed
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     bool permissionsGranted =
         await PermissionUtil.askForLocationPermission(_location);
@@ -302,7 +304,15 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           interval: interval,
           distanceFilter: distanceFilter);
 
+      _refreshCurrentLocation();
       listenForLocationUpdates();
+    }
+  }
+
+  void _refreshCurrentLocation() async {
+    LocationData? refreshedLocation = await _location?.getLocation();
+    if (refreshedLocation != null) {
+      _updateRouteOnMap(refreshedLocation);
     }
   }
 
