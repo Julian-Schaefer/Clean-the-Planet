@@ -59,6 +59,8 @@ dependencies:
   permission_handler: 8.1.6
   shared_preferences: ^2.0.8
   device_info_plus: ^3.1.1
+  flutter_bloc: ^7.3.3
+  get_it: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  mockito: ^5.0.16
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

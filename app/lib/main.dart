@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'map_view.dart';
+import 'package:clean_the_planet/map_view.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {

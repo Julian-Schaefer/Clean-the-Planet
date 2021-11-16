@@ -5,7 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 
-import 'my_route_screen.dart';
+import 'package:clean_the_planet/my_route_screen.dart';
 
 class MyRoutesScreen extends StatefulWidget {
   const MyRoutesScreen({Key? key}) : super(key: key);
