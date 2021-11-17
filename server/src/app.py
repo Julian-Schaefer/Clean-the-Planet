@@ -16,7 +16,7 @@ if serviceAccountJson:
     cred = credentials.Certificate(serviceAccount)
 else:
     cred = credentials.Certificate(
-        "/Users/julian/Google Drive/Programming/Clean the Planet/firebase-admin-sdk.json"
+        os.environ.get("CERTIFICATE_PATH", None)
     )
 firebase_admin.initialize_app(cred)
 
@@ -31,7 +31,7 @@ if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 else:
     app.config[
-        'SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:planetpassword@localhost:5432/postgres"
+        'SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:planetpassword@localhost:5433/postgres"
 app.register_blueprint(routes)
 db.init_app(app)
 migrate = Migrate(app, db)
