@@ -9,59 +9,51 @@ import 'package:location/location.dart';
 
 import 'package:clean_the_planet/permission_util.dart';
 
-abstract class MapViewEvent {}
+abstract class MapScreenEvent {}
 
-class RefreshCurrentLocation extends MapViewEvent {}
+class RefreshCurrentLocation extends MapScreenEvent {}
 
-class StartLocationListening extends MapViewEvent {}
+class StartLocationListening extends MapScreenEvent {}
 
-class UpdateRoute extends MapViewEvent {
-  final MapViewState newState;
+class UpdateRoute extends MapScreenEvent {
+  final MapScreenBlocState newState;
 
   UpdateRoute(this.newState);
 }
 
-class StartCollecting extends MapViewEvent {}
+class StartCollecting extends MapScreenEvent {}
 
-class FinishCollecting extends MapViewEvent {}
+class FinishCollecting extends MapScreenEvent {}
 
-class UpdatedMapViewState extends MapViewState {
-  const UpdatedMapViewState(LocationData? currentLocation,
-      List<LatLng> polylineCoordinates, bool collectionStarted)
-      : super(
-            currentLocation: currentLocation,
-            polylineCoordinates: polylineCoordinates,
-            collectionStarted: collectionStarted);
-}
-
-class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
+class MapScreenBloc extends Bloc<MapScreenEvent, MapScreenBlocState> {
   static const int interval = 1500;
   static const double distanceFilter = 5.0;
 
   final Location _location = Location();
   StreamSubscription<LocationData>? _locationSubscription;
 
-  MapViewBloc() : super(const InitialMapViewState(null)) {
-    on<RefreshCurrentLocation>((_, Emitter<MapViewState> emit) async {
+  MapScreenBloc() : super(const InitialMapScreenBlocState(null)) {
+    on<RefreshCurrentLocation>((_, Emitter<MapScreenBlocState> emit) async {
       await _refreshCurrentLocation();
     });
 
-    on<StartLocationListening>((_, Emitter<MapViewState> emit) async {
-      emit(InitialMapViewState(state.currentLocation));
+    on<StartLocationListening>((_, Emitter<MapScreenBlocState> emit) async {
+      emit(InitialMapScreenBlocState(state.currentLocation));
       await _getInitialLocation();
     });
 
-    on<UpdateRoute>((UpdateRoute event, Emitter<MapViewState> emit) async {
+    on<UpdateRoute>(
+        (UpdateRoute event, Emitter<MapScreenBlocState> emit) async {
       emit(event.newState);
     });
 
-    on<StartCollecting>((_, Emitter<MapViewState> emit) async {
-      MapViewState newState = await _startCollecting();
+    on<StartCollecting>((_, Emitter<MapScreenBlocState> emit) async {
+      MapScreenBlocState newState = await _startCollecting();
       emit(newState);
     });
 
-    on<FinishCollecting>((_, Emitter<MapViewState> emit) async {
-      MapViewState newState = await _finishCollecting();
+    on<FinishCollecting>((_, Emitter<MapScreenBlocState> emit) async {
+      MapScreenBlocState newState = await _finishCollecting();
       emit(newState);
     });
   }
@@ -105,7 +97,7 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
     });
   }
 
-  Future<MapViewState> _startCollecting() async {
+  Future<MapScreenBlocState> _startCollecting() async {
     if (!state.locationReady()) {
       return state;
     }
@@ -121,10 +113,11 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
     newPolyCoordinates.add(LatLng(
         state.currentLocation!.latitude!, state.currentLocation!.longitude!));
 
-    return UpdatedMapViewState(state.currentLocation, newPolyCoordinates, true);
+    return UpdatedMapScreenBlocState(
+        state.currentLocation, newPolyCoordinates, true);
   }
 
-  Future<MapViewState> _finishCollecting() async {
+  Future<MapScreenBlocState> _finishCollecting() async {
     if (!state.locationReady()) {
       return state;
     }
@@ -136,7 +129,7 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
       geo.BackgroundLocation.stopLocationService();
     }
 
-    return UpdatedMapViewState(
+    return UpdatedMapScreenBlocState(
         state.currentLocation, state.polylineCoordinates, false);
   }
 
@@ -167,7 +160,7 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
       newPolyCoordinates.add(newLatLng);
     }
 
-    var newState = UpdatedMapViewState(
+    var newState = UpdatedMapScreenBlocState(
         newLocation, newPolyCoordinates, state.collectionStarted);
 
     add(UpdateRoute(newState));

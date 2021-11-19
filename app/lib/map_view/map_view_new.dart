@@ -15,15 +15,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:slidable_button/slidable_button.dart';
 
-class MapScreenNew extends StatefulWidget {
-  const MapScreenNew({Key? key}) : super(key: key);
+class MapScreen extends StatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
 
   @override
-  State<MapScreenNew> createState() => MapScreenNewState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class MapScreenNewState extends State<MapScreenNew>
-    with WidgetsBindingObserver {
+class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   final MapController _mapController = MapController();
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
 
@@ -34,7 +33,7 @@ class MapScreenNewState extends State<MapScreenNew>
 
   static const double defaultZoom = 18.0;
 
-  final MapViewBloc mapViewBloc = getIt<MapViewBloc>();
+  final MapScreenBloc mapViewBloc = getIt<MapScreenBloc>();
 
   @override
   void initState() {
@@ -124,9 +123,10 @@ class MapScreenNewState extends State<MapScreenNew>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MapViewBloc, MapViewState>(
+    return BlocBuilder<MapScreenBloc, MapScreenBlocState>(
         bloc: mapViewBloc,
-        builder: (BuildContext context, MapViewState state) => WillPopScope(
+        builder: (BuildContext context, MapScreenBlocState state) =>
+            WillPopScope(
               onWillPop: () async {
                 return !state.collectionStarted;
               },
@@ -235,7 +235,7 @@ class MapScreenNewState extends State<MapScreenNew>
 
     mapViewBloc.add(FinishCollecting());
 
-    MapViewState state = mapViewBloc.state;
+    MapScreenBlocState state = mapViewBloc.state;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -253,7 +253,7 @@ class MapScreenNewState extends State<MapScreenNew>
         }));
   }
 
-  void _moveCamera(MapViewState state) {
+  void _moveCamera(MapScreenBlocState state) {
     if (state.locationReady() && isActive) {
       setState(() {
         _mapController.move(

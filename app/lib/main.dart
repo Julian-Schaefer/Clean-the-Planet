@@ -83,11 +83,11 @@ class _MyAppState extends State<MyApp> {
               return Container(); //VerifyEmailPage(user: snapshot.data);
             }
             // ignore: prefer_const_constructors
-            return MapScreenNew();
+            return MapScreen();
           } else {
             // logged in using other providers
             // ignore: prefer_const_constructors
-            return MapScreenNew();
+            return MapScreen();
           }
         } else {
           return const SignInScreen();

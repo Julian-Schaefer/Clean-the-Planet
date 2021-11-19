@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
 
-abstract class MapViewState extends Equatable {
+abstract class MapScreenBlocState extends Equatable {
   final LocationData? currentLocation;
   final List<LatLng> polylineCoordinates;
   final bool collectionStarted;
 
-  const MapViewState(
+  const MapScreenBlocState(
       {required this.currentLocation,
       required this.polylineCoordinates,
       required this.collectionStarted});
@@ -23,10 +23,19 @@ abstract class MapViewState extends Equatable {
       [currentLocation, polylineCoordinates, collectionStarted];
 }
 
-class InitialMapViewState extends MapViewState {
-  const InitialMapViewState(LocationData? currentLocation)
+class InitialMapScreenBlocState extends MapScreenBlocState {
+  const InitialMapScreenBlocState(LocationData? currentLocation)
       : super(
             currentLocation: currentLocation,
             polylineCoordinates: const [],
             collectionStarted: false);
+}
+
+class UpdatedMapScreenBlocState extends MapScreenBlocState {
+  const UpdatedMapScreenBlocState(LocationData? currentLocation,
+      List<LatLng> polylineCoordinates, bool collectionStarted)
+      : super(
+            currentLocation: currentLocation,
+            polylineCoordinates: polylineCoordinates,
+            collectionStarted: collectionStarted);
 }
