@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_location/background_location.dart' as geo;
-import 'package:equatable/equatable.dart';
+import 'package:clean_the_planet/map_view/map_view_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -25,37 +25,6 @@ class StartCollecting extends MapViewEvent {}
 
 class FinishCollecting extends MapViewEvent {}
 
-class Decrement extends MapViewEvent {}
-
-abstract class MapViewState extends Equatable {
-  final LocationData? currentLocation;
-  final List<LatLng> polylineCoordinates;
-  final bool collectionStarted;
-
-  const MapViewState(
-      {required this.currentLocation,
-      required this.polylineCoordinates,
-      required this.collectionStarted});
-
-  bool locationReady() {
-    return !(currentLocation == null ||
-        currentLocation!.latitude == null ||
-        currentLocation!.longitude == null);
-  }
-
-  @override
-  List<Object?> get props =>
-      [currentLocation, polylineCoordinates, collectionStarted];
-}
-
-class InitialMapViewState extends MapViewState {
-  const InitialMapViewState()
-      : super(
-            currentLocation: null,
-            polylineCoordinates: const [],
-            collectionStarted: false);
-}
-
 class UpdatedMapViewState extends MapViewState {
   const UpdatedMapViewState(LocationData? currentLocation,
       List<LatLng> polylineCoordinates, bool collectionStarted)
@@ -72,12 +41,13 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
   final Location _location = Location();
   StreamSubscription<LocationData>? _locationSubscription;
 
-  MapViewBloc() : super(const InitialMapViewState()) {
+  MapViewBloc() : super(const InitialMapViewState(null)) {
     on<RefreshCurrentLocation>((_, Emitter<MapViewState> emit) async {
       await _refreshCurrentLocation();
     });
 
     on<StartLocationListening>((_, Emitter<MapViewState> emit) async {
+      emit(InitialMapViewState(state.currentLocation));
       await _getInitialLocation();
     });
 
@@ -140,10 +110,6 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
       return state;
     }
 
-    // if (!(await PermissionUtil.askForBatteryOptimizationPermission(context))) {
-    //   return;
-    // }
-
     if (Platform.isIOS) {
       _location.enableBackgroundMode(enable: true);
     } else if (Platform.isAndroid) {
@@ -151,16 +117,11 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
       _startAndroidBackgroundLocationService();
     }
 
-    //setState(() {
-    //  takePictureAvailable = true;
-    //  _timerWidgetController.startTimer!.call();
-
     List<LatLng> newPolyCoordinates = [...state.polylineCoordinates];
     newPolyCoordinates.add(LatLng(
         state.currentLocation!.latitude!, state.currentLocation!.longitude!));
 
     return UpdatedMapViewState(state.currentLocation, newPolyCoordinates, true);
-    //});
   }
 
   Future<MapViewState> _finishCollecting() async {
@@ -177,26 +138,6 @@ class MapViewBloc extends Bloc<MapViewEvent, MapViewState> {
 
     return UpdatedMapViewState(
         state.currentLocation, state.polylineCoordinates, false);
-
-    //setState(() {
-    //_timerWidgetController.stopTimer!.call();
-    //});
-
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => SummaryScreen(
-    //             polylineCoordinates: _polylineCoordinates,
-    //             finalLocation: _currentLocation!,
-    //             duration: _timerWidgetController.duration,
-    //             tourPictures: _tourPictures,
-    //           )),
-    // ).then((_) => setState(() {
-    //       //_tourPictures.clear();
-    //       state.polylineCoordinates.clear();
-    //       //_timerWidgetController.resetTimer!.call();
-    //       listenForLocationUpdates();
-    //     }));
   }
 
   void _startAndroidBackgroundLocationService() async {

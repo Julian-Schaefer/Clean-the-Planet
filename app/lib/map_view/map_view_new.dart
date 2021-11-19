@@ -1,5 +1,9 @@
 import 'package:clean_the_planet/map_view/map_view_bloc.dart';
+import 'package:clean_the_planet/map_view/map_view_state.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
+import 'package:clean_the_planet/permission_util.dart';
+import 'package:clean_the_planet/summary_screen.dart';
+import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
@@ -7,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 import 'package:slidable_button/slidable_button.dart';
 
 class MapScreenNew extends StatefulWidget {
@@ -22,7 +27,7 @@ class MapScreenNewState extends State<MapScreenNew>
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
 
   bool takePictureAvailable = false;
-  bool isActive = false;
+  //bool isActive = false;
 
   final List<TourPicture> _tourPictures = [];
 
@@ -34,15 +39,10 @@ class MapScreenNewState extends State<MapScreenNew>
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
-    isActive = true;
+    //isActive = true;
     mapViewBloc.add(StartLocationListening());
     mapViewBloc.stream.listen((state) {
-      if (state.locationReady()) {
-        _mapController.move(
-            LatLng(state.currentLocation!.latitude!,
-                state.currentLocation!.longitude!),
-            defaultZoom);
-      }
+      _moveCamera(state);
     });
   }
 
@@ -120,7 +120,7 @@ class MapScreenNewState extends State<MapScreenNew>
           height: 60,
           onChanged: (position) {
             if (position == SlidableButtonPosition.right) {
-              mapViewBloc.add(FinishCollecting());
+              _finishCollecting();
             }
           },
         ),
@@ -221,6 +221,51 @@ class MapScreenNewState extends State<MapScreenNew>
             ));
   }
 
+  void _startCollecting() async {
+    if (!(await PermissionUtil.askForBatteryOptimizationPermission(context))) {
+      return;
+    }
+
+    mapViewBloc.add(StartCollecting());
+
+    setState(() {
+      takePictureAvailable = true;
+      _timerWidgetController.startTimer!.call();
+    });
+  }
+
+  void _finishCollecting() async {
+    setState(() {
+      _timerWidgetController.stopTimer!.call();
+    });
+
+    MapViewState state = mapViewBloc.state;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SummaryScreen(
+                polylineCoordinates: state.polylineCoordinates,
+                finalLocation: state.currentLocation!,
+                duration: _timerWidgetController.duration,
+                tourPictures: _tourPictures,
+              )),
+    ).then((_) => setState(() {
+          _tourPictures.clear();
+          _timerWidgetController.resetTimer!.call();
+
+          mapViewBloc.add(StartLocationListening());
+        }));
+  }
+
+  void _moveCamera(MapViewState state) {
+    if (state.locationReady()) {
+      _mapController.move(
+          LatLng(state.currentLocation!.latitude!,
+              state.currentLocation!.longitude!),
+          defaultZoom);
+    }
+  }
+
   Widget _getFloatingActionButton() {
     const String heroTag = "controller_fab";
     if (mapViewBloc.state.currentLocation == null) {
@@ -233,7 +278,7 @@ class MapScreenNewState extends State<MapScreenNew>
 
     if (!mapViewBloc.state.collectionStarted) {
       return FloatingActionButton.extended(
-        onPressed: () => mapViewBloc.add(StartCollecting()),
+        onPressed: _startCollecting,
         label: const Text('Start collecting!'),
         icon: const Icon(Icons.map_outlined),
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -245,25 +290,25 @@ class MapScreenNewState extends State<MapScreenNew>
   }
 
   void _takePicture() async {
-    // if (!_locationReady()) {
-    //   return;
-    // }
+    if (!mapViewBloc.state.locationReady()) {
+      return;
+    }
 
-    // LocationData location = _currentLocation!;
+    LocationData location = mapViewBloc.state.currentLocation!;
 
-    // List<String?>? result = await Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => const TakePictureScreen(allowComment: true)));
+    List<String?>? result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const TakePictureScreen(allowComment: true)));
 
-    // if (result != null) {
-    //   setState(() {
-    //     _tourPictures.add(TourPicture(
-    //         location: LatLng(location.latitude!, location.longitude!),
-    //         imageKey: result[0],
-    //         comment: result[1]));
-    //   });
-    // }
+    if (result != null) {
+      setState(() {
+        _tourPictures.add(TourPicture(
+            location: LatLng(location.latitude!, location.longitude!),
+            imageKey: result[0],
+            comment: result[1]));
+      });
+    }
   }
 
   void _selectTourPicture(TourPicture tourPicture) async {
