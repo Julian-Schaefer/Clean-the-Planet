@@ -1,6 +1,6 @@
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/map_view/map_view_bloc.dart';
-import 'package:clean_the_planet/map_view/map_view_state.dart';
+import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
+import 'package:clean_the_planet/map_screen/map_screen_state.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/permission_util.dart';
 import 'package:clean_the_planet/summary_screen.dart';

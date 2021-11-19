@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_location/background_location.dart' as geo;
-import 'package:clean_the_planet/map_view/map_view_state.dart';
+import 'package:clean_the_planet/map_screen/map_screen_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';

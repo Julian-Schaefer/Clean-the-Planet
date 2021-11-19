@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/map_view/map_view_new.dart';
+import 'package:clean_the_planet/map_screen/map_screen.dart';
 import 'package:clean_the_planet/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
