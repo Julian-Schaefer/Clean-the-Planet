@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/map_view/map_view_new.dart';
 import 'package:clean_the_planet/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,8 +9,6 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'package:clean_the_planet/map_view.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -81,11 +80,11 @@ class _MyAppState extends State<MyApp> {
               return Container(); //VerifyEmailPage(user: snapshot.data);
             }
             // ignore: prefer_const_constructors
-            return MapScreen();
+            return MapScreenNew();
           } else {
             // logged in using other providers
             // ignore: prefer_const_constructors
-            return MapScreen();
+            return MapScreenNew();
           }
         } else {
           return const SignInScreen();
