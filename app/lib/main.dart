@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/initialize.dart';
+import 'package:clean_the_planet/map_screen/map_screen.dart';
 import 'package:clean_the_planet/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,8 +10,6 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'package:clean_the_planet/map_view.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -24,6 +24,8 @@ Future<void> main() async {
       // Temporarily toggle this to true if you want to test crash reporting in your app.
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
+
+    setupDependencies();
 
     runApp(const MyApp());
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
