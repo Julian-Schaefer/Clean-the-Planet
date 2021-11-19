@@ -231,7 +231,9 @@ class SummaryScreenState extends State<SummaryScreen> {
         pathPolygon = polygon;
       });
     } catch (e) {
-      showSnackBar(context, "Error: " + e.toString(), isError: true);
+      if (mounted) {
+        showSnackBar(context, "Error: " + e.toString(), isError: true);
+      }
     }
   }
 

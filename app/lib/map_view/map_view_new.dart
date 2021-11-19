@@ -1,3 +1,4 @@
+import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_view/map_view_bloc.dart';
 import 'package:clean_the_planet/map_view/map_view_state.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
@@ -27,41 +28,34 @@ class MapScreenNewState extends State<MapScreenNew>
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
 
   bool takePictureAvailable = false;
-  //bool isActive = false;
+  bool isActive = false;
 
   final List<TourPicture> _tourPictures = [];
 
   static const double defaultZoom = 18.0;
 
-  final MapViewBloc mapViewBloc = MapViewBloc();
+  final MapViewBloc mapViewBloc = getIt<MapViewBloc>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
-    //isActive = true;
+    isActive = true;
     mapViewBloc.add(StartLocationListening());
     mapViewBloc.stream.listen((state) {
       _moveCamera(state);
     });
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.resumed) {
-  //     setState(() {
-  //       isActive = true;
-  //       _moveCameraToLocation();
-  //     });
-  //     if (_location == null) {
-  //       _getInitialLocation();
-  //     } else {
-  //       _refreshCurrentLocation();
-  //     }
-  //   } else {
-  //     isActive = false;
-  //   }
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      isActive = true;
+      mapViewBloc.add(RefreshCurrentLocation());
+    } else {
+      isActive = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -239,6 +233,8 @@ class MapScreenNewState extends State<MapScreenNew>
       _timerWidgetController.stopTimer!.call();
     });
 
+    mapViewBloc.add(FinishCollecting());
+
     MapViewState state = mapViewBloc.state;
     Navigator.push(
       context,
@@ -258,11 +254,13 @@ class MapScreenNewState extends State<MapScreenNew>
   }
 
   void _moveCamera(MapViewState state) {
-    if (state.locationReady()) {
-      _mapController.move(
-          LatLng(state.currentLocation!.latitude!,
-              state.currentLocation!.longitude!),
-          defaultZoom);
+    if (state.locationReady() && isActive) {
+      setState(() {
+        _mapController.move(
+            LatLng(state.currentLocation!.latitude!,
+                state.currentLocation!.longitude!),
+            defaultZoom);
+      });
     }
   }
 

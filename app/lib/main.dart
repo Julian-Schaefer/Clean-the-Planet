@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_view/map_view_new.dart';
 import 'package:clean_the_planet/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,8 @@ Future<void> main() async {
       // Temporarily toggle this to true if you want to test crash reporting in your app.
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
+
+    setupDependencies();
 
     runApp(const MyApp());
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
