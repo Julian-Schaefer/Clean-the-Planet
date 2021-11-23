@@ -20,6 +20,7 @@ import 'permission_service_mock.dart';
 @GenerateMocks([MapScreenBloc])
 void main() {
   testWidgets('Test Map Screen Initial State', (WidgetTester tester) async {
+    GetIt.instance.reset();
     GetIt.instance
         .registerSingleton<PermissionService>(PermissionServiceMock());
     GetIt.instance.registerSingleton<LocationService>(LocationServiceImpl());
@@ -34,8 +35,9 @@ void main() {
     expect(find.text('00:00:00'), findsOneWidget);
   });
 
-  testWidgets('Prevent Back Navigation during collecting',
+  testWidgets('Prevent Back Navigation during Collection',
       (WidgetTester tester) async {
+    GetIt.instance.reset();
     GetIt.instance
         .registerSingleton<PermissionService>(PermissionServiceMock());
     GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
