@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 void setupDependencies() {
-  getIt.registerFactory<PermissionService>(() => PermissionService());
-  getIt.registerFactory<LocationService>(() => LocationService());
+  getIt.registerFactory<PermissionService>(() => PermissionServiceImpl());
+  getIt.registerFactory<LocationService>(() => LocationServiceImpl());
   getIt.registerFactory<MapScreenBloc>(() => MapScreenBloc());
 }

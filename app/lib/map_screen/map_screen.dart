@@ -104,6 +104,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
               child: Icon(
             Icons.map_outlined,
             color: Colors.white,
+            key: Key("slider_button"),
           )),
           child: const Center(
               child: Text(
