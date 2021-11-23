@@ -2,7 +2,7 @@ import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
 import 'package:clean_the_planet/map_screen/map_screen_state.dart';
 import 'package:clean_the_planet/menu_drawer.dart';
-import 'package:clean_the_planet/permission_util.dart';
+import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/timer_widget.dart';
@@ -34,6 +34,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   static const double defaultZoom = 18.0;
 
   final MapScreenBloc mapViewBloc = getIt<MapScreenBloc>();
+  final PermissionService permissionService = getIt<PermissionService>();
 
   @override
   void initState() {
@@ -216,7 +217,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   }
 
   void _startCollecting() async {
-    if (!(await PermissionUtil.askForBatteryOptimizationPermission(context))) {
+    if (!(await permissionService
+        .askForBatteryOptimizationPermission(context))) {
       return;
     }
 
