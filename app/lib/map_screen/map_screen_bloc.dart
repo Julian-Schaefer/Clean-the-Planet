@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:background_location/background_location.dart' as geo;
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_screen/map_screen_state.dart';
 import 'package:clean_the_planet/service/location_service.dart';
