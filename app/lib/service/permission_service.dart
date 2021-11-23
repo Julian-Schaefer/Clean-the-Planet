@@ -8,9 +8,15 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PermissionService {
+abstract class PermissionService {
+  Future<bool> askForBatteryOptimizationPermission(BuildContext context);
+  Future<bool> askForLocationPermission(loc.Location? location);
+}
+
+class PermissionServiceImpl extends PermissionService {
   final String batteryOptimizationAskedKey = "BATTERY_OPTIMIZATION_ASKED";
 
+  @override
   Future<bool> askForBatteryOptimizationPermission(BuildContext context) async {
     if (!Platform.isAndroid) {
       return true;
@@ -49,6 +55,7 @@ class PermissionService {
     return true;
   }
 
+  @override
   Future<bool> askForLocationPermission(loc.Location? location) async {
     bool serviceEnabled = await location!.serviceEnabled();
     if (!serviceEnabled) {

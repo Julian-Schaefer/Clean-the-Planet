@@ -6,7 +6,17 @@ import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:location/location.dart';
 
-class LocationService {
+abstract class LocationService {
+  late Stream<LocationData> onLocationChanged;
+
+  Future<void> close();
+  Future<void> getInitialLocation();
+  Future<LocationData> getCurrentLocation();
+  Future<void> startCollecting();
+  Future<void> finishCollecting();
+}
+
+class LocationServiceImpl extends LocationService {
   static const int interval = 1500;
   static const double distanceFilter = 5.0;
 
@@ -17,12 +27,12 @@ class LocationService {
 
   final StreamController<LocationData> _locationStreamController =
       StreamController<LocationData>();
-  late Stream<LocationData> onLocationChanged;
 
-  LocationService() {
+  LocationServiceImpl() {
     onLocationChanged = _locationStreamController.stream;
   }
 
+  @override
   Future<void> close() async {
     await _locationSubscription?.cancel();
     if (Platform.isAndroid) {
@@ -30,6 +40,7 @@ class LocationService {
     }
   }
 
+  @override
   Future<void> getInitialLocation() async {
     //TODO: Remove once fixed
     await Future<void>.delayed(const Duration(seconds: 2));
@@ -49,6 +60,7 @@ class LocationService {
     }
   }
 
+  @override
   Future<LocationData> getCurrentLocation() async {
     LocationData refreshedLocation = await _location.getLocation();
     return refreshedLocation;
@@ -61,6 +73,7 @@ class LocationService {
     });
   }
 
+  @override
   Future<void> startCollecting() async {
     if (Platform.isIOS) {
       _location.enableBackgroundMode(enable: true);
@@ -70,6 +83,7 @@ class LocationService {
     }
   }
 
+  @override
   Future<void> finishCollecting() async {
     if (Platform.isIOS) {
       await _locationSubscription!.cancel();

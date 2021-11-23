@@ -5,26 +5,57 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:clean_the_planet/map_screen/map_screen.dart';
+import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
+import 'package:clean_the_planet/service/location_service.dart';
+import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mockito/annotations.dart';
 
-import 'package:clean_the_planet/main.dart';
+import 'location_service_mock.dart';
+import 'permission_service_mock.dart';
 
+@GenerateMocks([MapScreenBloc])
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Test Map Screen Initial State', (WidgetTester tester) async {
+    GetIt.instance
+        .registerSingleton<PermissionService>(PermissionServiceMock());
+    GetIt.instance.registerSingleton<LocationService>(LocationServiceImpl());
+    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    Widget testWidget = const MediaQuery(
+        data: MediaQueryData(), child: MaterialApp(home: MapScreen()));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpWidget(testWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+    expect(find.text('Retrieving Location...'), findsOneWidget);
+    expect(find.text('00:00:00'), findsOneWidget);
+  });
+
+  testWidgets('Prevent Back Navigation during collecting',
+      (WidgetTester tester) async {
+    GetIt.instance
+        .registerSingleton<PermissionService>(PermissionServiceMock());
+    GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
+    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
+
+    Widget testWidget = const MediaQuery(
+        data: MediaQueryData(), child: MaterialApp(home: MapScreen()));
+
+    await tester.pumpWidget(testWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 10));
+
+    expect(find.text('Start collecting!'), findsOneWidget);
+
+    await tester.tap(find.text('Start collecting!'));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    //await tester.pageBack();
+    expect(find.text('Take picture'), findsOneWidget);
+
+    tester.drag(
+        find.byKey(const Key("slider_button")), const Offset(1000.0, 0));
   });
 }
