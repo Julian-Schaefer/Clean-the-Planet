@@ -8,12 +8,10 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PermissionUtil {
-  static const String batteryOptimizationAskedKey =
-      "BATTERY_OPTIMIZATION_ASKED";
+class PermissionService {
+  final String batteryOptimizationAskedKey = "BATTERY_OPTIMIZATION_ASKED";
 
-  static Future<bool> askForBatteryOptimizationPermission(
-      BuildContext context) async {
+  Future<bool> askForBatteryOptimizationPermission(BuildContext context) async {
     if (!Platform.isAndroid) {
       return true;
     }
@@ -51,7 +49,7 @@ class PermissionUtil {
     return true;
   }
 
-  static Future<bool> askForLocationPermission(loc.Location? location) async {
+  Future<bool> askForLocationPermission(loc.Location? location) async {
     bool serviceEnabled = await location!.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
@@ -73,8 +71,7 @@ class PermissionUtil {
     return true;
   }
 
-  static Future<void> _showSamsungBatteryOptimizationHelp(
-      BuildContext context) async {
+  Future<void> _showSamsungBatteryOptimizationHelp(BuildContext context) async {
     await Navigator.of(context).push(
       SamsungBatteryHelpDialog(onComplete: () {
         Navigator.pop(context);
@@ -82,8 +79,7 @@ class PermissionUtil {
     );
   }
 
-  static Future<void> _showHuaweiBatteryOptimizationHelp(
-      BuildContext context) async {
+  Future<void> _showHuaweiBatteryOptimizationHelp(BuildContext context) async {
     await Navigator.of(context).push(
       HuaweiBatteryHelpDialog(onComplete: () {
         Navigator.pop(context);
