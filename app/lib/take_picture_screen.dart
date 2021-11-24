@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TakePictureScreen extends StatefulWidget {
   final bool allowComment;
@@ -233,7 +234,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('Add the Picture'),
+            title: Text(AppLocalizations.of(context)!.addPicture),
             backgroundColor:
                 Theme.of(context).colorScheme.primary.withOpacity(0.8),
           ),
@@ -242,7 +243,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               Positioned(
                 bottom: MediaQuery.of(context).padding.bottom + 12,
                 left: 15,
-                right: 100,
+                right: 160,
                 child: Card(
                   child: TextField(
                     keyboardType: TextInputType.multiline,
@@ -250,9 +251,10 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                     textInputAction: TextInputAction.done,
                     maxLines: null,
                     minLines: 5,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter a comment (optional)'),
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText:
+                            AppLocalizations.of(context)!.enterPictureComment),
                   ),
                 ),
               )
@@ -266,7 +268,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   Navigator.pop(context, [widget.imagePath, null]);
                 }
               },
-              label: const Text("Add")),
+              label: Text(AppLocalizations.of(context)!.add)),
         ));
   }
 }

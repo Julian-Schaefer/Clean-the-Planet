@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:clean_the_planet/my_route_screen.dart';
 
@@ -27,7 +28,7 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('My Routes')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.myTours)),
         body: FutureBuilder<List<Tour>>(
             future: _toursFuture,
             builder: (context, snapshot) {
@@ -39,7 +40,6 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
                   ? RefreshIndicator(
                       child: ListView.builder(
                           itemCount: snapshot.data!.length,
-                          shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return TourListItem(
                               tour: snapshot.data![index],
@@ -72,7 +72,9 @@ class TourListItem extends StatelessWidget {
     String titleString = DateFormat.yMd(locale.languageCode)
             .add_jm()
             .format(tour.dateTime!.toLocal()) +
-        " , Duration: " +
+        ", " +
+        AppLocalizations.of(context)!.duration +
+        " " +
         Tour.getDurationString(tour.duration);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),

@@ -7,6 +7,7 @@ import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyRouteScreen extends StatefulWidget {
   final Tour tour;
@@ -128,7 +129,9 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "Comment: " + selectedTourPicture!.comment!,
+                                AppLocalizations.of(context)!.comment +
+                                    " " +
+                                    selectedTourPicture!.comment!,
                                 style: const TextStyle(fontSize: 16),
                               ),
                             )
@@ -139,11 +142,11 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Duration:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              AppLocalizations.of(context)!.duration,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
           Padding(
@@ -154,11 +157,11 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             ),
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Amount (in litres):",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              AppLocalizations.of(context)!.amountInLitres,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
           Padding(

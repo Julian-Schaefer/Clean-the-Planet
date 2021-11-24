@@ -18,5 +18,14 @@
     "navigateBackWarning": "Falls du jetzt zurück navigierst, geht deine Sammlung verloren. Fortfahren?",
     "cancel": "Abbrechen",
     "discard": "Verwerfen",
-    "goodJob": "Gute Arbeit! Du hast es geschafft."
+    "goodJob": "Gute Arbeit! Du hast es geschafft.",
+    "addPicture": "Bild hinzufügen",
+    "enterPictureComment": "Kommentar hinzufügen (optional)",
+    "add": "Hinzufügen",
+    "comment": "Kommentar:",
+    "greeting": "Moin, ",
+    "myTours": "Meine Sammlungen",
+    "helpAndFeedback": "Hilfe und Feedback",
+    "settings": "Einstellungen",
+    "signOut": "Ausloggen"
 }

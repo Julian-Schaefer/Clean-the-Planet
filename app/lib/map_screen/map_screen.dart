@@ -134,7 +134,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                 return !state.collectionStarted;
               },
               child: Scaffold(
-                  appBar: AppBar(title: const Text('Clean the Planet')),
+                  appBar: AppBar(
+                      title: const Text('Clean the Planet'), centerTitle: true),
                   drawer: !state.collectionStarted ? const MenuDrawer() : null,
                   body: Stack(
                     alignment: Alignment.topRight,
