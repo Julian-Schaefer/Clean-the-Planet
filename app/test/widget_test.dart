@@ -13,21 +13,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/annotations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'location_service_mock.dart';
 import 'permission_service_mock.dart';
 
+Widget makeTestableWidget(Widget child) {
+  return MediaQuery(
+    data: const MediaQueryData(),
+    child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: child,
+    ),
+  );
+}
+
 @GenerateMocks([MapScreenBloc])
 void main() {
   testWidgets('Test Map Screen Initial State', (WidgetTester tester) async {
-    GetIt.instance.reset();
+    await GetIt.instance.reset();
     GetIt.instance
         .registerSingleton<PermissionService>(PermissionServiceMock());
     GetIt.instance.registerSingleton<LocationService>(LocationServiceImpl());
     GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
-    Widget testWidget = const MediaQuery(
-        data: MediaQueryData(), child: MaterialApp(home: MapScreen()));
+    Widget testWidget = makeTestableWidget(const MapScreen());
 
     await tester.pumpWidget(testWidget);
     await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -37,14 +47,13 @@ void main() {
 
   testWidgets('Prevent Back Navigation during Collection',
       (WidgetTester tester) async {
-    GetIt.instance.reset();
+    await GetIt.instance.reset();
     GetIt.instance
         .registerSingleton<PermissionService>(PermissionServiceMock());
     GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
     GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
-    Widget testWidget = const MediaQuery(
-        data: MediaQueryData(), child: MaterialApp(home: MapScreen()));
+    Widget testWidget = makeTestableWidget(const MapScreen());
 
     await tester.pumpWidget(testWidget);
     await tester.pumpAndSettle(const Duration(seconds: 10));
