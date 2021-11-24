@@ -1,6 +1,7 @@
 import 'package:clean_the_planet/my_routes_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({Key? key}) : super(key: key);
@@ -21,12 +22,17 @@ class MenuDrawer extends StatelessWidget {
                   ),
                   child: Center(
                       child: Text(
-                    'Hi, ' + username,
+                    AppLocalizations.of(context)!.greeting + username,
                     style: const TextStyle(color: Colors.white, fontSize: 24),
                   )),
                 ),
                 ListTile(
-                  title: const Text('My Routes'),
+                  leading: const Icon(Icons.map_outlined),
+                  title: Text(
+                    AppLocalizations.of(context)!.myTours,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -45,14 +51,16 @@ class MenuDrawer extends StatelessWidget {
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.logout),
-                    title: const Text('Sign out'),
+                    title: Text(AppLocalizations.of(context)!.signOut),
                     onTap: _signOut,
                   ),
-                  const ListTile(
-                      leading: Icon(Icons.settings), title: Text('Settings')),
-                  const ListTile(
-                      leading: Icon(Icons.help),
-                      title: Text('Help and Feedback'))
+                  ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: Text(AppLocalizations.of(context)!.settings)),
+                  ListTile(
+                      leading: const Icon(Icons.help),
+                      title:
+                          Text(AppLocalizations.of(context)!.helpAndFeedback))
                 ],
               ))
         ],

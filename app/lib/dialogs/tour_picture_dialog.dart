@@ -1,6 +1,7 @@
 import 'package:clean_the_planet/image_preview.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TourPictureDialog extends PopupRoute {
   final TourPicture tourPicture;
@@ -60,9 +61,9 @@ class TourPictureDialog extends PopupRoute {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          "Comment: ",
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.comment,
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 8),
