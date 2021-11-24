@@ -13,6 +13,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SummaryScreen extends StatefulWidget {
   final LocationData finalLocation;
@@ -53,7 +54,7 @@ class SummaryScreenState extends State<SummaryScreen> {
       },
       child: Scaffold(
           appBar: AppBar(
-            title: const Text('Summary'),
+            title: Text(AppLocalizations.of(context)!.summary),
             actions: [
               Center(
                 child: Padding(
@@ -62,7 +63,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                     onPressed: !_savingTourInProgress ? addTour : null,
                     child: !_savingTourInProgress
                         ? Text(
-                            "Save",
+                            AppLocalizations.of(context)!.save,
                             style: TextStyle(
                                 color:
                                     Theme.of(context).colorScheme.onSecondary),
@@ -123,18 +124,18 @@ class SummaryScreenState extends State<SummaryScreen> {
                   ],
                 ),
               ),
-              const Padding(
-                  padding: EdgeInsets.all(8.0),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Good job! You've done it.",
-                    style: TextStyle(fontSize: 18),
+                    AppLocalizations.of(context)!.goodJob,
+                    style: const TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   )),
               const Divider(),
-              const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("Duration:",
-                      style: TextStyle(
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(AppLocalizations.of(context)!.duration,
+                      style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w500))),
               Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
@@ -146,17 +147,19 @@ class SummaryScreenState extends State<SummaryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text("Amount (in litres):",
-                            style: TextStyle(
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            AppLocalizations.of(context)!.amountInLitres,
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w500))),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Enter the amount in litres'),
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            hintText:
+                                AppLocalizations.of(context)!.enterAmount),
                         keyboardType: const TextInputType.numberWithOptions(
                             signed: false, decimal: true),
                         onChanged: (text) {
@@ -169,10 +172,10 @@ class SummaryScreenState extends State<SummaryScreen> {
                 ),
               ),
               const Divider(),
-              const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("Add Pictures of the result:",
-                      style: TextStyle(
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(AppLocalizations.of(context)!.addResultPictures,
+                      style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w500))),
               GridView.count(
                 crossAxisCount: 3,
@@ -232,14 +235,16 @@ class SummaryScreenState extends State<SummaryScreen> {
       });
     } catch (e) {
       if (mounted) {
-        showSnackBar(context, "Error: " + e.toString(), isError: true);
+        showSnackBar(
+            context, AppLocalizations.of(context)!.error + e.toString(),
+            isError: true);
       }
     }
   }
 
   String? _validateAmount(value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter the amount.';
+      return AppLocalizations.of(context)!.pleaseEnterAmount;
     }
 
     try {
@@ -250,7 +255,7 @@ class SummaryScreenState extends State<SummaryScreen> {
         throw Exception();
       }
     } catch (e) {
-      return 'Please enter a valid number.';
+      return AppLocalizations.of(context)!.pleaseEnterValidNumer;
     }
     return null;
   }
@@ -276,17 +281,17 @@ class SummaryScreenState extends State<SummaryScreen> {
     try {
       await TourService.addTour(tour);
       Navigator.pop(context);
-      showSnackBar(context, 'Success! Tour has been saved.');
+      showSnackBar(context, AppLocalizations.of(context)!.tourSaved);
     } catch (e) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                  title: const Text('Error'),
+                  title: Text(AppLocalizations.of(context)!.error),
                   content: Text(e.toString()),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
+                      child: Text(AppLocalizations.of(context)!.ok),
                     )
                   ]));
     }
@@ -300,20 +305,19 @@ class SummaryScreenState extends State<SummaryScreen> {
     bool? navigateBack = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text('Are you sure?'),
-              content: const Text(
-                  'If you navigate back now, your tour will be lost. Do you want to continue?'),
+              title: Text(AppLocalizations.of(context)!.areYouSure),
+              content: Text(AppLocalizations.of(context)!.navigateBackWarning),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 MaterialButton(
                   onPressed: () => Navigator.pop(context, true),
                   color: Colors.red,
-                  child: const Text(
-                    'Discard',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    AppLocalizations.of(context)!.discard,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],

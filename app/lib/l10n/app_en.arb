@@ -1,0 +1,82 @@
+{
+    "startCollecting": "Start collecting!",
+    "@startCollecting": {
+      "description": "Start collecting"
+    },
+    "slideToFinish": "Slide to finish!",
+    "@slideToFinish": {
+      "description": "Slide to finish!"
+    },
+    "retrievingLocation": "Retrieving Location...",
+    "@retrievingLocation": {
+      "description": "Retrieving Location"
+    },
+    "takePicture": "Take picture",
+    "@takePicture": {
+      "description": "Take picture"
+    },
+    "summary": "Summary",
+    "@summary": {
+      "description": "Summary"
+    },
+    "save": "Save",
+    "@summary": {
+      "description": "Save"
+    },
+    "duration": "Duration:",
+    "@duration": {
+      "description": "Duration"
+    },
+    "amountInLitres": "Amount (in litres):",
+    "@amountInLitres": {
+      "description": "Amount (in litres)"
+    },
+    "enterAmount": "Enter the amount in litres",
+    "@enterAmount": {
+      "description": "Enter the amount in litres"
+    },
+    "addResultPictures": "Add Pictures of the result:",
+    "@addResultPictures": {
+      "description": "Add Pictures of the result"
+    },
+    "pleaseEnterAmount": "Please enter the amount.",
+    "@pleaseEnterAmount": {
+      "description": "Please enter the amount."
+    },
+    "pleaseEnterValidNumer": "Please enter a valid number.",
+    "@pleaseEnterValidNumer": {
+      "description": "Please enter a valid number"
+    },
+    "tourSaved": "Success! Tour has been saved.",
+    "@tourSaved": {
+      "description": "Tour has been saved"
+    },
+    "error": "Error",
+    "@error": {
+      "description": "Error"
+    },
+    "ok": "OK",
+    "@ok": {
+      "description": "OK"
+    },
+    "areYouSure": "Are you sure?",
+    "@areYouSure": {
+      "description": "Are you sure Warning"
+    },
+    "navigateBackWarning": "If you navigate back now, your tour will be lost. Do you want to continue?",
+    "@navigateBackWarning": {
+      "description": "Back Navigation Warning"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+      "description": "Cancel"
+    },
+    "discard": "Discard",
+    "@discard": {
+      "description": "Discard"
+    },
+    "goodJob": "Good job! You've done it.",
+    "@goodJob": {
+      "description": "Good Job Message"
+    }
+}
