@@ -14,6 +14,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:slidable_button/slidable_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -106,10 +107,10 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             color: Colors.white,
             key: Key("slider_button"),
           )),
-          child: const Center(
+          child: Center(
               child: Text(
-            "Slide to finish!",
-            style: TextStyle(
+            AppLocalizations.of(context)!.slideToFinish,
+            style: const TextStyle(
                 color: Colors.white, fontSize: 20, fontStyle: FontStyle.italic),
           )),
           height: 60,
@@ -206,7 +207,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                             padding: const EdgeInsets.only(bottom: 80.0),
                             child: FloatingActionButton.extended(
                               onPressed: _takePicture,
-                              label: const Text("Take picture"),
+                              label: Text(
+                                  AppLocalizations.of(context)!.takePicture),
                               icon: const Icon(Icons.photo_camera),
                               heroTag: "picture_fab",
                             ),
@@ -270,17 +272,17 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   Widget _getFloatingActionButton() {
     const String heroTag = "controller_fab";
     if (mapViewBloc.state.currentLocation == null) {
-      return const FloatingActionButton.extended(
+      return FloatingActionButton.extended(
           onPressed: null,
-          label: Text('Retrieving Location...'),
-          icon: Icon(Icons.location_disabled),
+          label: Text(AppLocalizations.of(context)!.retrievingLocation),
+          icon: const Icon(Icons.location_disabled),
           heroTag: heroTag);
     }
 
     if (!mapViewBloc.state.collectionStarted) {
       return FloatingActionButton.extended(
         onPressed: _startCollecting,
-        label: const Text('Start collecting!'),
+        label: Text(AppLocalizations.of(context)!.startCollecting),
         icon: const Icon(Icons.map_outlined),
         backgroundColor: Theme.of(context).colorScheme.primary,
         heroTag: heroTag,

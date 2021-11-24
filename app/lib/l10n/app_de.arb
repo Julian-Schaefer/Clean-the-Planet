@@ -1,0 +1,22 @@
+{
+    "startCollecting": "Sammlung starten!",
+    "slideToFinish": "Wischen zum Beenden!",
+    "retrievingLocation": "Standort wird gesucht...",
+    "takePicture": "Bild aufnehmen",
+    "summary": "Zusammenfassung",
+    "save": "Speichern",
+    "duration": "Dauer:",
+    "amountInLitres": "Menge (in Litern):",
+    "enterAmount": "Gib die Menge in Litern ein",
+    "addResultPictures": "Bilder vom Ergebnis hinzufügen:",
+    "pleaseEnterAmount": "Bitte gib eine Menge ein.",
+    "pleaseEnterValidNumer": "Bitte gib eine valide Nummer ein.",
+    "tourSaved": "Erfolg! Die Sammlung wurde gespeichert.",
+    "error": "Fehler",
+    "ok": "OK",
+    "areYouSure": "Bist du sicher?",
+    "navigateBackWarning": "Falls du jetzt zurück navigierst, geht deine Sammlung verloren. Fortfahren?",
+    "cancel": "Abbrechen",
+    "discard": "Verwerfen",
+    "goodJob": "Gute Arbeit! Du hast es geschafft."
+}
