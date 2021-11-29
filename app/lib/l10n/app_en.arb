@@ -114,5 +114,13 @@
     "signOut": "Sign out",
     "@signOut": {
       "description": "Sign out"
+    },
+    "notificationTitle": "Clean the Planet: Collecting",
+    "@notificationTitle": {
+      "description": "Background Notification Title"
+    },
+    "notificationDescription": "We are using your location while you collect.",
+    "@notificationDescription": {
+      "description": "Background Notification Description"
     }
 }

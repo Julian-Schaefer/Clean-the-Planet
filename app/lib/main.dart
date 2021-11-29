@@ -47,9 +47,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.light,
         primary: Colors.green,
         onPrimary: Colors.white,
-        primaryVariant: Colors.green.shade900,
         secondary: Colors.lightGreen,
-        secondaryVariant: Colors.white,
         onSecondary: Colors.white,
         background: Colors.grey,
         onBackground: Colors.grey,
@@ -61,35 +59,52 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       title: 'Clean the Planet',
-      home: _getLandingPage(),
+      home: const LocalizedLandingPage(),
       debugShowCheckedModeBanner: false,
     );
   }
+}
 
-  Widget _getLandingPage() {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.providerData.length == 1) {
-            FirebaseCrashlytics.instance.setUserIdentifier(snapshot.data!.uid);
+class LocalizedLandingPage extends StatelessWidget {
+  const LocalizedLandingPage({Key? key}) : super(key: key);
 
-            if (snapshot.data!.providerData[0].providerId == "password" &&
-                !snapshot.data!.emailVerified) {
-              // logged in using email and password
-              return Container(); //VerifyEmailPage(user: snapshot.data);
-            }
-            // ignore: prefer_const_constructors
-            return MapScreen();
-          } else {
-            // logged in using other providers
-            // ignore: prefer_const_constructors
-            return MapScreen();
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+        future: updateLocalizations(AppLocalizations.of(context)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.providerData.length == 1) {
+                    FirebaseCrashlytics.instance
+                        .setUserIdentifier(snapshot.data!.uid);
+
+                    if (snapshot.data!.providerData[0].providerId ==
+                            "password" &&
+                        !snapshot.data!.emailVerified) {
+                      // logged in using email and password
+                      return Scaffold(
+                          body:
+                              Container()); //VerifyEmailPage(user: snapshot.data);
+                    }
+                    // ignore: prefer_const_constructors
+                    return MapScreen();
+                  } else {
+                    // logged in using other providers
+                    // ignore: prefer_const_constructors
+                    return MapScreen();
+                  }
+                } else {
+                  return const SignInScreen();
+                }
+              },
+            );
           }
-        } else {
-          return const SignInScreen();
-        }
-      },
-    );
+
+          return Scaffold(body: Container());
+        });
   }
 }
