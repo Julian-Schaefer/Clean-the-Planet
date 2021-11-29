@@ -27,5 +27,7 @@
     "myTours": "Meine Sammlungen",
     "helpAndFeedback": "Hilfe und Feedback",
     "settings": "Einstellungen",
-    "signOut": "Ausloggen"
+    "signOut": "Ausloggen",
+    "notificationTitle": "Clean the Planet: Sammeln",
+    "notificationDescription": "Wir nutzen deinen Standort im Hintergrund während du sammelst."
 }

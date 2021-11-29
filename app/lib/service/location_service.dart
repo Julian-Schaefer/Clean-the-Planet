@@ -5,8 +5,12 @@ import 'package:background_location/background_location.dart' as geo;
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:location/location.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class LocationService {
+  final AppLocalizations? appLocalizations;
+  LocationService({this.appLocalizations});
+
   late Stream<LocationData> onLocationChanged;
 
   Future<void> close();
@@ -28,7 +32,8 @@ class LocationServiceImpl extends LocationService {
   final StreamController<LocationData> _locationStreamController =
       StreamController<LocationData>();
 
-  LocationServiceImpl() {
+  LocationServiceImpl(AppLocalizations? appLocalizations)
+      : super(appLocalizations: appLocalizations) {
     onLocationChanged = _locationStreamController.stream;
   }
 
@@ -94,11 +99,17 @@ class LocationServiceImpl extends LocationService {
   }
 
   void _startAndroidBackgroundLocationService() async {
+    String title =
+        appLocalizations?.notificationTitle ?? "Clean the Planet: Collecting";
+    String description = appLocalizations?.notificationDescription ??
+        "We are using your location while you collect.";
+
     geo.BackgroundLocation.setAndroidNotification(
-      title: "Clean the Planet: Collecting",
-      message: "We are using your location while you collect.",
+      title: title,
+      message: description,
       icon: "@mipmap/ic_launcher",
     );
+
     await geo.BackgroundLocation.setAndroidConfiguration(interval);
     geo.BackgroundLocation.startLocationService(distanceFilter: distanceFilter);
     geo.BackgroundLocation.getLocationUpdates((location) {
