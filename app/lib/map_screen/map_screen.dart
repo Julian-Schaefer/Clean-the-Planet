@@ -15,6 +15,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:slidable_button/slidable_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -135,7 +136,9 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
               },
               child: Scaffold(
                   appBar: AppBar(
-                      title: const Text('Clean the Planet'), centerTitle: true),
+                      title: Text('Clean the Planet',
+                          style: GoogleFonts.comfortaa(fontSize: 22)),
+                      centerTitle: true),
                   drawer: !state.collectionStarted ? const MenuDrawer() : null,
                   body: Stack(
                     alignment: Alignment.topRight,

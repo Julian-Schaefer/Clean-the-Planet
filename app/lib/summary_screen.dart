@@ -236,7 +236,7 @@ class SummaryScreenState extends State<SummaryScreen> {
     } catch (e) {
       if (mounted) {
         showSnackBar(
-            context, AppLocalizations.of(context)!.error + e.toString(),
+            context, AppLocalizations.of(context)!.error + ": " + e.toString(),
             isError: true);
       }
     }
