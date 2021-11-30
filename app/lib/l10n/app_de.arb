@@ -29,5 +29,13 @@
     "settings": "Einstellungen",
     "signOut": "Ausloggen",
     "notificationTitle": "Clean the Planet: Sammeln",
-    "notificationDescription": "Wir nutzen deinen Standort im Hintergrund während du sammelst."
+    "notificationDescription": "Wir nutzen deinen Standort im Hintergrund während du sammelst.",
+    "picturesOfCollection": "Bilder dieser Sammlung:",
+    "noTourPictures": "Du hast keine Bilder während der Sammlung gemacht.",
+    "deleteTourQuestion": "Möchstest du diese Sammlung wirklich löschen?",
+    "delete": "Löschen",
+    "tourDeletedSuccess": "Die ausgewählte Sammlung wurde gelöscht.",
+    "tourDetailScreenTitle": "Meine Sammlung am",
+    "overview": "Überblick",
+    "pictures": "Bilder"
 }

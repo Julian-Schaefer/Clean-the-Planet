@@ -45,16 +45,21 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
         .format(widget.tour.dateTime!.toLocal());
     return Scaffold(
         appBar: AppBar(
-          title: Text('My Route on ' + dateString),
+          title: Text(AppLocalizations.of(context)!.tourDetailScreenTitle +
+              " " +
+              dateString),
           actions: [
             IconButton(onPressed: _deleteTour, icon: const Icon(Icons.delete))
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Overview'),
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.picture_in_picture_sharp), label: 'Pictures'),
+                icon: const Icon(Icons.home),
+                label: AppLocalizations.of(context)!.overview),
+            BottomNavigationBarItem(
+                icon: const Icon(Icons.picture_in_picture_sharp),
+                label: AppLocalizations.of(context)!.pictures),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Theme.of(context).colorScheme.primary,
@@ -174,11 +179,12 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           const Divider(),
           if (widget.tour.resultPicturesUrls != null &&
               widget.tour.resultPicturesUrls!.isNotEmpty)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Pictures of Collection:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                AppLocalizations.of(context)!.picturesOfCollection,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
           if (widget.tour.resultPicturesUrls != null &&
@@ -228,8 +234,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           itemCount: widget.tour.tourPictures!.length,
         );
       } else {
-        return const Center(
-          child: Text("No Tour Pictures."),
+        return Center(
+          child: Text(AppLocalizations.of(context)!.noTourPictures),
         );
       }
     }
@@ -246,19 +252,19 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     bool? deleteTour = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: const Text('Are you sure?'),
-              content: const Text('Do you really want to delete this Tour?'),
+              title: Text(AppLocalizations.of(context)!.areYouSure),
+              content: Text(AppLocalizations.of(context)!.deleteTourQuestion),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 MaterialButton(
                   onPressed: () => Navigator.pop(context, true),
                   color: Colors.red,
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    AppLocalizations.of(context)!.delete,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -267,7 +273,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     if (deleteTour != null && deleteTour) {
       await TourService.deleteTour(widget.tour);
       Navigator.pop(context, true);
-      showSnackBar(context, 'Success! Selected Tour has been deleted.');
+      showSnackBar(context, AppLocalizations.of(context)!.tourDeletedSuccess);
     }
   }
 }

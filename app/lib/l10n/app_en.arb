@@ -122,5 +122,37 @@
     "notificationDescription": "We are using your location while you collect.",
     "@notificationDescription": {
       "description": "Background Notification Description"
+    },
+    "picturesOfCollection": "Pictures of Collection:",
+    "@picturesOfCollection": {
+      "description": "Pictures of Collection"
+    },
+    "noTourPictures": "No Tour Pictures.",
+    "@noTourPictures": {
+      "description": "No Tour Pictures"
+    },
+    "deleteTourQuestion": "Do you really want to delete this Tour?",
+    "@deleteTourQuestion": {
+      "description": "Confirm Tour Deletion Question"
+    },
+    "delete": "Delete",
+    "@delete": {
+      "description": "Delete"
+    },
+    "tourDeletedSuccess": "Success! Selected Tour has been deleted.",
+    "@tourDeletedSuccess": {
+      "description": "Tour deleted successfully"
+    },
+    "tourDetailScreenTitle": "My Route on",
+    "@tourDetailScreenTitle": {
+      "description": "Tour Detail Screen Title"
+    },
+    "overview": "Overview",
+    "@overview": {
+      "description": "Overview"
+    },
+    "pictures": "Pictures",
+    "@pictures": {
+      "description": "Pictures"
     }
 }
