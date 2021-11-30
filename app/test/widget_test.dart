@@ -15,8 +15,8 @@ import 'package:get_it/get_it.dart';
 import 'package:mockito/annotations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'location_service_mock.dart';
-import 'permission_service_mock.dart';
+import 'mocks/location_service_mock.dart';
+import 'mocks/permission_service_mock.dart';
 
 Widget makeTestableWidget(Widget child) {
   return MediaQuery(

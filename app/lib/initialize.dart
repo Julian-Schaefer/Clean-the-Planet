@@ -1,3 +1,4 @@
+import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
 import 'package:clean_the_planet/service/location_service.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
@@ -7,9 +8,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 final getIt = GetIt.instance;
 
 void setupDependencies() {
-  getIt.registerFactory<PermissionService>(() => PermissionServiceImpl());
+  getIt.registerSingleton<PermissionService>(PermissionServiceImpl());
   getIt.registerFactory<LocationService>(() => LocationServiceImpl(null));
   getIt.registerFactory<MapScreenBloc>(() => MapScreenBloc());
+  getIt.registerSingleton<MapProvider>(MapProviderImpl());
 }
 
 Future<void> updateLocalizations(AppLocalizations? appLocalizations) async {

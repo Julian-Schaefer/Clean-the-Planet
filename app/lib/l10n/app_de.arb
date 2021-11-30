@@ -35,7 +35,7 @@
     "deleteTourQuestion": "Möchstest du diese Sammlung wirklich löschen?",
     "delete": "Löschen",
     "tourDeletedSuccess": "Die ausgewählte Sammlung wurde gelöscht.",
-    "tourDetailScreenTitle": "Meine Sammlung am",
+    "tourDetailScreenTitle": "Sammlung am",
     "overview": "Überblick",
     "pictures": "Bilder"
 }

@@ -1,4 +1,6 @@
+import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
@@ -23,6 +25,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
   Locale? locale;
   TourPicture? selectedTourPicture;
   late MapController _mapController;
+  final MapProvider mapProvider = getIt<MapProvider>();
 
   void _onItemTapped(int index) {
     setState(() {
@@ -76,44 +79,32 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             height: 400,
             child: Stack(
               children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
+                mapProvider.getMap(
+                    mapController: _mapController,
                     center: widget.tour.polyline[0],
-                    zoom: 18.0,
-                    maxZoom: 18.4,
-                  ),
-                  layers: [
-                    TileLayerOptions(
-                        urlTemplate:
-                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        subdomains: ['a', 'b', 'c']),
-                    PolygonLayerOptions(polygons: [widget.tour.polygon!]),
-                    PolylineLayerOptions(
-                      polylines: [
-                        Polyline(
-                            points: widget.tour.polyline,
-                            strokeWidth: 2.0,
-                            color: Colors.red),
-                      ],
-                    ),
-                    if (widget.tour.tourPictures != null)
-                      MarkerLayerOptions(markers: [
-                        for (var picture in widget.tour.tourPictures!)
-                          Marker(
-                            width: 36.0,
-                            height: 36.0,
-                            anchorPos: AnchorPos.exactly(Anchor(18, 18)),
-                            point: picture.location,
-                            builder: (ctx) => GestureDetector(
-                              onTap: () => _selectTourPicture(picture),
-                              child: const Icon(Icons.photo_camera,
-                                  size: 36.0, color: Colors.red),
-                            ),
-                          )
-                      ])
-                  ],
-                ),
+                    polylines: [
+                      Polyline(
+                          points: widget.tour.polyline,
+                          strokeWidth: 2.0,
+                          color: Colors.red),
+                    ],
+                    polygons: [widget.tour.polygon!],
+                    markers: (widget.tour.tourPictures != null)
+                        ? [
+                            for (var picture in widget.tour.tourPictures!)
+                              Marker(
+                                width: 36.0,
+                                height: 36.0,
+                                anchorPos: AnchorPos.exactly(Anchor(18, 18)),
+                                point: picture.location,
+                                builder: (ctx) => GestureDetector(
+                                  onTap: () => _selectTourPicture(picture),
+                                  child: const Icon(Icons.photo_camera,
+                                      size: 36.0, color: Colors.red),
+                                ),
+                              )
+                          ]
+                        : null),
                 if (selectedTourPicture != null)
                   Center(
                     child: Padding(

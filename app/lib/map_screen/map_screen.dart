@@ -1,3 +1,4 @@
+import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
 import 'package:clean_the_planet/map_screen/map_screen_state.dart';
@@ -37,6 +38,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   final MapScreenBloc mapViewBloc = getIt<MapScreenBloc>();
   final PermissionService permissionService = getIt<PermissionService>();
+  final MapProvider mapProvider = getIt<MapProvider>();
 
   @override
   void initState() {
@@ -143,61 +145,47 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   body: Stack(
                     alignment: Alignment.topRight,
                     children: <Widget>[
-                      FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                            center: LatLng(51.5, -0.09),
-                            zoom: defaultZoom,
-                            maxZoom: 18.4,
-                            minZoom: 4.0),
-                        layers: [
-                          TileLayerOptions(
-                              urlTemplate:
-                                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                              subdomains: ['a', 'b', 'c']),
-                          PolylineLayerOptions(
-                            polylines: [
-                              Polyline(
-                                  points: state.polylineCoordinates,
-                                  strokeWidth: 4.0,
-                                  borderStrokeWidth: 16.0,
-                                  borderColor:
-                                      Colors.redAccent.withOpacity(0.5),
-                                  color: Colors.red.withOpacity(0.8)),
-                            ],
-                          ),
-                          if (state.collectionStarted && state.locationReady())
-                            MarkerLayerOptions(
-                              markers: [
-                                Marker(
-                                  width: 40.0,
-                                  height: 40.0,
-                                  anchorPos: AnchorPos.exactly(Anchor(20, 5)),
-                                  point: LatLng(
-                                      state.currentLocation!.latitude!,
-                                      state.currentLocation!.longitude!),
-                                  builder: (ctx) => const Icon(
-                                      Icons.location_pin,
-                                      size: 40.0,
-                                      color: Colors.red),
-                                ),
-                                for (var picture in _tourPictures)
+                      mapProvider.getMap(
+                          mapController: _mapController,
+                          polylines: [
+                            Polyline(
+                                points: state.polylineCoordinates,
+                                strokeWidth: 4.0,
+                                borderStrokeWidth: 16.0,
+                                borderColor: Colors.redAccent.withOpacity(0.5),
+                                color: Colors.red.withOpacity(0.8)),
+                          ],
+                          markers: (state.collectionStarted &&
+                                  state.locationReady())
+                              ? [
                                   Marker(
-                                    width: 36.0,
-                                    height: 36.0,
-                                    anchorPos:
-                                        AnchorPos.exactly(Anchor(18, 18)),
-                                    point: picture.location,
-                                    builder: (ctx) => GestureDetector(
-                                      onTap: () => _selectTourPicture(picture),
-                                      child: const Icon(Icons.photo_camera,
-                                          size: 36.0, color: Colors.red),
-                                    ),
-                                  )
-                              ],
-                            ),
-                        ],
-                      ),
+                                    width: 40.0,
+                                    height: 40.0,
+                                    anchorPos: AnchorPos.exactly(Anchor(20, 5)),
+                                    point: LatLng(
+                                        state.currentLocation!.latitude!,
+                                        state.currentLocation!.longitude!),
+                                    builder: (ctx) => const Icon(
+                                        Icons.location_pin,
+                                        size: 40.0,
+                                        color: Colors.red),
+                                  ),
+                                  for (var picture in _tourPictures)
+                                    Marker(
+                                      width: 36.0,
+                                      height: 36.0,
+                                      anchorPos:
+                                          AnchorPos.exactly(Anchor(18, 18)),
+                                      point: picture.location,
+                                      builder: (ctx) => GestureDetector(
+                                        onTap: () =>
+                                            _selectTourPicture(picture),
+                                        child: const Icon(Icons.photo_camera,
+                                            size: 36.0, color: Colors.red),
+                                      ),
+                                    )
+                                ]
+                              : null),
                       _getTimer(),
                       if (state.collectionStarted) _getFinishButton()
                     ],

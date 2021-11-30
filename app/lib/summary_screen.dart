@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
@@ -39,6 +41,7 @@ class SummaryScreenState extends State<SummaryScreen> {
   String? amount;
   bool _savingTourInProgress = false;
   final _formKey = GlobalKey<FormState>();
+  final MapProvider mapProvider = getIt<MapProvider>();
 
   @override
   void initState() {
@@ -86,28 +89,19 @@ class SummaryScreenState extends State<SummaryScreen> {
             child: ListView(children: [
               SizedBox(
                 height: 360,
-                child: FlutterMap(
-                  options: MapOptions(
+                child: mapProvider.getMap(
                     center: LatLng(widget.finalLocation.latitude!,
                         widget.finalLocation.longitude!),
-                    zoom: 18.0,
-                    maxZoom: 18.4,
-                  ),
-                  layers: [
-                    TileLayerOptions(
-                        urlTemplate:
-                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        subdomains: ['a', 'b', 'c']),
-                    PolygonLayerOptions(polygons: [pathPolygon]),
-                    PolylineLayerOptions(
-                      polylines: [
-                        Polyline(
-                            points: widget.polylineCoordinates,
-                            strokeWidth: 2.0,
-                            color: Colors.red),
-                      ],
-                    ),
-                    MarkerLayerOptions(markers: [
+                    polygons: [
+                      pathPolygon
+                    ],
+                    polylines: [
+                      Polyline(
+                          points: widget.polylineCoordinates,
+                          strokeWidth: 2.0,
+                          color: Colors.red),
+                    ],
+                    markers: [
                       for (var picture in widget.tourPictures)
                         Marker(
                           width: 36.0,
@@ -120,9 +114,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                                 size: 36.0, color: Colors.red),
                           ),
                         )
-                    ])
-                  ],
-                ),
+                    ]),
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
