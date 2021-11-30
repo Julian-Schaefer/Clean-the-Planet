@@ -34,7 +34,8 @@ void main() {
     await GetIt.instance.reset();
     GetIt.instance
         .registerSingleton<PermissionService>(PermissionServiceMock());
-    GetIt.instance.registerSingleton<LocationService>(LocationServiceImpl());
+    GetIt.instance
+        .registerSingleton<LocationService>(LocationServiceImpl(null));
     GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
     Widget testWidget = makeTestableWidget(const MapScreen());
