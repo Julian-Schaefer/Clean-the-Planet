@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/map_screen/map_screen.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
 import 'package:clean_the_planet/service/location_service.dart';
@@ -16,6 +17,7 @@ import 'package:mockito/annotations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'mocks/location_service_mock.dart';
+import 'mocks/map_provider_mock.dart';
 import 'mocks/permission_service_mock.dart';
 
 Widget makeTestableWidget(Widget child) {
@@ -28,15 +30,18 @@ Widget makeTestableWidget(Widget child) {
   );
 }
 
-@GenerateMocks([MapScreenBloc])
+Future<void> setupMocks() async {
+  await GetIt.instance.reset();
+  GetIt.instance.registerSingleton<PermissionService>(PermissionServiceMock());
+  GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
+  GetIt.instance.registerSingleton<MapProvider>(MapProviderMock());
+}
+
 void main() {
   testWidgets('Test Map Screen Initial State', (WidgetTester tester) async {
-    await GetIt.instance.reset();
-    GetIt.instance
-        .registerSingleton<PermissionService>(PermissionServiceMock());
+    await setupMocks();
     GetIt.instance
         .registerSingleton<LocationService>(LocationServiceImpl(null));
-    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
     Widget testWidget = makeTestableWidget(const MapScreen());
 
@@ -48,11 +53,8 @@ void main() {
 
   testWidgets('Prevent Back Navigation during Collection',
       (WidgetTester tester) async {
-    await GetIt.instance.reset();
-    GetIt.instance
-        .registerSingleton<PermissionService>(PermissionServiceMock());
+    await setupMocks();
     GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
-    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
     Widget testWidget = makeTestableWidget(const MapScreen());
 
