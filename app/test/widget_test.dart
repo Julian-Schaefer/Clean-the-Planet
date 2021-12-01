@@ -13,7 +13,6 @@ import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mockito/annotations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'mocks/location_service_mock.dart';
