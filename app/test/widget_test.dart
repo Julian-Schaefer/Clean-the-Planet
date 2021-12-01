@@ -32,7 +32,6 @@ Widget makeTestableWidget(Widget child) {
 Future<void> setupMocks() async {
   await GetIt.instance.reset();
   GetIt.instance.registerSingleton<PermissionService>(PermissionServiceMock());
-  GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
   GetIt.instance.registerSingleton<MapProvider>(MapProviderMock());
 }
 
@@ -41,6 +40,7 @@ void main() {
     await setupMocks();
     GetIt.instance
         .registerSingleton<LocationService>(LocationServiceImpl(null));
+    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
     Widget testWidget = makeTestableWidget(const MapScreen());
 
@@ -54,6 +54,7 @@ void main() {
       (WidgetTester tester) async {
     await setupMocks();
     GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
+    GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
     Widget testWidget = makeTestableWidget(const MapScreen());
 
