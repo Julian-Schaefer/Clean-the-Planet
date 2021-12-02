@@ -9,6 +9,8 @@ abstract class MapProvider {
       required List<Polyline> polylines,
       required List<Marker>? markers,
       List<Polygon>? polygons});
+
+  MapController getMapController();
 }
 
 class MapProviderImpl extends MapProvider {
@@ -42,5 +44,10 @@ class MapProviderImpl extends MapProvider {
           ),
       ],
     );
+  }
+
+  @override
+  MapController getMapController() {
+    return MapController();
   }
 }

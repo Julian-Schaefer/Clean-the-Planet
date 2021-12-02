@@ -17,4 +17,57 @@ class MapProviderMock extends MapProvider {
       List<Polygon>? polygons}) {
     return Container();
   }
+
+  @override
+  MapController getMapController() {
+    return MapControllerMock();
+  }
+}
+
+class MapControllerMock extends MapController {
+  factory MapControllerMock() => MapControllerMock();
+
+  @override
+  LatLngBounds? get bounds => null;
+
+  @override
+  LatLng get center => LatLng(5.2, 6.2);
+
+  @override
+  CenterZoom centerZoomFitBounds(LatLngBounds bounds,
+      {FitBoundsOptions? options}) {
+    return CenterZoom(center: center, zoom: zoom);
+  }
+
+  @override
+  void fitBounds(LatLngBounds bounds, {FitBoundsOptions? options}) {}
+
+  @override
+  Stream<MapEvent> get mapEventStream => const Stream<MapEvent>.empty();
+
+  @override
+  bool move(LatLng center, double zoom, {String? id}) {
+    return true;
+  }
+
+  @override
+  MoveAndRotateResult moveAndRotate(LatLng center, double zoom, double degree,
+      {String? id}) {
+    return MoveAndRotateResult(true, true);
+  }
+
+  @override
+  // ignore: prefer_void_to_null
+  Future<Null> get onReady => Future.delayed(const Duration(seconds: 1));
+
+  @override
+  bool rotate(double degree, {String? id}) {
+    return true;
+  }
+
+  @override
+  double get rotation => 0.0;
+
+  @override
+  double get zoom => 0.0;
 }
