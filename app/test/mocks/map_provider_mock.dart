@@ -1,12 +1,18 @@
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/src/layer/polyline_layer.dart';
 import 'package:flutter_map/src/layer/polygon_layer.dart';
 import 'package:flutter_map/src/layer/marker_layer.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'map_provider_mock.mocks.dart';
+
+@GenerateMocks([MapController])
 class MapProviderMock extends MapProvider {
   @override
   Widget getMap(
@@ -20,54 +26,10 @@ class MapProviderMock extends MapProvider {
 
   @override
   MapController getMapController() {
-    return MapControllerMock();
+    MockMapController mockMapController = MockMapController();
+    when(mockMapController.move(
+            argThat(isInstanceOf<LatLng>()), argThat(isInstanceOf<double>())))
+        .thenReturn(true);
+    return mockMapController;
   }
-}
-
-class MapControllerMock extends MapController {
-  factory MapControllerMock() => MapControllerMock();
-
-  @override
-  LatLngBounds? get bounds => null;
-
-  @override
-  LatLng get center => LatLng(5.2, 6.2);
-
-  @override
-  CenterZoom centerZoomFitBounds(LatLngBounds bounds,
-      {FitBoundsOptions? options}) {
-    return CenterZoom(center: center, zoom: zoom);
-  }
-
-  @override
-  void fitBounds(LatLngBounds bounds, {FitBoundsOptions? options}) {}
-
-  @override
-  Stream<MapEvent> get mapEventStream => const Stream<MapEvent>.empty();
-
-  @override
-  bool move(LatLng center, double zoom, {String? id}) {
-    return true;
-  }
-
-  @override
-  MoveAndRotateResult moveAndRotate(LatLng center, double zoom, double degree,
-      {String? id}) {
-    return MoveAndRotateResult(true, true);
-  }
-
-  @override
-  // ignore: prefer_void_to_null
-  Future<Null> get onReady => Future.delayed(const Duration(seconds: 1));
-
-  @override
-  bool rotate(double degree, {String? id}) {
-    return true;
-  }
-
-  @override
-  double get rotation => 0.0;
-
-  @override
-  double get zoom => 0.0;
 }
