@@ -28,7 +28,9 @@ Future<void> main() async {
     setupDependencies();
 
     runApp(const MyApp());
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
+  }, (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
+  });
 }
 
 class MyApp extends StatefulWidget {

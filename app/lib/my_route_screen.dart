@@ -30,14 +30,14 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _mapController = MapController();
+      _mapController = mapProvider.getMapController();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
+    _mapController = mapProvider.getMapController();
   }
 
   @override

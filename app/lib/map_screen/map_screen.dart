@@ -26,7 +26,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
-  final MapController _mapController = MapController();
+  late MapController _mapController;
   final TimerWidgetController _timerWidgetController = TimerWidgetController();
 
   bool takePictureAvailable = false;
@@ -44,6 +44,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
+    _mapController = mapProvider.getMapController();
     isActive = true;
     mapViewBloc.add(StartLocationListening());
     mapViewBloc.stream.listen((state) {
