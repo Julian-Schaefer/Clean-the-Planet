@@ -29,6 +29,7 @@ Future<void> main() async {
 
     runApp(const MyApp());
   }, (error, stack) {
+    debugPrint("Error: " + error.toString() + ", Stack: " + stack.toString());
     FirebaseCrashlytics.instance.recordError(error, stack);
   });
 }
