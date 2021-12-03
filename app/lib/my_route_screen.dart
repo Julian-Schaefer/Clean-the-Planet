@@ -234,7 +234,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
 
   void _selectTourPicture(TourPicture picture) {
     setState(() {
-      _mapController.move(picture.location, 18.0);
+      _mapController.move(picture.location, MapProvider.defaultZoom);
       selectedTourPicture = picture;
     });
   }
