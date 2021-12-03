@@ -56,18 +56,34 @@ void main() {
     GetIt.instance.registerSingleton<LocationService>(LocationServiceMock());
     GetIt.instance.registerSingleton<MapScreenBloc>(MapScreenBloc());
 
-    Widget testWidget = makeTestableWidget(const MapScreen());
+    Widget testWidget = makeTestableWidget(Builder(
+      builder: (BuildContext context) => Center(
+        child: MaterialButton(
+          onPressed: () => Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const MapScreen())),
+          child: const Text("PUSH_MAP_SCREEN"),
+        ),
+      ),
+    ));
 
     await tester.pumpWidget(testWidget);
-    await tester.pumpAndSettle(const Duration(seconds: 10));
+    await tester.tap(find.text('PUSH_MAP_SCREEN'));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     expect(find.text('Start collecting!'), findsOneWidget);
 
     await tester.tap(find.text('Start collecting!'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    //await tester.pageBack();
+    MapScreenState mapScreenState =
+        tester.state<MapScreenState>(find.byType(MapScreen));
+    expect(mapScreenState.mapViewBloc.state.collectionStarted, isTrue);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
     expect(find.text('Take picture'), findsOneWidget);
+    expect(find.text('Slide to finish!'), findsOneWidget);
 
     tester.drag(
         find.byKey(const Key("slider_button")), const Offset(1000.0, 0));
