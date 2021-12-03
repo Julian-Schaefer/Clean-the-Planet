@@ -34,8 +34,6 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   final List<TourPicture> _tourPictures = [];
 
-  static const double defaultZoom = 18.0;
-
   final MapScreenBloc mapViewBloc = getIt<MapScreenBloc>();
   final PermissionService permissionService = getIt<PermissionService>();
   final MapProvider mapProvider = getIt<MapProvider>();
@@ -257,7 +255,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         _mapController.move(
             LatLng(state.currentLocation!.latitude!,
                 state.currentLocation!.longitude!),
-            defaultZoom);
+            MapProvider.defaultZoom);
       });
     }
   }
