@@ -21,7 +21,7 @@
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>LSRequiresIPhoneOS</key>
-		<true/>
+		<true />
 		<key>NSCameraUsageDescription</key>
 		<string>We need access to the Camera in order to take a Picture.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
@@ -48,7 +48,7 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false/>
+		<false />
 		<!-- Google Sign-in Section -->
 		<key>CFBundleURLTypes</key>
 		<array>
@@ -59,6 +59,8 @@
 				<array>
 					<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
 					<string>com.googleusercontent.apps.1071361725650-r35djbsca42risg04onfk7ojpq341he0</string>
+					<!-- Facebook Authentication -->
+					<string>fb183406783950460</string>
 				</array>
 			</dict>
 		</array>
@@ -69,6 +71,21 @@
 			<string>clean-the-planet</string>
 		</array>
 		<key>UIStatusBarHidden</key>
-		<false/>
+		<false />
+		<!-- Facebook Sign-in Section -->
+		<key>FacebookAppID</key>
+		<string></string>
+		<key>FacebookClientToken</key>
+		<string></string>
+		<key>FacebookDisplayName</key>
+		<string>Clean the Planet</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>fbapi</string>
+			<string>fb-messenger-share-api</string>
+			<string>fbauth2</string>
+			<string>fbshareextension</string>
+		</array>
+		<!-- End of the Facebook Sign-in Section -->
 	</dict>
 </plist>

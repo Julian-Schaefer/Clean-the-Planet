@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:clean_the_planet/core/widgets/widget_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:twitter_login/twitter_login.dart';
@@ -125,7 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
         user = await signInWithGoogle();
         break;
       case Provider.facebook:
-        //user = await signInWithGoogle();
+        user = await signInWithFacebook();
         break;
       case Provider.twitter:
         user = await signInWithTwitter();
@@ -159,6 +159,28 @@ class _SignInScreenState extends State<SignInScreen> {
     );
 
     return await signInWithCredential(credential);
+  }
+
+  Future<UserCredential?> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult loginResult = await FacebookAuth.instance.login();
+
+    if (loginResult.accessToken == null) {
+      String message = "Failed to login using Facebook.";
+      if (loginResult.message != null) {
+        message = "Failed to login using Facebook: " + loginResult.message!;
+      }
+
+      showSnackBar(context, message, isError: true);
+      return null;
+    }
+
+    // Create a credential from the access token
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+    // Once signed in, return the UserCredential
+    return signInWithCredential(facebookAuthCredential);
   }
 
   Future<UserCredential?> signInWithTwitter() async {
