@@ -1,4 +1,4 @@
-import 'package:clean_the_planet/json_interceptor.dart';
+import 'package:clean_the_planet/core/network/json_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';

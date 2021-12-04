@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:clean_the_planet/constants.dart';
-import 'package:clean_the_planet/json_interceptor.dart';
-import 'package:clean_the_planet/tour_picture.dart';
+import 'package:clean_the_planet/core/network/json_interceptor.dart';
+import 'package:clean_the_planet/core/data/models/tour_picture.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
 

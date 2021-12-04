@@ -1,7 +1,7 @@
 import 'package:clean_the_planet/constants.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/service/picture_service.dart';
-import 'package:clean_the_planet/tour.dart';
+import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 

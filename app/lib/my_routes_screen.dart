@@ -1,5 +1,5 @@
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/tour.dart';
+import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:clean_the_planet/service/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
