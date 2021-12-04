@@ -1,5 +1,6 @@
+import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/tour.dart';
-import 'package:clean_the_planet/tour_service.dart';
+import 'package:clean_the_planet/service/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -18,11 +19,12 @@ class MyRoutesScreen extends StatefulWidget {
 class MyRoutesScreenState extends State<MyRoutesScreen> {
   late Polygon pathPolygon;
   late Future<List<Tour>> _toursFuture;
+  TourService tourService = getIt<TourService>();
 
   @override
   void initState() {
     super.initState();
-    _toursFuture = TourService.getTours();
+    _toursFuture = tourService.getTours();
   }
 
   @override
@@ -52,7 +54,7 @@ class MyRoutesScreenState extends State<MyRoutesScreen> {
   }
 
   Future<void> _refresh() async {
-    List<Tour> tours = await TourService.getTours();
+    List<Tour> tours = await tourService.getTours();
     setState(() {
       _toursFuture = Future.value(tours);
     });

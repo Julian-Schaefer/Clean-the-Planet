@@ -1,14 +1,15 @@
 import 'dart:io';
 
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
-import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/core/widgets/image_preview.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/picture_screen.dart';
+import 'package:clean_the_planet/service/buffer_service.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
-import 'package:clean_the_planet/tour_service.dart';
+import 'package:clean_the_planet/service/tour_service.dart';
 import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -42,6 +43,8 @@ class SummaryScreenState extends State<SummaryScreen> {
   bool _savingTourInProgress = false;
   final _formKey = GlobalKey<FormState>();
   final MapProvider mapProvider = getIt<MapProvider>();
+  TourService tourService = getIt<TourService>();
+  BufferService bufferService = getIt<BufferService>();
 
   @override
   void initState() {
@@ -221,7 +224,8 @@ class SummaryScreenState extends State<SummaryScreen> {
 
   void _getTourBuffer() async {
     try {
-      Polygon polygon = await TourService.getBuffer(widget.polylineCoordinates);
+      Polygon polygon =
+          await bufferService.getBuffer(widget.polylineCoordinates);
       setState(() {
         pathPolygon = polygon;
       });
@@ -271,7 +275,7 @@ class SummaryScreenState extends State<SummaryScreen> {
         tourPictures: widget.tourPictures);
 
     try {
-      await TourService.addTour(tour);
+      await tourService.addTour(tour);
       Navigator.pop(context);
       showSnackBar(context, AppLocalizations.of(context)!.tourSaved);
     } catch (e) {

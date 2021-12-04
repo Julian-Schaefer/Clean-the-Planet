@@ -1,10 +1,10 @@
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
-import 'package:clean_the_planet/image_preview.dart';
+import 'package:clean_the_planet/core/widgets/image_preview.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/picture_screen.dart';
 import 'package:clean_the_planet/tour.dart';
 import 'package:clean_the_planet/tour_picture.dart';
-import 'package:clean_the_planet/tour_service.dart';
+import 'package:clean_the_planet/service/tour_service.dart';
 import 'package:clean_the_planet/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -262,7 +262,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             ));
 
     if (deleteTour != null && deleteTour) {
-      await TourService.deleteTour(widget.tour);
+      TourService tourService = getIt<TourService>();
+      await tourService.deleteTour(widget.tour);
       Navigator.pop(context, true);
       showSnackBar(context, AppLocalizations.of(context)!.tourDeletedSuccess);
     }

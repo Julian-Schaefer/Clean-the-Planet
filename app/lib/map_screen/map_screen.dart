@@ -6,7 +6,7 @@ import 'package:clean_the_planet/menu_drawer.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:clean_the_planet/summary_screen.dart';
 import 'package:clean_the_planet/take_picture_screen.dart';
-import 'package:clean_the_planet/timer_widget.dart';
+import 'package:clean_the_planet/core/widgets/timer_widget.dart';
 import 'package:clean_the_planet/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
 import 'package:flutter/material.dart';
