@@ -163,9 +163,9 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<UserCredential?> signInWithTwitter() async {
     final twitterLogin = TwitterLogin(
-        apiKey: dotenv.env['TWITTER_API_KEY']!,
-        apiSecretKey: dotenv.env['TWITTER_API_SECRET_KEY']!,
-        redirectURI: dotenv.env['TWITTER_REDIRECT_URI']!);
+        apiKey: "",
+        apiSecretKey: "",
+        redirectURI: "clean-the-planet://");
 
     final authResult = await twitterLogin.login();
     if (authResult.status == TwitterLoginStatus.loggedIn) {
@@ -187,6 +187,8 @@ class _SignInScreenState extends State<SignInScreen> {
         showSnackBar(context,
             'Error! You have already signed in using a different provider. Please use this provider again.',
             isError: true);
+      } else if (e.message != null) {
+        showSnackBar(context, e.message!, isError: true);
       }
     }
   }
