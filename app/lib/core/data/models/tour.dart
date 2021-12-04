@@ -1,4 +1,4 @@
-import 'package:clean_the_planet/tour_picture.dart';
+import 'package:clean_the_planet/core/data/models/tour_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';

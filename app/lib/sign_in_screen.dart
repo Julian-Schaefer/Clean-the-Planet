@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:clean_the_planet/utils.dart';
+import 'package:clean_the_planet/core/widgets/widget_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

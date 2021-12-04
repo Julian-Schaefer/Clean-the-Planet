@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:clean_the_planet/tour.dart';
+import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:flutter/material.dart';
 
 class TimerWidgetController {
