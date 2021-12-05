@@ -56,7 +56,7 @@ class Tour {
     return {
       'polyline': getPolylineString(polyline),
       'duration': duration.toString(),
-      'amount': amount.toString(),
+      'amount': amount,
       'result_picture_keys': resultPictureKeys,
       "tour_pictures": tourPictures
     };
