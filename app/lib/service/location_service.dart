@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:background_location/background_location.dart' as geo;
+import 'package:clean_the_planet/core/utils/geo_data_util.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:location/location.dart';
@@ -21,8 +23,12 @@ abstract class LocationService {
 }
 
 class LocationServiceImpl extends LocationService {
-  static const int interval = 1500;
-  static const double distanceFilter = 5.0;
+  static const int queueSize = 5;
+  static const int interval = 1000;
+  static const double distanceFilter = 0.0;
+  static const double accuracyRequirement = 15; // in meters
+
+  final Queue<LocationData> locationQueue = Queue();
 
   final Location _location = Location();
   StreamSubscription<LocationData>? _locationSubscription;
@@ -68,6 +74,11 @@ class LocationServiceImpl extends LocationService {
   @override
   Future<LocationData> getCurrentLocation() async {
     LocationData refreshedLocation = await _location.getLocation();
+    while (refreshedLocation.accuracy == null ||
+        refreshedLocation.accuracy! > accuracyRequirement) {
+      refreshedLocation = await _location.getLocation();
+    }
+
     return refreshedLocation;
   }
 
@@ -113,12 +124,26 @@ class LocationServiceImpl extends LocationService {
     await geo.BackgroundLocation.setAndroidConfiguration(interval);
     geo.BackgroundLocation.startLocationService(distanceFilter: distanceFilter);
     geo.BackgroundLocation.getLocationUpdates((location) {
-      _broadcastLocation((LocationData.fromMap(
-          {"latitude": location.latitude, "longitude": location.longitude})));
+      _broadcastLocation((LocationData.fromMap({
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "accuracy": location.accuracy
+      })));
     });
   }
 
   void _broadcastLocation(LocationData newLocation) {
-    _locationStreamController.add(newLocation);
+    if (newLocation.accuracy == null ||
+        newLocation.accuracy! > accuracyRequirement) {
+      return;
+    }
+
+    locationQueue.add(newLocation);
+    if (locationQueue.length == queueSize) {
+      LocationData centerLocation =
+          GeoDataHelper.getGeographicCenter(locationQueue);
+      _locationStreamController.add(centerLocation);
+      locationQueue.clear();
+    }
   }
 }
