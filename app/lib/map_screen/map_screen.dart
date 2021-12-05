@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clean_the_planet/core/profile/profile_screen.dart';
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:clean_the_planet/take_picture_screen.dart';
 import 'package:clean_the_planet/core/widgets/timer_widget.dart';
 import 'package:clean_the_planet/core/data/models/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -139,7 +142,8 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   appBar: AppBar(
                       title: Text('Clean the Planet',
                           style: GoogleFonts.comfortaa(fontSize: 22)),
-                      centerTitle: true),
+                      centerTitle: true,
+                      actions: [getProfilePhotoButton()]),
                   drawer: !state.collectionStarted ? const MenuDrawer() : null,
                   body: Stack(
                     alignment: Alignment.topRight,
@@ -208,6 +212,39 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                         _getFloatingActionButton()
                       ])),
             ));
+  }
+
+  Widget getProfilePhotoButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        onTap: () => Navigator.push(
+            context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
+        customBorder: const CircleBorder(),
+        child: Material(
+          elevation: 10,
+          borderRadius: BorderRadius.circular(360),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(360),
+            child: CircleAvatar(
+                child: (getProfilePhotoURL() == null)
+                    ? const Icon(Icons.person)
+                    : null,
+                backgroundImage: (getProfilePhotoURL() != null)
+                    ? CachedNetworkImageProvider(
+                        getProfilePhotoURL()!,
+                      )
+                    : null,
+                backgroundColor: Colors.green.shade800,
+                foregroundColor: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? getProfilePhotoURL() {
+    return FirebaseAuth.instance.currentUser?.photoURL;
   }
 
   void _startCollecting() async {
