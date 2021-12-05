@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:clean_the_planet/core/widgets/widget_utils.dart';
+import 'package:clean_the_planet/core/utils/widget_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
