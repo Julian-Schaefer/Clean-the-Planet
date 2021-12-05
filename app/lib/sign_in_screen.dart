@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:clean_the_planet/core/utils/widget_utils.dart';
+import 'package:clean_the_planet/initialize.dart';
+import 'package:clean_the_planet/service/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:twitter_login/twitter_login.dart';
 
 class SignInButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -50,8 +49,6 @@ class SignInButton extends StatelessWidget {
   }
 }
 
-enum Provider { password, google, facebook, twitter, apple }
-
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
@@ -61,6 +58,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   bool buttonsDisabled = false;
+  AuthenticationService authenticationService = getIt<AuthenticationService>();
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,7 @@ class _SignInScreenState extends State<SignInScreen> {
             color: Colors.red.shade800,
             onPressed: buttonsDisabled
                 ? null
-                : () async => await signIn(Provider.google),
+                : () async => await signIn(AuthenticationProvider.google),
           ),
           const SizedBox(height: 30),
           SignInButton(
@@ -85,7 +83,7 @@ class _SignInScreenState extends State<SignInScreen> {
             color: Colors.blue.shade800,
             onPressed: buttonsDisabled
                 ? null
-                : () async => await signIn(Provider.facebook),
+                : () async => await signIn(AuthenticationProvider.facebook),
           ),
           const SizedBox(height: 30),
           SignInButton(
@@ -94,7 +92,7 @@ class _SignInScreenState extends State<SignInScreen> {
             color: Colors.blue,
             onPressed: buttonsDisabled
                 ? null
-                : () async => await signIn(Provider.twitter),
+                : () async => await signIn(AuthenticationProvider.twitter),
           ),
           const SizedBox(height: 30),
           if (Platform.isIOS)
@@ -104,35 +102,23 @@ class _SignInScreenState extends State<SignInScreen> {
               color: Colors.black,
               onPressed: buttonsDisabled
                   ? null
-                  : () async => await signIn(Provider.apple),
+                  : () async => await signIn(AuthenticationProvider.apple),
             ),
         ],
       )),
     );
   }
 
-  Future<UserCredential?> signIn(Provider provider) async {
+  Future<UserCredential?> signIn(AuthenticationProvider provider) async {
     setState(() {
       buttonsDisabled = true;
     });
 
     UserCredential? user;
-    switch (provider) {
-      case Provider.password:
-        //user = await signInWithGoogle();
-        break;
-      case Provider.google:
-        user = await signInWithGoogle();
-        break;
-      case Provider.facebook:
-        user = await signInWithFacebook();
-        break;
-      case Provider.twitter:
-        user = await signInWithTwitter();
-        break;
-      case Provider.apple:
-        // TODO: Handle this case.
-        break;
+    try {
+      user = await authenticationService.signIn(provider);
+    } on AuthenticationException catch (e) {
+      showSnackBar(context, e.message, isError: true);
     }
 
     setState(() {
@@ -140,78 +126,5 @@ class _SignInScreenState extends State<SignInScreen> {
     });
 
     return user;
-  }
-
-  Future<UserCredential?> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    if (googleAuth == null ||
-        googleAuth.accessToken == null && googleAuth.idToken == null) {
-      return null;
-    }
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    return await signInWithCredential(credential);
-  }
-
-  Future<UserCredential?> signInWithFacebook() async {
-    // Trigger the sign-in flow
-    final LoginResult loginResult = await FacebookAuth.instance.login();
-
-    if (loginResult.accessToken == null) {
-      String message = "Failed to login using Facebook.";
-      if (loginResult.message != null) {
-        message = "Failed to login using Facebook: " + loginResult.message!;
-      }
-
-      showSnackBar(context, message, isError: true);
-      return null;
-    }
-
-    // Create a credential from the access token
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.token);
-
-    // Once signed in, return the UserCredential
-    return signInWithCredential(facebookAuthCredential);
-  }
-
-  Future<UserCredential?> signInWithTwitter() async {
-    final twitterLogin = TwitterLogin(
-        apiKey: "",
-        apiSecretKey: "",
-        redirectURI: "clean-the-planet://");
-
-    final authResult = await twitterLogin.login();
-    if (authResult.status == TwitterLoginStatus.loggedIn) {
-      final twitterAuthCredential = TwitterAuthProvider.credential(
-        accessToken: authResult.authToken!,
-        secret: authResult.authTokenSecret!,
-      );
-
-      return await signInWithCredential(twitterAuthCredential);
-    }
-  }
-
-  Future<UserCredential?> signInWithCredential(
-      AuthCredential credential) async {
-    try {
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == "account-exists-with-different-credential") {
-        showSnackBar(context,
-            'Error! You have already signed in using a different provider. Please use this provider again.',
-            isError: true);
-      } else if (e.message != null) {
-        showSnackBar(context, e.message!, isError: true);
-      }
-    }
   }
 }

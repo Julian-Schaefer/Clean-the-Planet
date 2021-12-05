@@ -8,6 +8,7 @@
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/map_screen/map_screen.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
+import 'package:clean_the_planet/service/authentication_service.dart';
 import 'package:clean_the_planet/service/location_service.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'mocks/authentication_service_mock.dart';
 import 'mocks/location_service_mock.dart';
 import 'mocks/map_provider_mock.dart';
 import 'mocks/permission_service_mock.dart';
@@ -31,6 +33,8 @@ Widget makeTestableWidget(Widget child) {
 
 Future<void> setupMocks() async {
   await GetIt.instance.reset();
+  GetIt.instance
+      .registerSingleton<AuthenticationService>(AuthenticationServiceMock());
   GetIt.instance.registerSingleton<PermissionService>(PermissionServiceMock());
   GetIt.instance.registerSingleton<MapProvider>(MapProviderMock());
 }

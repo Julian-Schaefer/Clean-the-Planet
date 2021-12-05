@@ -1,5 +1,6 @@
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
+import 'package:clean_the_planet/service/authentication_service.dart';
 import 'package:clean_the_planet/service/buffer_service.dart';
 import 'package:clean_the_planet/service/location_service.dart';
 import 'package:clean_the_planet/service/permission_service.dart';
@@ -14,6 +15,7 @@ void setupDependencies() {
   getIt.registerSingleton<PermissionService>(PermissionServiceImpl());
   getIt.registerSingleton<BufferService>(BufferServiceImpl());
   getIt.registerSingleton<PictureService>(PictureServiceImpl());
+  getIt.registerSingleton<AuthenticationService>(AuthenticationServiceImpl());
   getIt.registerSingleton<TourService>(TourServiceImpl());
   getIt.registerFactory<LocationService>(() => LocationServiceImpl(null));
   getIt.registerFactory<MapScreenBloc>(() => MapScreenBloc());

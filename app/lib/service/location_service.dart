@@ -26,7 +26,7 @@ class LocationServiceImpl extends LocationService {
   static const int queueSize = 5;
   static const int interval = 1000;
   static const double distanceFilter = 0.0;
-  static const double accuracyRequirement = 15; // in meters
+  static const double accuracyRequirement = 20; // in meters
 
   final Queue<LocationData> locationQueue = Queue();
 
@@ -75,7 +75,8 @@ class LocationServiceImpl extends LocationService {
   Future<LocationData> getCurrentLocation() async {
     LocationData refreshedLocation = await _location.getLocation();
     while (refreshedLocation.accuracy == null ||
-        refreshedLocation.accuracy! > accuracyRequirement) {
+        refreshedLocation.accuracy! > accuracyRequirement * 2) {
+      await Future.delayed(const Duration(seconds: 2));
       refreshedLocation = await _location.getLocation();
     }
 

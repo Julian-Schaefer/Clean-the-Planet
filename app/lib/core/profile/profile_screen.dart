@@ -1,15 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:clean_the_planet/initialize.dart';
+import 'package:clean_the_planet/service/authentication_service.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final AuthenticationService authenticationService =
+      getIt<AuthenticationService>();
 
-  String? getProfilePhotoURL() {
-    return FirebaseAuth.instance.currentUser?.photoURL;
-  }
+  ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String? profilePhotoURL = authenticationService.getProfilePhotoURL();
+
     return Scaffold(
       appBar: AppBar(title: const Text("Profile"), centerTitle: true),
       body: Center(
@@ -20,12 +22,11 @@ class ProfileScreen extends StatelessWidget {
             elevation: 16,
             borderRadius: BorderRadius.circular(360),
             child: CircleAvatar(
-                child: (getProfilePhotoURL() == null)
-                    ? const Icon(Icons.person)
-                    : null,
-                backgroundImage: (getProfilePhotoURL() != null)
+                child:
+                    (profilePhotoURL == null) ? const Icon(Icons.person) : null,
+                backgroundImage: (profilePhotoURL != null)
                     ? Image.network(
-                        getProfilePhotoURL()!,
+                        profilePhotoURL,
                         filterQuality: FilterQuality.high,
                       ).image
                     : null,
