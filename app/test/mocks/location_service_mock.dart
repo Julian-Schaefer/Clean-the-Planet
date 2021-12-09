@@ -1,4 +1,4 @@
-import 'package:clean_the_planet/service/location_service.dart';
+import 'package:clean_the_planet/services/location_service.dart';
 import 'package:location/location.dart';
 
 class LocationServiceMock extends LocationService {

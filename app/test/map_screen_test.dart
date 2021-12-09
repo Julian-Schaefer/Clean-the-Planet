@@ -6,11 +6,11 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
-import 'package:clean_the_planet/map_screen/map_screen.dart';
-import 'package:clean_the_planet/map_screen/map_screen_bloc.dart';
-import 'package:clean_the_planet/service/authentication_service.dart';
-import 'package:clean_the_planet/service/location_service.dart';
-import 'package:clean_the_planet/service/permission_service.dart';
+import 'package:clean_the_planet/screens/map_screen/map_screen.dart';
+import 'package:clean_the_planet/screens/map_screen/map_screen_bloc.dart';
+import 'package:clean_the_planet/services/authentication_service.dart';
+import 'package:clean_the_planet/services/location_service.dart';
+import 'package:clean_the_planet/services/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';

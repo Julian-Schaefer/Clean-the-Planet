@@ -5,13 +5,13 @@ import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:latlong2/latlong.dart';
 
-abstract class BufferService {
+abstract class TourBufferService {
   Future<Polygon> getBuffer(List<LatLng> polyline);
 }
 
-class BufferServiceLoadException implements Exception {}
+class TourBufferServiceLoadException implements Exception {}
 
-class BufferServiceImpl extends BufferService {
+class TourBufferServiceImpl extends TourBufferService {
   final Client _client = getInterceptedClient();
 
   @override
@@ -25,7 +25,7 @@ class BufferServiceImpl extends BufferService {
       final parsedJson = jsonDecode(response.body);
       return Tour.fromPolygonString(parsedJson['polygon']);
     } else {
-      throw Exception('Failed to get Buffer.');
+      throw TourBufferServiceLoadException();
     }
   }
 }

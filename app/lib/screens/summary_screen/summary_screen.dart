@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/core/widgets/image_preview.dart';
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/picture_screen.dart';
-import 'package:clean_the_planet/service/buffer_service.dart';
-import 'package:clean_the_planet/take_picture_screen.dart';
+import 'package:clean_the_planet/core/screens/picture_screen.dart';
+import 'package:clean_the_planet/services/buffer_service.dart';
+import 'package:clean_the_planet/core/screens/take_picture_screen.dart';
 import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:clean_the_planet/core/data/models/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
-import 'package:clean_the_planet/service/tour_service.dart';
+import 'package:clean_the_planet/services/tour_service.dart';
 import 'package:clean_the_planet/core/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -44,7 +44,7 @@ class SummaryScreenState extends State<SummaryScreen> {
   final _formKey = GlobalKey<FormState>();
   final MapProvider mapProvider = getIt<MapProvider>();
   TourService tourService = getIt<TourService>();
-  BufferService bufferService = getIt<BufferService>();
+  TourBufferService bufferService = getIt<TourBufferService>();
 
   @override
   void initState() {
