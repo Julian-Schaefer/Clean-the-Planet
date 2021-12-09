@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/screens/map_screen/map_screen.dart';
-import 'package:clean_the_planet/screens/sign_in/sign_in_screen.dart';
+import 'package:clean_the_planet/screens/sign_in_screen/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

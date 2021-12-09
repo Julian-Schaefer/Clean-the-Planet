@@ -1,4 +1,4 @@
-import 'package:clean_the_planet/screens/my_route/my_routes_screen.dart';
+import 'package:clean_the_planet/screens/my_route_screen/my_routes_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
