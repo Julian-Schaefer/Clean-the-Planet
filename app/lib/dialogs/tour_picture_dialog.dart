@@ -6,8 +6,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class TourPictureDialog extends PopupRoute {
   final TourPicture tourPicture;
   final VoidCallback? onDelete;
+  final VoidCallback? onDiscard;
 
-  TourPictureDialog({required this.tourPicture, this.onDelete}) : super();
+  TourPictureDialog({required this.tourPicture, this.onDelete, this.onDiscard})
+      : super();
 
   @override
   Color get barrierColor => Colors.black.withOpacity(0.5);
@@ -48,9 +50,12 @@ class TourPictureDialog extends PopupRoute {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: ImagePreview(
-                          path: tourPicture.imageKey!,
-                        ),
+                        child: (tourPicture.imageUrl == null)
+                            ? ImagePreview(
+                                path: tourPicture.imageKey!,
+                              )
+                            : NetworkImagePreview(
+                                imageUrl: tourPicture.imageUrl!),
                       ),
                     ],
                   ),
@@ -76,22 +81,40 @@ class TourPictureDialog extends PopupRoute {
                   )
               ]),
             ),
-            Positioned(
-              right: -32,
-              top: -16,
-              child: RawMaterialButton(
-                onPressed: onDelete,
-                elevation: 2.0,
-                fillColor: Colors.red.shade800,
-                child: const Icon(
-                  Icons.delete,
-                  size: 30,
-                  color: Colors.white,
+            if (onDelete != null)
+              Positioned(
+                right: -32,
+                top: -16,
+                child: RawMaterialButton(
+                  onPressed: onDelete,
+                  elevation: 2.0,
+                  fillColor: Colors.red.shade800,
+                  child: const Icon(
+                    Icons.delete,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+                  shape: const CircleBorder(),
                 ),
-                padding: const EdgeInsets.all(10.0),
-                shape: const CircleBorder(),
               ),
-            ),
+            if (onDiscard != null)
+              Positioned(
+                right: -32,
+                top: -16,
+                child: RawMaterialButton(
+                  onPressed: onDelete,
+                  elevation: 2.0,
+                  fillColor: Colors.red.shade800,
+                  child: const Icon(
+                    Icons.cancel_outlined,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+                  shape: const CircleBorder(),
+                ),
+              ),
           ],
         ),
       ),

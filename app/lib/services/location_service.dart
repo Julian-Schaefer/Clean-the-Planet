@@ -23,8 +23,8 @@ abstract class LocationService {
 }
 
 class LocationServiceImpl extends LocationService {
-  static const int queueSize = 5;
-  static const int interval = 1000;
+  static const int queueSize = 3;
+  static const int interval = 500;
   static const double distanceFilter = 0.0;
   static const double accuracyRequirement = 20; // in meters
 
@@ -66,7 +66,7 @@ class LocationServiceImpl extends LocationService {
           distanceFilter: distanceFilter);
 
       LocationData initialLocation = await getCurrentLocation();
-      _broadcastLocation(initialLocation);
+      _broadcastLocation(initialLocation, useQueue: false);
       listenForLocationUpdates();
     }
   }
@@ -75,8 +75,8 @@ class LocationServiceImpl extends LocationService {
   Future<LocationData> getCurrentLocation() async {
     LocationData refreshedLocation = await _location.getLocation();
     while (refreshedLocation.accuracy == null ||
-        refreshedLocation.accuracy! > accuracyRequirement * 2) {
-      await Future.delayed(const Duration(seconds: 2));
+        refreshedLocation.accuracy! > accuracyRequirement) {
+      await Future.delayed(const Duration(seconds: 1));
       refreshedLocation = await _location.getLocation();
     }
 
@@ -133,18 +133,17 @@ class LocationServiceImpl extends LocationService {
     });
   }
 
-  void _broadcastLocation(LocationData newLocation) {
-    if (newLocation.accuracy == null ||
-        newLocation.accuracy! > accuracyRequirement) {
-      return;
-    }
-
-    locationQueue.add(newLocation);
-    if (locationQueue.length == queueSize) {
-      LocationData centerLocation =
-          GeoDataHelper.getGeographicCenter(locationQueue);
-      _locationStreamController.add(centerLocation);
-      locationQueue.clear();
+  void _broadcastLocation(LocationData newLocation, {useQueue = true}) {
+    if (useQueue) {
+      locationQueue.add(newLocation);
+      if (locationQueue.length == queueSize) {
+        LocationData centerLocation =
+            GeoDataHelper.getGeographicCenter(locationQueue);
+        _locationStreamController.add(centerLocation);
+        locationQueue.clear();
+      }
+    } else {
+      _locationStreamController.add(newLocation);
     }
   }
 }

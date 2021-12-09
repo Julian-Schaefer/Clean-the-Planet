@@ -8,6 +8,10 @@ String getAPIBaseUrl() {
   if (kReleaseMode) {
     return "https://clean-the-planet.herokuapp.com";
   } else {
+    if (const bool.hasEnvironment("API_URL")) {
+      return const String.fromEnvironment("API_URL");
+    }
+
     return dotenv.env['API_URL']!;
   }
 }
