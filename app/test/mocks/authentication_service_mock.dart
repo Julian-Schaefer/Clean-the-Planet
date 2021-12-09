@@ -1,5 +1,4 @@
-import 'package:clean_the_planet/service/authentication_service.dart';
-import 'package:firebase_auth_platform_interface/src/auth_credential.dart';
+import 'package:clean_the_planet/services/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationServiceMock extends AuthenticationService {

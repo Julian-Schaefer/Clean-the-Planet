@@ -1,13 +1,13 @@
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/core/data/models/tour.dart';
-import 'package:clean_the_planet/service/tour_service.dart';
+import 'package:clean_the_planet/services/tour_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:clean_the_planet/my_route_screen.dart';
+import 'package:clean_the_planet/screens/my_route/my_route_screen.dart';
 
 class MyRoutesScreen extends StatefulWidget {
   const MyRoutesScreen({Key? key}) : super(key: key);

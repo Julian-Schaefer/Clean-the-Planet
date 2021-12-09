@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:background_location/background_location.dart' as geo;
 import 'package:clean_the_planet/core/utils/geo_data_util.dart';
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/service/permission_service.dart';
+import 'package:clean_the_planet/services/permission_service.dart';
 import 'package:location/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

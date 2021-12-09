@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/map_screen/map_screen_state.dart';
-import 'package:clean_the_planet/service/location_service.dart';
+import 'package:clean_the_planet/screens/map_screen/map_screen_state.dart';
+import 'package:clean_the_planet/services/location_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';

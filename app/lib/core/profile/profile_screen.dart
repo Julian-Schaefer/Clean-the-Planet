@@ -1,5 +1,5 @@
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/service/authentication_service.dart';
+import 'package:clean_the_planet/services/authentication_service.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {

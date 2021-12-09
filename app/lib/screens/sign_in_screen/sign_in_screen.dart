@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:clean_the_planet/core/utils/widget_utils.dart';
 import 'package:clean_the_planet/initialize.dart';
-import 'package:clean_the_planet/service/authentication_service.dart';
+import 'package:clean_the_planet/services/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
