@@ -190,7 +190,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                       },
                       child: Hero(
                           child: ImagePreview(
-                            path: path,
+                            imagePath: path,
                             onRemove: () async {
                               await File(path).delete();
                               setState(() {
@@ -298,32 +298,11 @@ class SummaryScreenState extends State<SummaryScreen> {
   }
 
   Future<bool> _navigateBackDialog() async {
-    bool? navigateBack = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text(AppLocalizations.of(context)!.areYouSure),
-              content: Text(AppLocalizations.of(context)!.navigateBackWarning),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(AppLocalizations.of(context)!.cancel),
-                ),
-                MaterialButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  color: Colors.red,
-                  child: Text(
-                    AppLocalizations.of(context)!.discard,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ));
-
-    if (navigateBack != null) {
-      return navigateBack;
-    }
-
-    return false;
+    return await showConfirmDialog(context,
+        title: AppLocalizations.of(context)!.areYouSure,
+        content: AppLocalizations.of(context)!.navigateBackWarning,
+        noAction: AppLocalizations.of(context)!.cancel,
+        yesAction: AppLocalizations.of(context)!.discard);
   }
 
   void addPicture() async {

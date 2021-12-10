@@ -1,5 +1,6 @@
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/core/widgets/image_preview.dart';
+import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/core/screens/picture_screen.dart';
 import 'package:clean_the_planet/core/data/models/tour.dart';
@@ -43,9 +44,9 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
   @override
   Widget build(BuildContext context) {
     locale ??= Localizations.localeOf(context);
-
     String dateString = DateFormat.yMd(locale!.languageCode)
         .format(widget.tour.dateTime!.toLocal());
+
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.tourDetailScreenTitle +
@@ -104,37 +105,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                                 ),
                               )
                           ]
-                        : null),
-                if (selectedTourPicture != null)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Card(
-                        child: Column(children: [
-                          Expanded(
-                            child: NetworkImagePreview(
-                              imageUrl: selectedTourPicture!.imageUrl!,
-                              onRemove: () {
-                                setState(() {
-                                  selectedTourPicture = null;
-                                });
-                              },
-                            ),
-                          ),
-                          if (selectedTourPicture!.comment != null)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                AppLocalizations.of(context)!.comment +
-                                    " " +
-                                    selectedTourPicture!.comment!,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            )
-                        ]),
-                      ),
-                    ),
-                  )
+                        : null)
               ],
             ),
           ),
@@ -168,8 +139,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             ),
           ),
           const Divider(),
-          if (widget.tour.resultPicturesUrls != null &&
-              widget.tour.resultPicturesUrls!.isNotEmpty)
+          if (widget.tour.resultPictureKeys != null &&
+              widget.tour.resultPictureKeys!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -178,25 +149,25 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
-          if (widget.tour.resultPicturesUrls != null &&
-              widget.tour.resultPicturesUrls!.isNotEmpty)
+          if (widget.tour.resultPictureKeys != null &&
+              widget.tour.resultPictureKeys!.isNotEmpty)
             GridView.count(
               crossAxisCount: 3,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: [
-                for (var url in widget.tour.resultPicturesUrls!)
+                for (var pictureKey in widget.tour.resultPictureKeys!)
                   GestureDetector(
                     child: Hero(
-                        child: NetworkImagePreview(imageUrl: url),
-                        tag: "picture_screen_" + url),
+                        child: ImagePreview(pictureKey: pictureKey),
+                        tag: "picture_screen_" + pictureKey),
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => PictureScreen(
-                                imageUrl: url,
-                                heroTag: "picture_screen_" + url),
+                                pictureKey: pictureKey,
+                                heroTag: "picture_screen_" + pictureKey),
                           ));
                     },
                   )
@@ -215,7 +186,10 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               child: Card(
                 child: Row(
                   children: [
-                    NetworkImagePreview(imageUrl: picture.imageUrl!),
+                    SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: ImagePreview(pictureKey: picture.pictureKey!)),
                     if (picture.comment != null) Text(picture.comment!)
                   ],
                 ),
@@ -232,36 +206,22 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
     }
   }
 
-  void _selectTourPicture(TourPicture picture) {
+  void _selectTourPicture(TourPicture tourPicture) async {
     setState(() {
-      _mapController.move(picture.location, MapProvider.defaultZoom);
-      selectedTourPicture = picture;
+      _mapController.move(tourPicture.location, MapProvider.defaultZoom);
     });
+    await Navigator.of(context).push(TourPictureDialog(
+        tourPicture: tourPicture, onDiscard: () => Navigator.pop(context)));
   }
 
   Future<void> _deleteTour() async {
-    bool? deleteTour = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text(AppLocalizations.of(context)!.areYouSure),
-              content: Text(AppLocalizations.of(context)!.deleteTourQuestion),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(AppLocalizations.of(context)!.cancel),
-                ),
-                MaterialButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  color: Colors.red,
-                  child: Text(
-                    AppLocalizations.of(context)!.delete,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ));
+    bool deleteTour = await showConfirmDialog(context,
+        title: AppLocalizations.of(context)!.areYouSure,
+        content: AppLocalizations.of(context)!.deleteTourQuestion,
+        noAction: AppLocalizations.of(context)!.cancel,
+        yesAction: AppLocalizations.of(context)!.delete);
 
-    if (deleteTour != null && deleteTour) {
+    if (deleteTour) {
       TourService tourService = getIt<TourService>();
       await tourService.deleteTour(widget.tour);
       Navigator.pop(context, true);

@@ -3,29 +3,28 @@ import 'package:latlong2/latlong.dart';
 class TourPicture {
   String? id;
   final LatLng location;
-  final String? imageKey;
-  final String? imageUrl;
+  final String? pictureKey;
+  final String? imagePath;
   final String? comment;
 
   TourPicture(
       {this.id,
       required this.location,
-      this.imageKey,
-      this.imageUrl,
+      this.pictureKey,
+      this.imagePath,
       this.comment});
 
   factory TourPicture.fromJson(Map<String, dynamic> json) {
     return TourPicture(
         id: json['id'],
         location: fromPointString(json['location']),
-        imageKey: json['imageKey'],
-        imageUrl: json['imageUrl'],
+        pictureKey: json['pictureKey'],
         comment: json['comment']);
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'imageKey': imageKey,
+      'pictureKey': pictureKey,
       'location': getPointString(location),
       'comment': comment
     };

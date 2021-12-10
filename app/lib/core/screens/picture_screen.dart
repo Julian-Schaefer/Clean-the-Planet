@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clean_the_planet/core/widgets/image_preview.dart';
 import 'package:flutter/material.dart';
 
 class PictureScreen extends StatelessWidget {
   final String? imagePath;
-  final String? imageUrl;
+  final String? pictureKey;
   final String heroTag;
 
   const PictureScreen(
-      {Key? key, this.imagePath, this.imageUrl, required this.heroTag})
+      {Key? key, this.imagePath, this.pictureKey, required this.heroTag})
       : super(key: key);
 
   @override
@@ -20,12 +20,8 @@ class PictureScreen extends StatelessWidget {
       body = Image.file(File(imagePath!));
     }
 
-    if (imageUrl != null) {
-      body = CachedNetworkImage(
-          imageUrl: imageUrl!,
-          placeholder: (context, url) =>
-              const Center(child: CircularProgressIndicator()),
-          errorWidget: (context, url, error) => const Icon(Icons.error));
+    if (pictureKey != null) {
+      body = ImageWidget(pictureKey: pictureKey!);
     }
 
     return Scaffold(

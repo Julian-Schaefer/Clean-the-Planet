@@ -5,21 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "clean_the_planet",
+            "name": "Debug: Clean the Planet",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "clean_the_planet: Run all Tests",
+            "name": "Debug: Clean the Planet (Production Env.)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "API_URL=https://clean-the-planet.herokuapp.com"
+            ],
+        },
+        {
+            "name": "Release: Clean the Planet (Release Mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Test: Clean the Planet",
             "request": "launch",
             "type": "dart",
             "program": "./test/"
         },
-        {
-            "name": "clean_the_planet (release mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        }
     ]
 }

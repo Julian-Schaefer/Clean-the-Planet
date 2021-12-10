@@ -12,3 +12,32 @@ void showSnackBar(BuildContext context, String message, {isError = false}) {
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
+
+Future<bool> showConfirmDialog(BuildContext context,
+    {String? title,
+    String? content,
+    String? noAction,
+    String? yesAction}) async {
+  bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+            title: Text(title!),
+            content: Text(content!),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(noAction!),
+              ),
+              MaterialButton(
+                onPressed: () => Navigator.pop(context, true),
+                color: Colors.red,
+                child: Text(
+                  yesAction!,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ));
+
+  return confirmed != null && confirmed;
+}

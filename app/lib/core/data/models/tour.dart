@@ -12,7 +12,6 @@ class Tour {
   Polygon? polygon;
   DateTime? dateTime;
   List<String>? resultPictureKeys;
-  List<String>? resultPicturesUrls;
   List<TourPicture>? tourPictures;
 
   Tour(
@@ -23,18 +22,12 @@ class Tour {
       this.polygon,
       this.dateTime,
       this.resultPictureKeys,
-      this.resultPicturesUrls,
       this.tourPictures});
 
   factory Tour.fromJson(Map<String, dynamic> json) {
     List<String>? resultPictureKeys;
-    if (json['result_picture_keys'] != null) {
-      resultPictureKeys = List<String>.from(json['result_picture_keys']);
-    }
-
-    List<String>? resultPictureUrls;
-    if (json['result_picture_urls'] != null) {
-      resultPictureUrls = List<String>.from(json['result_picture_urls']);
+    if (json['resultPictureKeys'] != null) {
+      resultPictureKeys = List<String>.from(json['resultPictureKeys']);
     }
 
     return Tour(
@@ -45,8 +38,7 @@ class Tour {
       amount: json['amount'],
       dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
-      resultPicturesUrls: resultPictureUrls,
-      tourPictures: json['tour_pictures']
+      tourPictures: json['tourPictures']
           .map<TourPicture>((json) => TourPicture.fromJson(json))
           .toList(),
     );
@@ -57,8 +49,8 @@ class Tour {
       'polyline': getPolylineString(polyline),
       'duration': duration.toString(),
       'amount': amount,
-      'result_picture_keys': resultPictureKeys,
-      "tour_pictures": tourPictures
+      'resultPictureKeys': resultPictureKeys,
+      "tourPictures": tourPictures
     };
   }
 
