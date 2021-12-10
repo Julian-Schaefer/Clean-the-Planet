@@ -190,7 +190,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                       },
                       child: Hero(
                           child: ImagePreview(
-                            path: path,
+                            imagePath: path,
                             onRemove: () async {
                               await File(path).delete();
                               setState(() {

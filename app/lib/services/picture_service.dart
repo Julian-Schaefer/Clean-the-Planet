@@ -10,9 +10,12 @@ import 'package:path/path.dart';
 abstract class PictureService {
   Future<List<String>> uploadResultPictures(List<String> paths);
   Future<List<TourPicture>> uploadTourPictures(List<TourPicture> tourPictures);
+  Future<String> getPictureUrl(String pictureKey);
 }
 
 class PictureServiceImpl extends PictureService {
+  final Client _client = getInterceptedClient();
+
   @override
   Future<List<String>> uploadResultPictures(List<String> paths) async {
     MultipartRequest request = MultipartRequest(
@@ -43,10 +46,11 @@ class PictureServiceImpl extends PictureService {
     MultipartRequest request =
         MultipartRequest('POST', Uri.parse(getAPIBaseUrl() + '/tour-pictures'));
     for (TourPicture picture in tourPictures) {
-      File imageFile = File(picture.imageKey!);
+      File imageFile = File(picture.imagePath!);
       String fileName = basename(imageFile.path);
       request.fields[fileName] = jsonEncode(picture);
-      request.files.add(await MultipartFile.fromPath('files', picture.imageKey!,
+      request.files.add(await MultipartFile.fromPath(
+          'files', picture.imagePath!,
           filename: fileName));
     }
     Map<String, String> headers = await JsonInterceptor.getHeaders();
@@ -63,6 +67,21 @@ class PictureServiceImpl extends PictureService {
           .toList();
     } else {
       throw Exception('Failed to upload Pictures.');
+    }
+  }
+
+  @override
+  Future<String> getPictureUrl(String pictureKey) async {
+    var relativeUrl = "/picture";
+    final response = await _client
+        .get(Uri.parse(getAPIBaseUrl() + relativeUrl + "?key=" + pictureKey));
+
+    if (response.statusCode == 200) {
+      final parsedJson = jsonDecode(response.body);
+      final url = parsedJson['url'];
+      return url;
+    } else {
+      throw Exception('Failed to get Picture URL.');
     }
   }
 }

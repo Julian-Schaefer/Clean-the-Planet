@@ -139,8 +139,8 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
             ),
           ),
           const Divider(),
-          if (widget.tour.resultPicturesUrls != null &&
-              widget.tour.resultPicturesUrls!.isNotEmpty)
+          if (widget.tour.resultPictureKeys != null &&
+              widget.tour.resultPictureKeys!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -149,25 +149,25 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
-          if (widget.tour.resultPicturesUrls != null &&
-              widget.tour.resultPicturesUrls!.isNotEmpty)
+          if (widget.tour.resultPictureKeys != null &&
+              widget.tour.resultPictureKeys!.isNotEmpty)
             GridView.count(
               crossAxisCount: 3,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: [
-                for (var url in widget.tour.resultPicturesUrls!)
+                for (var pictureKey in widget.tour.resultPictureKeys!)
                   GestureDetector(
                     child: Hero(
-                        child: NetworkImagePreview(imageUrl: url),
-                        tag: "picture_screen_" + url),
+                        child: ImagePreview(pictureKey: pictureKey),
+                        tag: "picture_screen_" + pictureKey),
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => PictureScreen(
-                                imageUrl: url,
-                                heroTag: "picture_screen_" + url),
+                                pictureKey: pictureKey,
+                                heroTag: "picture_screen_" + pictureKey),
                           ));
                     },
                   )
@@ -186,7 +186,10 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               child: Card(
                 child: Row(
                   children: [
-                    NetworkImagePreview(imageUrl: picture.imageUrl!),
+                    SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: ImagePreview(pictureKey: picture.pictureKey!)),
                     if (picture.comment != null) Text(picture.comment!)
                   ],
                 ),

@@ -333,7 +333,7 @@ class MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       setState(() {
         _tourPictures.add(TourPicture(
             location: LatLng(location.latitude!, location.longitude!),
-            imageKey: result[0],
+            imagePath: result[0],
             comment: result[1]));
       });
     }

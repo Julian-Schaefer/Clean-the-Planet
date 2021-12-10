@@ -50,12 +50,10 @@ class TourPictureDialog extends PopupRoute {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: (tourPicture.imageUrl == null)
-                            ? ImagePreview(
-                                path: tourPicture.imageKey!,
-                              )
-                            : NetworkImagePreview(
-                                imageUrl: tourPicture.imageUrl!),
+                        child: ImagePreview(
+                          pictureKey: tourPicture.pictureKey,
+                          imagePath: tourPicture.imagePath,
+                        ),
                       ),
                     ],
                   ),
@@ -103,7 +101,7 @@ class TourPictureDialog extends PopupRoute {
                 right: -32,
                 top: -16,
                 child: RawMaterialButton(
-                  onPressed: onDelete,
+                  onPressed: onDiscard,
                   elevation: 2.0,
                   fillColor: Colors.red.shade800,
                   child: const Icon(

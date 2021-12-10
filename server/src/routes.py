@@ -22,13 +22,13 @@ def addTour():
         id = uuid.uuid4()
 
         tour_pictures = []
-        if data['tour_pictures']:
-            tour_pictures_json = data['tour_pictures']
+        if data['tourPictures']:
+            tour_pictures_json = data['tourPictures']
             for tour_picture_json in tour_pictures_json:
                 tour_picture = TourPicture(
                     tour_id=id,
                     location=tour_picture_json['location'],
-                    picture_key=tour_picture_json['imageKey'],
+                    picture_key=tour_picture_json['pictureKey'],
                     comment=tour_picture_json['comment'])
                 tour_pictures.append(tour_picture)
 
@@ -37,7 +37,7 @@ def addTour():
                     polyline=data['polyline'],
                     duration=data['duration'],
                     amount=data['amount'],
-                    result_picture_keys=data["result_picture_keys"],
+                    result_picture_keys=data["resultPictureKeys"],
                     tour_pictures=tour_pictures)
         db.session.add(tour)
 
@@ -88,19 +88,13 @@ def getTours():
             str(duration),
             "amount":
             amount,
-            "result_picture_keys":
+            "resultPictureKeys":
             result_picture_keys,
-            "result_picture_urls":
-            get_urls_from_picture_keys(result_picture_keys),
-            "tour_pictures": [{
-                "id":
-                tour_picture.id,
-                "location":
-                location,
-                "imageUrl":
-                get_url_from_picture_key(tour_picture.picture_key),
-                "comment":
-                tour_picture.comment
+            "tourPictures": [{
+                "id": tour_picture.id,
+                "location": location,
+                "pictureKey": tour_picture.picture_key,
+                "comment": tour_picture.comment
             } for (tour_picture, location) in tour_pictures_query]
         })
 
@@ -186,7 +180,7 @@ def upload_tour_pictures():
             file_name = str(uuid.uuid4()) + pathlib.Path(file.filename).suffix
             s3_resource.Object(BUCKET, file_name).put(Body=file_content)
 
-            file_json['imageKey'] = file_name
+            file_json['pictureKey'] = file_name
             picture_json.append(file_json)
         except ClientError as e:
             logging.error(e)
@@ -196,6 +190,14 @@ def upload_tour_pictures():
         return jsonify(picture_json)
 
     return "Error", 400
+
+
+@routes.route("/picture", methods=["GET"])
+def get_picture_by_key():
+    picture_key = request.args['key']
+    picture_Url = get_url_from_picture_key(picture_key)
+
+    return {"url": picture_Url}
 
 
 def get_urls_from_picture_keys(picture_keys):
