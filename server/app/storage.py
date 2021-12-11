@@ -1,9 +1,6 @@
 import os
-from flask_sqlalchemy import SQLAlchemy
 import boto3
 from botocore.config import Config
-
-db = SQLAlchemy()
 
 BUCKET = "clean-the-planet"
 ENDPOINT_URL = None
@@ -18,7 +15,6 @@ if not (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_REGION):
     AWS_REGION = None
     USE_SSL = False
 
-bucket = "clean-the-planet"
 signature_config = Config(signature_version='s3v4')
 
 s3_resource = boto3.resource('s3',
