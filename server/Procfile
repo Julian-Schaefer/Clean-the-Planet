@@ -1,2 +1,2 @@
-web: gunicorn --chdir ./src app:app
-upgrade: cd src; flask db upgrade
+web: gunicorn "app:create_app()"
+upgrade: flask db upgrade
