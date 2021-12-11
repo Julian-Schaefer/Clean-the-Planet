@@ -17,6 +17,8 @@ firebase-admin = "*"
 python-dotenv = "*"
 
 [dev-packages]
+coverage = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.9"
