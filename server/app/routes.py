@@ -7,13 +7,14 @@ import pathlib
 import uuid
 import json
 
-from utils import db, s3_client, s3_resource, BUCKET
-from tour import Tour, TourPicture
+from app.db import db
+from app.storage import s3_client, s3_resource, BUCKET
+from app.tour import Tour, TourPicture
 
-routes = Blueprint('Routes', __name__)
+bp = Blueprint('routes', __name__)
 
 
-@routes.route("/tour", methods=["POST"])
+@bp.route("/tour", methods=["POST"])
 def addTour():
     userId = request.user['user_id']
 
@@ -39,6 +40,7 @@ def addTour():
                     amount=data['amount'],
                     result_picture_keys=data["resultPictureKeys"],
                     tour_pictures=tour_pictures)
+
         db.session.add(tour)
 
         try:
@@ -55,7 +57,7 @@ def addTour():
         return {"error": "The request payload is not in JSON format"}, 400
 
 
-@routes.route("/tour", methods=["GET"])
+@bp.route("/tour", methods=["GET"])
 def getTours():
     userId = request.user['user_id']
 
@@ -101,7 +103,7 @@ def getTours():
     return jsonify(tours)
 
 
-@routes.route("/tour", methods=["DELETE"])
+@bp.route("/tour", methods=["DELETE"])
 def deleteTour():
     userId = request.user['user_id']
     tourId = request.args.get('id')
@@ -130,7 +132,7 @@ def deleteTour():
     }
 
 
-@routes.route("/buffer", methods=["POST"])
+@bp.route("/buffer", methods=["POST"])
 def getBuffer():
     if request.is_json:
         data = request.get_json()
@@ -146,7 +148,7 @@ def getBuffer():
     return "Error", 400
 
 
-@routes.route("/result-pictures", methods=["POST"])
+@bp.route("/result-pictures", methods=["POST"])
 def upload_result_pictures():
     files = request.files.getlist("files")
 
@@ -167,7 +169,7 @@ def upload_result_pictures():
     return "Error", 400
 
 
-@routes.route("/tour-pictures", methods=["POST"])
+@bp.route("/tour-pictures", methods=["POST"])
 def upload_tour_pictures():
     files = request.files.getlist("files")
 
@@ -192,7 +194,7 @@ def upload_tour_pictures():
     return "Error", 400
 
 
-@routes.route("/picture", methods=["GET"])
+@bp.route("/picture", methods=["GET"])
 def get_picture_by_key():
     picture_key = request.args['key']
     picture_Url = get_url_from_picture_key(picture_key)

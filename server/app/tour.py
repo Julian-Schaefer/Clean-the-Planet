@@ -1,8 +1,9 @@
-from utils import db
 from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.sql import func
 import uuid
+
+from app.db import db
 
 
 class Tour(db.Model):
