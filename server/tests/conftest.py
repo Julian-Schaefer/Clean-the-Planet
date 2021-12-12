@@ -48,6 +48,25 @@ def no_ST_Buffer():
         yield
 
 
+@pytest.fixture(autouse=True)
+def no_Geometry_from_text():
+    with patch('geoalchemy2.Geometry.from_text', "upper"):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def no_Geometry_as_binary():
+    with patch('geoalchemy2.Geometry.as_binary', "upper"):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def no_Interval_DataType():
+    with patch('sqlalchemy.sql.sqltypes.Interval.bind_processor',
+               lambda *_: lambda value: value):
+        yield
+
+
 def ST_AsText_placeholder(_):
     return Column('Tour.polyline')
 

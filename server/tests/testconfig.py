@@ -5,7 +5,7 @@ class TestConfig:
 
     def get_token_verifier():
         class MockTokenVerifier:
-            def verify(self, token):
-                return {"user_id": "testuser_" + token}
+            def verify(self, _):
+                return {"user_id": "testuser"}
 
         return MockTokenVerifier()
