@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-import sqlalchemy
 from geoalchemy2 import functions
 import logging
 from botocore.exceptions import ClientError
@@ -45,7 +44,7 @@ def addTour():
 
         try:
             db.session.commit()
-        except sqlalchemy.exc.InternalError as err:
+        except Exception as err:
             print(err)
             return {"error": "Could not insert Tour into database."}, 400
 
