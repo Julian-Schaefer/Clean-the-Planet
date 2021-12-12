@@ -33,7 +33,7 @@ def upgrade():
             ['tour_id'],
             ['tour.id'],
         ), sa.PrimaryKeyConstraint('id', 'tour_id'))
-    #op.drop_table('spatial_ref_sys')
+    # op.drop_table('spatial_ref_sys')
     # ### end Alembic commands ###
 
 
