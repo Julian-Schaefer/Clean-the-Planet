@@ -110,7 +110,7 @@ def deleteTour():
     try:
         tours_query = db.session.query(Tour).filter_by(userId=userId,
                                                        id=tourId).one()
-    except:
+    except Exception:
         return {'message': 'Could not find appropriate Tour.'}, 400
 
     for result_picture_key in tours_query.result_picture_keys:

@@ -5,7 +5,7 @@ import firebase_admin
 from firebase_admin import credentials, auth
 
 
-#Connect to Firebase
+# Connect to Firebase
 def setUpFirebase():
     serviceAccountJson = os.environ.get("SERVICE_ACCOUNT_JSON", None)
     if serviceAccountJson:

@@ -33,7 +33,7 @@ def create_app(config_class=config.Config):
             token = authHeader.split()[1]
             user = tokenVerifier.verify(token)
             request.user = user
-        except:
+        except Exception:
             return {"message": "Invalid Token provided."}, 401
 
     return app
