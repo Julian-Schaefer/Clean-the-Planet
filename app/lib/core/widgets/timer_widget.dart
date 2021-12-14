@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:flutter/material.dart';
+import 'package:clean_the_planet/core/data/extensions/extensions.dart';
 
 class TimerWidgetController {
   Duration duration = const Duration();
@@ -41,7 +41,7 @@ class TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final timeString = Tour.getDurationString(widget.controller.duration);
+    final timeString = widget.controller.duration.getDurationString();
     return Text(timeString,
         style: const TextStyle(fontSize: 26, color: Colors.white));
   }

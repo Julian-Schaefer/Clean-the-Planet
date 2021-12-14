@@ -10,6 +10,7 @@ import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:clean_the_planet/core/data/models/tour_picture.dart';
 import 'package:clean_the_planet/dialogs/tour_picture_dialog.dart';
 import 'package:clean_the_planet/services/tour_service.dart';
+import 'package:clean_the_planet/core/data/extensions/extensions.dart';
 import 'package:clean_the_planet/core/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -134,7 +135,7 @@ class SummaryScreenState extends State<SummaryScreen> {
                           fontSize: 18, fontWeight: FontWeight.w500))),
               Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                  child: Text(Tour.getDurationString(widget.duration),
+                  child: Text(widget.duration.getDurationString(),
                       style: const TextStyle(fontSize: 18))),
               const Divider(),
               Form(

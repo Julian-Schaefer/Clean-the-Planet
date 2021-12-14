@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:clean_the_planet/core/data/extensions/extensions.dart';
 
 import 'package:clean_the_planet/screens/my_route_screen/my_route_screen.dart';
 
@@ -77,7 +78,7 @@ class TourListItem extends StatelessWidget {
         ", " +
         AppLocalizations.of(context)!.duration +
         " " +
-        Tour.getDurationString(tour.duration);
+        tour.duration.getDurationString();
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         child: Card(
