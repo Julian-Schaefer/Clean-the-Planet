@@ -29,7 +29,7 @@ class MapProviderImpl extends MapProvider {
           center: (center != null) ? center : LatLng(51.5, -0.09),
           zoom: MapProvider.defaultZoom,
           maxZoom: 18.4,
-          minZoom: 4.0),
+          minZoom: 3.0),
       layers: [
         TileLayerOptions(
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",

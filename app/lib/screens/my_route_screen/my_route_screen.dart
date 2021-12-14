@@ -5,6 +5,7 @@ import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/core/screens/picture_screen.dart';
 import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:clean_the_planet/core/data/models/tour_picture.dart';
+import 'package:clean_the_planet/core/data/extensions/extensions.dart';
 import 'package:clean_the_planet/services/tour_service.dart';
 import 'package:clean_the_planet/core/utils/widget_utils.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              Tour.getDurationString(widget.tour.duration),
+              widget.tour.duration.getDurationString(),
               style: const TextStyle(fontSize: 18),
             ),
           ),
