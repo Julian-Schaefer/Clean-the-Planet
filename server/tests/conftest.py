@@ -67,8 +67,8 @@ def no_Interval_DataType():
         yield
 
 
-def ST_AsText_placeholder(_):
-    return Column('Tour.polyline')
+def ST_AsText_placeholder(column):
+    return Column(column.key)
 
 
 def SetSRID_placeholder(first, _):
