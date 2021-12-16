@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -32,8 +33,10 @@ class MapProviderImpl extends MapProvider {
           minZoom: 3.0),
       layers: [
         TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']),
+          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          subdomains: ['a', 'b', 'c'],
+          tileProvider: const CachedTileProvider(),
+        ),
         if (polygons != null) PolygonLayerOptions(polygons: polygons),
         PolylineLayerOptions(
           polylines: polylines,
@@ -49,5 +52,16 @@ class MapProviderImpl extends MapProvider {
   @override
   MapController getMapController() {
     return MapController();
+  }
+}
+
+class CachedTileProvider extends TileProvider {
+  const CachedTileProvider();
+
+  @override
+  ImageProvider getImage(Coords<num> coords, TileLayerOptions options) {
+    return CachedNetworkImageProvider(
+      getTileUrl(coords, options),
+    );
   }
 }
