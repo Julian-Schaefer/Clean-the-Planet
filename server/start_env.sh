@@ -8,7 +8,7 @@ docker run --rm -it -d -p 5433:5432 --name planet-postgis -e POSTGRES_PASSWORD=p
 
 sleep 10
 
-cd src
+cd app
 pipenv run flask db upgrade
 
 docker run --rm -it --link localstack amazon/aws-cli --no-sign-request --endpoint-url=http://localstack:4566/ s3 mb s3://clean-the-planet
