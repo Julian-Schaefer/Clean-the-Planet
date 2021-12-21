@@ -9,7 +9,7 @@ abstract class MapProvider {
   Widget getMap(
       {MapController? mapController,
       LatLng? center,
-      required List<Polyline> polylines,
+      required List<Polyline>? polylines,
       required List<Marker>? markers,
       List<Polygon>? polygons});
 
@@ -21,7 +21,7 @@ class MapProviderImpl extends MapProvider {
   Widget getMap(
       {MapController? mapController,
       LatLng? center,
-      required List<Polyline> polylines,
+      required List<Polyline>? polylines,
       required List<Marker>? markers,
       List<Polygon>? polygons}) {
     return FlutterMap(
@@ -38,9 +38,10 @@ class MapProviderImpl extends MapProvider {
           tileProvider: const CachedTileProvider(),
         ),
         if (polygons != null) PolygonLayerOptions(polygons: polygons),
-        PolylineLayerOptions(
-          polylines: polylines,
-        ),
+        if (polylines != null)
+          PolylineLayerOptions(
+            polylines: polylines,
+          ),
         if (markers != null)
           MarkerLayerOptions(
             markers: markers,

@@ -8,6 +8,7 @@ CREATE TABLE tour (
   duration DATETIME NOT NULL,
   amount FLOAT NOT NULL,
   polyline TEXT NOT NULL,
+  centerPoint TEXT NOT NULL,
   result_picture_keys TEXT
 );
 

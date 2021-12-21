@@ -32,9 +32,12 @@ def addTour():
                     comment=tour_picture_json['comment'])
                 tour_pictures.append(tour_picture)
 
+        centerPoint = get_centroid(data['polyline'])
+
         tour = Tour(id=id,
                     userId=userId,
                     polyline=data['polyline'],
+                    centerPoint=centerPoint,
                     duration=data['duration'],
                     amount=data['amount'],
                     result_picture_keys=data["resultPictureKeys"],
@@ -65,12 +68,12 @@ def getTours():
     tours_query = db.session.query(
         Tour.id,
         functions.ST_AsText(
-            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,
-                                                     25832), 0.0001)),
-        functions.ST_AsText(Tour.polyline), Tour.datetime, Tour.duration,
+            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline, 25832),
+                                0.0001)), functions.ST_AsText(Tour.polyline),
+        functions.ST_AsText(Tour.centerPoint), Tour.datetime, Tour.duration,
         Tour.amount, Tour.result_picture_keys).filter_by(userId=userId)
 
-    for (id, polygon, polyline, datetime, duration, amount,
+    for (id, polygon, polyline, centerPoint, datetime, duration, amount,
          result_picture_keys) in tours_query:
         tour_pictures_query = db.session.query(
             TourPicture,
@@ -83,6 +86,8 @@ def getTours():
             polygon,
             "polyline":
             polyline,
+            "centerPoint":
+            centerPoint,
             "datetime":
             datetime.strftime('%Y-%m-%dT%H:%M:%S.%f'),
             "duration":
@@ -145,6 +150,14 @@ def getBuffer():
         return jsonify({"polygon": polygon[0]})
 
     return "Error", 400
+
+
+def get_centroid(geometry):
+    return db.session.query(
+        functions.ST_AsText(
+            functions.ST_Centroid(
+                functions.ST_SetSRID(functions.ST_GeomFromText(geometry),
+                                     25832)))).one()[0]
 
 
 @bp.route("/result-pictures", methods=["POST"])

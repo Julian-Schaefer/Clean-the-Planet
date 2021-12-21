@@ -49,6 +49,12 @@ def no_ST_Buffer():
 
 
 @pytest.fixture(autouse=True)
+def no_ST_Centroid():
+    with patch('app.routes.get_centroid', get_centroid_placeholder):
+        yield
+
+
+@pytest.fixture(autouse=True)
 def no_Geometry_from_text():
     with patch('geoalchemy2.Geometry.from_text', "upper"):
         yield
@@ -76,4 +82,8 @@ def SetSRID_placeholder(first, _):
 
 
 def ST_Buffer_placeholder(geo, _):
+    return geo
+
+
+def get_centroid_placeholder(geo):
     return geo

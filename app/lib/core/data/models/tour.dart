@@ -9,6 +9,7 @@ class Tour {
   final List<LatLng> polyline;
   final Duration duration;
   final double amount;
+  LatLng? centerPoint;
   Polygon? polygon;
   DateTime? dateTime;
   List<String>? resultPictureKeys;
@@ -19,6 +20,7 @@ class Tour {
       required this.polyline,
       required this.duration,
       required this.amount,
+      this.centerPoint,
       this.polygon,
       this.dateTime,
       this.resultPictureKeys,
@@ -33,6 +35,7 @@ class Tour {
     return Tour(
       id: json['id'],
       polyline: fromPolylineString(json['polyline']),
+      centerPoint: fromPointString(json['centerPoint']),
       polygon: fromPolygonString(json['polygon']),
       duration: parseDuration(json['duration']),
       amount: json['amount'],
@@ -139,6 +142,16 @@ class Tour {
     }
 
     return polyline;
+  }
+
+  static LatLng fromPointString(String pointString) {
+    pointString = pointString.substring("POINT(".length);
+    pointString = pointString.substring(0, pointString.length - 1);
+
+    List<String> coords = pointString.split(" ");
+    double latitude = double.parse(coords[0]);
+    double longitude = double.parse(coords[1]);
+    return LatLng(latitude, longitude);
   }
 
   static Duration parseDuration(String s) {

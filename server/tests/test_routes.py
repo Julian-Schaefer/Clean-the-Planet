@@ -68,9 +68,10 @@ def test_get_one_tour(client):
     assert len(data) == 1
 
     tour = data[0]
-    assert len(tour) == 8
+    assert len(tour) == 9
     assert tour['id'] == str(id)
     assert tour['polyline'] == 'POLYLINE(3 5)'
+    assert tour['centerPoint'] == 'POLYLINE(3 5)'
     assert tour['polygon'] == 'POLYLINE(3 5)'
     assert tour['duration'] is not None
     assert tour['amount'] == 5.5
