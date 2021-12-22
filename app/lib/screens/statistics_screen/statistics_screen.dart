@@ -1,4 +1,4 @@
-import 'package:clean_the_planet/core/data/models/tour.dart';
+import 'package:clean_the_planet/core/data/models/tour_statistic.dart';
 import 'package:clean_the_planet/core/widgets/map_provider.dart';
 import 'package:clean_the_planet/initialize.dart';
 import 'package:clean_the_planet/services/statistics_service.dart';
@@ -27,10 +27,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     mapController.mapEventStream.listen((event) async {
       if (event is MapEventMoveEnd) {
         if (mapController.bounds != null) {
-          List<Tour> tours = await statisticsService
-              .getTourStatisticsWithBounds(mapController.bounds!);
+          List<TourStatistic> tours =
+              await statisticsService.getTourStatisticsWithBounds(
+                  mapController.bounds!, mapController.zoom.toInt());
           markers = [];
-          for (Tour tour in tours) {
+          for (TourStatistic tour in tours) {
             markers!.add(Marker(
               point: tour.centerPoint!,
               builder: (ctx) =>

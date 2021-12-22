@@ -1,3 +1,4 @@
+from geoalchemy2 import functions
 from app.db import db
 from app import create_app
 from app.tour import Tour
@@ -5,6 +6,15 @@ from random import randint, random
 from uuid import uuid4
 
 app = create_app()
+
+
+def get_centroid(geometry):
+    return db.session.query(
+        functions.ST_AsText(
+            functions.ST_Centroid(
+                functions.ST_SetSRID(functions.ST_GeomFromText(geometry),
+                                     25832)))).one()[0]
+
 
 with app.app_context():
     noOfTours = 200
@@ -22,10 +32,12 @@ with app.app_context():
             map(lambda x: str(x[0]) + " " + str(x[1]), positions))
         positionsString = ', '.join(positionsString)
         polylineString = "LINESTRING(" + positionsString + ")"
+        centerPoint = get_centroid(polylineString)
 
         tour = Tour(id=uuid4(),
                     userId="test_user",
                     polyline=polylineString,
+                    centerPoint=centerPoint,
                     duration="12:44",
                     amount=13.5,
                     result_picture_keys=["asd.png"],

@@ -34,7 +34,7 @@ class Tour {
 
     List<TourPicture>? tourPictures;
     if (json['tourPictures'] != null) {
-      resultPictureKeys = json['tourPictures']
+      tourPictures = json['tourPictures']
           .map<TourPicture>((json) => TourPicture.fromJson(json))
           .toList();
     }
