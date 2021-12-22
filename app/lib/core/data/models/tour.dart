@@ -32,6 +32,13 @@ class Tour {
       resultPictureKeys = List<String>.from(json['resultPictureKeys']);
     }
 
+    List<TourPicture>? tourPictures;
+    if (json['tourPictures'] != null) {
+      resultPictureKeys = json['tourPictures']
+          .map<TourPicture>((json) => TourPicture.fromJson(json))
+          .toList();
+    }
+
     return Tour(
       id: json['id'],
       polyline: fromPolylineString(json['polyline']),
@@ -41,9 +48,7 @@ class Tour {
       amount: json['amount'],
       dateTime: DateTime.parse(json['datetime']),
       resultPictureKeys: resultPictureKeys,
-      tourPictures: json['tourPictures']
-          .map<TourPicture>((json) => TourPicture.fromJson(json))
-          .toList(),
+      tourPictures: tourPictures,
     );
   }
 

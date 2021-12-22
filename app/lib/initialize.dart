@@ -5,6 +5,7 @@ import 'package:clean_the_planet/services/buffer_service.dart';
 import 'package:clean_the_planet/services/location_service.dart';
 import 'package:clean_the_planet/services/permission_service.dart';
 import 'package:clean_the_planet/services/picture_service.dart';
+import 'package:clean_the_planet/services/statistics_service.dart';
 import 'package:clean_the_planet/services/tour_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,6 +18,7 @@ void setupDependencies() {
   getIt.registerSingleton<PictureService>(PictureServiceImpl());
   getIt.registerSingleton<AuthenticationService>(AuthenticationServiceImpl());
   getIt.registerSingleton<TourService>(TourServiceImpl());
+  getIt.registerSingleton<StatisticsService>(StatisticsServiceImpl());
   getIt.registerFactory<LocationService>(() => LocationServiceImpl(null));
   getIt.registerFactory<MapScreenBloc>(() => MapScreenBloc());
   getIt.registerSingleton<MapProvider>(MapProviderImpl());

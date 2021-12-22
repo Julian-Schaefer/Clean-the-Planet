@@ -15,6 +15,8 @@ def create_app(config_class=config.Config):
 
     from . import routes
     app.register_blueprint(routes.bp)
+    from . import statistics
+    app.register_blueprint(statistics.bp)
 
     from . import db
     db.init_app(app)
