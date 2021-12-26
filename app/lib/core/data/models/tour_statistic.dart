@@ -1,15 +1,23 @@
 import 'package:latlong2/latlong.dart';
 
 class TourStatistic {
-  String? id;
-  LatLng? centerPoint;
+  String id;
+  LatLng centerPoint;
+  String address;
+  int count;
 
-  TourStatistic({this.id, this.centerPoint});
+  TourStatistic(
+      {required this.id,
+      required this.centerPoint,
+      required this.address,
+      required this.count});
 
   factory TourStatistic.fromJson(Map<String, dynamic> json) {
     return TourStatistic(
       id: json['id'],
       centerPoint: fromPointString(json['centerPoint']),
+      address: json['address'],
+      count: json['count'],
     );
   }
 

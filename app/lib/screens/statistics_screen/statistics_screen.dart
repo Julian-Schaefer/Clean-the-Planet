@@ -5,6 +5,7 @@ import 'package:clean_the_planet/services/statistics_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -33,9 +34,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           markers = [];
           for (TourStatistic tour in tours) {
             markers!.add(Marker(
-              point: tour.centerPoint!,
-              builder: (ctx) =>
-                  const Icon(Icons.location_pin, size: 40.0, color: Colors.red),
+              point: tour.centerPoint,
+              builder: (ctx) => GestureDetector(
+                child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2),
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                    child: Center(child: Text(tour.count.toString()))),
+                onTap: () =>
+                    print(tour.address + ", count: " + tour.count.toString()),
+              ),
             ));
           }
           setState(() {});
@@ -48,8 +60,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title:
-                Text('Statistics', style: GoogleFonts.comfortaa(fontSize: 22)),
+            title: Text(AppLocalizations.of(context)!.statistics,
+                style: GoogleFonts.comfortaa(fontSize: 22)),
             centerTitle: true),
         body: mapProvider.getMap(
             polylines: null, markers: markers, mapController: mapController));

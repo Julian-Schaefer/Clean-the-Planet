@@ -44,9 +44,10 @@ class MenuDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.insights),
-                  title: const Text(
-                    'Statistics',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  title: Text(
+                    AppLocalizations.of(context)!.statistics,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                   onTap: () {
                     Navigator.pop(context);

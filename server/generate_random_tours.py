@@ -2,7 +2,7 @@ from geoalchemy2 import functions
 from app.db import db
 from app import create_app
 from app.tour import Tour
-from random import randint, random
+from random import randint, uniform
 from uuid import uuid4
 
 app = create_app()
@@ -18,14 +18,15 @@ def get_centroid(geometry):
 
 with app.app_context():
     noOfTours = 200
-    for _ in range(100):
+    for _ in range(noOfTours):
         positions = []
-        lastPos = (51.1657 + (random() * 15), 10.4515 + (random() * 15))
+        lastPos = (51.1657 + (uniform(-1, 1) * 15),
+                   10.4515 + (uniform(-1, 1) * 15))
         positions.append(lastPos)
 
         for _ in range(randint(50, 1000)):
-            lastPos = (lastPos[0] + (random() / 100),
-                       lastPos[1] + (random() / 100))
+            lastPos = (lastPos[0] + (uniform(-1, 1) / 100),
+                       lastPos[1] + (uniform(-1, 1) / 100))
             positions.append(lastPos)
 
         positionsString = list(

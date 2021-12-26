@@ -154,5 +154,9 @@
     "pictures": "Pictures",
     "@pictures": {
       "description": "Pictures"
+    },
+    "statistics": "Statistics",
+    "@statistics": {
+      "description": "Statistics"
     }
 }
