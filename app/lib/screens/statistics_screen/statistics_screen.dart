@@ -19,7 +19,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   late MapController mapController;
   StatisticsService statisticsService = getIt<StatisticsService>();
 
-  List<Marker>? markers;
+  List<TourStatistic> tourStatistics = [];
 
   @override
   void initState() {
@@ -28,32 +28,53 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     mapController.mapEventStream.listen((event) async {
       if (event is MapEventMoveEnd) {
         if (mapController.bounds != null) {
-          List<TourStatistic> tours =
+          List<TourStatistic> newTourStatistics =
               await statisticsService.getTourStatisticsWithBounds(
                   mapController.bounds!, mapController.zoom.toInt());
-          markers = [];
-          for (TourStatistic tour in tours) {
-            markers!.add(Marker(
-              point: tour.centerPoint,
-              builder: (ctx) => GestureDetector(
-                child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 2),
-                      shape: BoxShape.circle,
-                      color: Colors.red,
-                    ),
-                    child: Center(child: Text(tour.count.toString()))),
-                onTap: () =>
-                    print(tour.address + ", count: " + tour.count.toString()),
-              ),
-            ));
-          }
-          setState(() {});
+
+          setState(() {
+            tourStatistics = newTourStatistics;
+          });
         }
       }
     });
+  }
+
+  List<Marker> getMarkers(double screenWidth) {
+    List<Marker> markers = [];
+
+    int totalCount = 0;
+    for (TourStatistic tourStatistic in tourStatistics) {
+      totalCount += tourStatistic.count;
+    }
+
+    for (TourStatistic tourStatistic in tourStatistics) {
+      double size = (screenWidth - 80) / totalCount * tourStatistic.count;
+
+      markers.add(Marker(
+        point: tourStatistic.centerPoint,
+        builder: (ctx) => GestureDetector(
+          child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                border: Border.all(width: 2, color: Colors.green.shade900),
+                shape: BoxShape.circle,
+                color: Colors.green.shade700,
+              ),
+              child: Center(
+                  child: Text(
+                tourStatistic.count.toString(),
+                style: const TextStyle(color: Colors.white),
+              ))),
+          onTap: () => print(tourStatistic.address +
+              ", count: " +
+              tourStatistic.count.toString()),
+        ),
+      ));
+    }
+
+    return markers;
   }
 
   @override
@@ -64,6 +85,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 style: GoogleFonts.comfortaa(fontSize: 22)),
             centerTitle: true),
         body: mapProvider.getMap(
-            polylines: null, markers: markers, mapController: mapController));
+            polylines: null,
+            markers: getMarkers(MediaQuery.of(context).size.width),
+            mapController: mapController,
+            zoom: 5));
   }
 }

@@ -11,7 +11,8 @@ abstract class MapProvider {
       LatLng? center,
       required List<Polyline>? polylines,
       required List<Marker>? markers,
-      List<Polygon>? polygons});
+      List<Polygon>? polygons,
+      double? zoom});
 
   MapController getMapController();
 }
@@ -23,12 +24,13 @@ class MapProviderImpl extends MapProvider {
       LatLng? center,
       required List<Polyline>? polylines,
       required List<Marker>? markers,
-      List<Polygon>? polygons}) {
+      List<Polygon>? polygons,
+      double? zoom}) {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
           center: (center != null) ? center : LatLng(51.5, -0.09),
-          zoom: MapProvider.defaultZoom,
+          zoom: (zoom != null) ? zoom : MapProvider.defaultZoom,
           maxZoom: 18.4,
           minZoom: 3.0),
       layers: [

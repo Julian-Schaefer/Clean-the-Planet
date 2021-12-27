@@ -20,8 +20,9 @@ def getStatistics():
     if bounds and zoom:
         tours_query = db.session.query(
             Tour.id, functions.ST_AsText(Tour.centerPoint)).filter(
-                functions.ST_Contains(functions.ST_Envelope(bounds),
-                                      Tour.centerPoint))
+                functions.ST_Contains(
+                    functions.ST_Envelope(functions.ST_GeomFromText(bounds)),
+                    Tour.centerPoint))
 
         tour_statistics = {}
         reverse_locations = []
