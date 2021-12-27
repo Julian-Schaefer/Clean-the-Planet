@@ -30,10 +30,8 @@ def getStatistics():
             reverse_location = getCenterPointReverseLocation(
                 centerPoint, reverse_locations)
             if not reverse_location:
-                centerPointString = centerPoint[6:-1]
-                coordinates = centerPointString.split(" ")
-                lat_lon = (float(coordinates[0]), float(coordinates[1]))
-                reverse_location = reverse_geocode(lat_lon=lat_lon, zoom=zoom)
+                reverse_location = reverse_geocode(
+                    lat_lon=getLatLngFromPoint(centerPoint), zoom=zoom)
                 if reverse_location:
                     reverse_locations.append(reverse_location)
 
@@ -66,9 +64,8 @@ def getStatistics():
 
 
 def getCenterPointReverseLocation(centerPoint, reverse_locations):
-    centerPointString = centerPoint[6:-1]
-    coordinates = centerPointString.split(" ")
-    point = Point(float(coordinates[0]), float(coordinates[1]))
+    lat_lon = getLatLngFromPoint(centerPoint)
+    point = Point(lat_lon[0], lat_lon[1])
 
     for reverse_location in reverse_locations:
         bounds = [
@@ -84,6 +81,13 @@ def getCenterPointReverseLocation(centerPoint, reverse_locations):
             return reverse_location
 
     return None
+
+
+def getLatLngFromPoint(centerPoint):
+    centerPointString = centerPoint[6:-1]
+    coordinates = centerPointString.split(" ")
+    lat_lon = (float(coordinates[0]), float(coordinates[1]))
+    return lat_lon
 
 
 nominatim_user_agent = "clean-the-planet"
