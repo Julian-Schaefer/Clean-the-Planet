@@ -68,7 +68,7 @@ def getTours():
     tours_query = db.session.query(
         Tour.id,
         functions.ST_AsText(
-            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline, 25832),
+            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline, 4326),
                                 0.0001)), functions.ST_AsText(Tour.polyline),
         functions.ST_AsText(Tour.centerPoint), Tour.datetime, Tour.duration,
         Tour.amount, Tour.result_picture_keys).filter_by(userId=userId)
@@ -146,7 +146,7 @@ def getBuffer():
             functions.ST_AsText(
                 functions.ST_Buffer(
                     functions.ST_SetSRID(functions.ST_GeomFromText(polyline),
-                                         25832), 0.0001))).one()
+                                         4326), 0.0001))).one()
         return jsonify({"polygon": polygon[0]})
 
     return "Error", 400
@@ -157,7 +157,7 @@ def get_centroid(geometry):
         functions.ST_AsText(
             functions.ST_Centroid(
                 functions.ST_SetSRID(functions.ST_GeomFromText(geometry),
-                                     25832)))).one()[0]
+                                     4326)))).one()[0]
 
 
 @bp.route("/result-pictures", methods=["POST"])

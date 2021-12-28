@@ -13,7 +13,7 @@ def get_centroid(geometry):
         functions.ST_AsText(
             functions.ST_Centroid(
                 functions.ST_SetSRID(functions.ST_GeomFromText(geometry),
-                                     25832)))).one()[0]
+                                     4326)))).one()[0]
 
 
 with app.app_context():
