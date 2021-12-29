@@ -25,7 +25,7 @@ def addTour():
                 location = json.dumps(tour_picture_json['location'])
                 tour_picture = TourPicture(
                     tour_id=id,
-                    location=functions.ST_GeomFromGeoJSON(location),
+                    location=geom_from_geo_json(location),
                     picture_key=tour_picture_json['pictureKey'],
                     comment=tour_picture_json['comment'])
                 tour_pictures.append(tour_picture)
@@ -35,8 +35,8 @@ def addTour():
 
         tour = Tour(id=id,
                     userId=userId,
-                    polyline=functions.ST_GeomFromGeoJSON(polyline),
-                    centerPoint=functions.ST_GeomFromGeoJSON(centerPoint),
+                    polyline=geom_from_geo_json(polyline),
+                    centerPoint=geom_from_geo_json(centerPoint),
                     duration=data['duration'],
                     amount=data['amount'],
                     result_picture_keys=data["resultPictureKeys"],
@@ -144,10 +144,8 @@ def getBuffer():
 
         polygon = db.session.query(
             functions.ST_AsGeoJSON(
-                functions.ST_Buffer(
-                    functions.ST_SetSRID(
-                        functions.ST_GeomFromGeoJSON(polyline), 4326),
-                    0.0001))).one()
+                functions.ST_Buffer(geom_from_geo_json(polyline),
+                                    0.0001))).one()
         return jsonify({"polygon": string_to_json(polygon[0])})
 
     return "Error", 400
@@ -156,9 +154,11 @@ def getBuffer():
 def get_centroid(geometry):
     return db.session.query(
         functions.ST_AsGeoJSON(
-            functions.ST_Centroid(
-                functions.ST_SetSRID(functions.ST_GeomFromGeoJSON(geometry),
-                                     4326)))).one()[0]
+            functions.ST_Centroid(geom_from_geo_json(geometry)))).one()[0]
+
+
+def geom_from_geo_json(geo_json):
+    return functions.ST_SetSRID(functions.ST_GeomFromGeoJSON(geo_json), 4326)
 
 
 def string_to_json(geometry):
