@@ -52,6 +52,27 @@ def ST_Buffer_placeholder(geo, _):
 
 
 @pytest.fixture(autouse=True)
+def no_ST_AsBinary():
+    with patch('geoalchemy2.functions.ST_AsBinary', ST_AsBinary_placeholder):
+        yield
+
+
+def ST_AsBinary_placeholder(geo):
+    return geo
+
+
+@pytest.fixture(autouse=True)
+def no_ST_GeogFromWKB():
+    with patch('geoalchemy2.functions.ST_GeogFromWKB',
+               ST_GeogFromWKB_placeholder):
+        yield
+
+
+def ST_GeogFromWKB_placeholder(geo):
+    return geo
+
+
+@pytest.fixture(autouse=True)
 def no_get_centroid():
     with patch('app.routes.get_centroid', get_centroid_placeholder):
         yield
