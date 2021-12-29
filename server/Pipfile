@@ -15,11 +15,14 @@ boto3 = "*"
 werkzeug = "*"
 firebase-admin = "*"
 python-dotenv = "*"
+geopy = "*"
+shapely = "*"
 
 [dev-packages]
 coverage = "*"
 pytest = "*"
 flake8 = "*"
+yapf = "*"
 
 [requires]
 python_version = "3.9"

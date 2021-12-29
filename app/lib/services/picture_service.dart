@@ -45,12 +45,13 @@ class PictureServiceImpl extends PictureService {
       List<TourPicture> tourPictures) async {
     MultipartRequest request =
         MultipartRequest('POST', Uri.parse(getAPIBaseUrl() + '/tour-pictures'));
-    for (TourPicture picture in tourPictures) {
-      File imageFile = File(picture.imagePath!);
+        
+    for (TourPicture tourPicture in tourPictures) {
+      File imageFile = File(tourPicture.imagePath!);
       String fileName = basename(imageFile.path);
-      request.fields[fileName] = jsonEncode(picture);
+      request.fields[fileName] = jsonEncode(tourPicture);
       request.files.add(await MultipartFile.fromPath(
-          'files', picture.imagePath!,
+          'files', tourPicture.imagePath!,
           filename: fileName));
     }
     Map<String, String> headers = await JsonInterceptor.getHeaders();

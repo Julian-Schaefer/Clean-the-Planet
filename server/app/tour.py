@@ -14,15 +14,17 @@ class Tour(db.Model):
     datetime = db.Column(db.DateTime(), default=func.now())
     duration = db.Column(db.Interval())
     amount = db.Column(db.Float())
-    polyline = db.Column(Geometry('LINESTRING'))
+    polyline = db.Column(Geometry(geometry_type='LINESTRING', srid=4326))
+    centerPoint = db.Column(Geometry(geometry_type='POINT', srid=4326))
     result_picture_keys = db.Column(JSONB)
     tour_pictures = db.relationship("TourPicture", cascade="all, delete")
 
-    def __init__(self, id, userId, polyline, duration, amount,
+    def __init__(self, id, userId, polyline, centerPoint, duration, amount,
                  result_picture_keys, tour_pictures):
         self.id = id
         self.userId = userId
         self.polyline = polyline
+        self.centerPoint = centerPoint
         self.duration = duration
         self.amount = amount
         self.result_picture_keys = result_picture_keys
@@ -39,7 +41,7 @@ class TourPicture(db.Model):
     tour_id = db.Column(UUID(as_uuid=True),
                         db.ForeignKey('tour.id'),
                         primary_key=True)
-    location = db.Column(Geometry('POINT'))
+    location = db.Column(Geometry(geometry_type='POINT', srid=4326))
     picture_key = db.Column(db.String())
     comment = db.Column(db.String())
 

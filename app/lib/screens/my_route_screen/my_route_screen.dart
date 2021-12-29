@@ -83,7 +83,7 @@ class _MyRouteScreenState extends State<MyRouteScreen> {
               children: [
                 mapProvider.getMap(
                     mapController: _mapController,
-                    center: widget.tour.polyline[0],
+                    center: widget.tour.centerPoint,
                     polylines: [
                       Polyline(
                           points: widget.tour.polyline,

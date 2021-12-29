@@ -9,9 +9,10 @@ abstract class MapProvider {
   Widget getMap(
       {MapController? mapController,
       LatLng? center,
-      required List<Polyline> polylines,
+      required List<Polyline>? polylines,
       required List<Marker>? markers,
-      List<Polygon>? polygons});
+      List<Polygon>? polygons,
+      double? zoom});
 
   MapController getMapController();
 }
@@ -21,14 +22,15 @@ class MapProviderImpl extends MapProvider {
   Widget getMap(
       {MapController? mapController,
       LatLng? center,
-      required List<Polyline> polylines,
+      required List<Polyline>? polylines,
       required List<Marker>? markers,
-      List<Polygon>? polygons}) {
+      List<Polygon>? polygons,
+      double? zoom}) {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
           center: (center != null) ? center : LatLng(51.5, -0.09),
-          zoom: MapProvider.defaultZoom,
+          zoom: (zoom != null) ? zoom : MapProvider.defaultZoom,
           maxZoom: 18.4,
           minZoom: 3.0),
       layers: [
@@ -38,9 +40,10 @@ class MapProviderImpl extends MapProvider {
           tileProvider: const CachedTileProvider(),
         ),
         if (polygons != null) PolygonLayerOptions(polygons: polygons),
-        PolylineLayerOptions(
-          polylines: polylines,
-        ),
+        if (polylines != null)
+          PolylineLayerOptions(
+            polylines: polylines,
+          ),
         if (markers != null)
           MarkerLayerOptions(
             markers: markers,

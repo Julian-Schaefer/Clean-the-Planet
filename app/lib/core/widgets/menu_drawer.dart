@@ -1,4 +1,5 @@
 import 'package:clean_the_planet/screens/my_route_screen/my_routes_screen.dart';
+import 'package:clean_the_planet/screens/statistics_screen/statistics_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,6 +40,21 @@ class MenuDrawer extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MyRoutesScreen()));
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.insights),
+                  title: Text(
+                    AppLocalizations.of(context)!.statistics,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StatisticsScreen()));
                   },
                 ),
               ],

@@ -1,3 +1,4 @@
+import json
 import pytest
 from sqlalchemy import Column
 from tests.testconfig import TestConfig
@@ -31,15 +32,13 @@ def runner(app):
 
 
 @pytest.fixture(autouse=True)
-def no_ST_AsText():
-    with patch('geoalchemy2.functions.ST_AsText', ST_AsText_placeholder):
-        yield
-
-
-@pytest.fixture(autouse=True)
 def no_ST_SetSRID():
     with patch('geoalchemy2.functions.ST_SetSRID', SetSRID_placeholder):
         yield
+
+
+def SetSRID_placeholder(first, _):
+    return first
 
 
 @pytest.fixture(autouse=True)
@@ -48,15 +47,50 @@ def no_ST_Buffer():
         yield
 
 
+def ST_Buffer_placeholder(geo, _):
+    return geo
+
+
+@pytest.fixture(autouse=True)
+def no_get_centroid():
+    with patch('app.routes.get_centroid', get_centroid_placeholder):
+        yield
+
+
+def get_centroid_placeholder(geo):
+    return json.dumps(json.loads(geo))
+
+
+@pytest.fixture(autouse=True)
+def no_ST_GeomFromGeoJSON():
+    with patch('geoalchemy2.functions.ST_GeomFromGeoJSON',
+               ST_GeomFromGeoJSON_placeholder):
+        yield
+
+
+def ST_GeomFromGeoJSON_placeholder(geo):
+    return geo
+
+
+@pytest.fixture(autouse=True)
+def no_ST_AsGeoJSON():
+    with patch('geoalchemy2.functions.ST_AsGeoJSON', ST_AsGeoJSON_placeholder):
+        yield
+
+
+def ST_AsGeoJSON_placeholder(column):
+    return Column(column.key)
+
+
 @pytest.fixture(autouse=True)
 def no_Geometry_from_text():
-    with patch('geoalchemy2.Geometry.from_text', "upper"):
+    with patch('geoalchemy2.Geometry.from_text', "TRIM"):
         yield
 
 
 @pytest.fixture(autouse=True)
 def no_Geometry_as_binary():
-    with patch('geoalchemy2.Geometry.as_binary', "upper"):
+    with patch('geoalchemy2.Geometry.as_binary', "TRIM"):
         yield
 
 
@@ -65,15 +99,3 @@ def no_Interval_DataType():
     with patch('sqlalchemy.sql.sqltypes.Interval.bind_processor',
                lambda *_: lambda value: value):
         yield
-
-
-def ST_AsText_placeholder(column):
-    return Column(column.key)
-
-
-def SetSRID_placeholder(first, _):
-    return first
-
-
-def ST_Buffer_placeholder(geo, _):
-    return geo
