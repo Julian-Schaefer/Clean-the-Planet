@@ -65,10 +65,7 @@ def getTours():
     tours = []
 
     tours_query = db.session.query(
-        Tour.id,
-        functions.ST_AsGeoJSON(
-            functions.ST_Buffer(functions.ST_SetSRID(Tour.polyline,
-                                                     4326), 0.0001)),
+        Tour.id, functions.ST_AsGeoJSON(get_buffer(Tour.polyline)),
         functions.ST_AsGeoJSON(Tour.polyline),
         functions.ST_AsGeoJSON(Tour.centerPoint), Tour.datetime, Tour.duration,
         Tour.amount, Tour.result_picture_keys).filter_by(userId=userId)
@@ -140,12 +137,11 @@ def deleteTour():
 def getBuffer():
     if request.is_json:
         data = request.get_json()
-        polyline = json.dumps(data['polyline'])
+        polyline_json = json.dumps(data['polyline'])
+        polyline = geom_from_geo_json(polyline_json)
 
-        polygon = db.session.query(
-            functions.ST_AsGeoJSON(
-                functions.ST_Buffer(geom_from_geo_json(polyline),
-                                    0.0001))).one()
+        polygon = db.session.query(functions.ST_AsGeoJSON(
+            get_buffer(polyline))).one()
         return jsonify({"polygon": string_to_json(polygon[0])})
 
     return "Error", 400
@@ -159,6 +155,12 @@ def get_centroid(geometry):
 
 def geom_from_geo_json(geo_json):
     return functions.ST_SetSRID(functions.ST_GeomFromGeoJSON(geo_json), 4326)
+
+
+def get_buffer(polyline):
+    meters = 10
+    return functions.ST_Buffer(
+        functions.ST_GeogFromWKB(functions.ST_AsBinary((polyline))), meters)
 
 
 def string_to_json(geometry):
