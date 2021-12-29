@@ -67,7 +67,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 tourStatistic.count.toString(),
                 style: const TextStyle(color: Colors.white),
               ))),
-          onTap: () => print(tourStatistic.address +
+          onTap: () => debugPrint(tourStatistic.address +
               ", count: " +
               tourStatistic.count.toString()),
         ),

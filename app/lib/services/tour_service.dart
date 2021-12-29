@@ -18,31 +18,25 @@ class TourServiceImpl extends TourService {
   @override
   Future<void> addTour(Tour tour) async {
     var relativeUrl = "/tour";
-    try {
-      if (tour.resultPictureKeys != null &&
-          tour.resultPictureKeys!.isNotEmpty) {
-        var pictureKeys =
-            await pictureService.uploadResultPictures(tour.resultPictureKeys!);
-        tour.resultPictureKeys = pictureKeys;
-      }
+    if (tour.resultPictureKeys != null && tour.resultPictureKeys!.isNotEmpty) {
+      var pictureKeys =
+          await pictureService.uploadResultPictures(tour.resultPictureKeys!);
+      tour.resultPictureKeys = pictureKeys;
+    }
 
-      if (tour.tourPictures != null && tour.tourPictures!.isNotEmpty) {
-        var tourPictures =
-            await pictureService.uploadTourPictures(tour.tourPictures!);
-        tour.tourPictures = tourPictures;
-      }
+    if (tour.tourPictures != null && tour.tourPictures!.isNotEmpty) {
+      var tourPictures =
+          await pictureService.uploadTourPictures(tour.tourPictures!);
+      tour.tourPictures = tourPictures;
+    }
 
-      final response = await _client.post(
-          Uri.parse(getAPIBaseUrl() + relativeUrl),
-          body: jsonEncode(tour));
+    final response = await _client
+        .post(Uri.parse(getAPIBaseUrl() + relativeUrl), body: jsonEncode(tour));
 
-      if (response.statusCode == 200) {
-        return;
-      } else {
-        throw Exception('Failed to add Tour.');
-      }
-    } catch (e) {
-      return Future.error(e);
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw Exception('Failed to add Tour.');
     }
   }
 

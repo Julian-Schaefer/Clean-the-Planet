@@ -7,19 +7,28 @@ from random import randint
 
 def add_tour(client, id):
     body = {
-        "polyline":
-        "POLYLINE(3 5)",
+        "polyline": {
+            "type": "LineString",
+            "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0],
+                            [105.0, 1.0]]
+        },
         "duration":
         str(datetime.now() + timedelta(minutes=33, seconds=45)),
         "amount":
         5.5,
         "resultPictureKeys": ["1", "2", "3"],
         "tourPictures": [{
-            "location": "POINT(1 1)",
+            "location": {
+                "type": "Point",
+                "coordinates": [105.742, 21.43]
+            },
             "pictureKey": "key1",
             "comment": None
         }, {
-            "location": "POINT(2 2)",
+            "location": {
+                "type": "Point",
+                "coordinates": [-20.123, -10.63]
+            },
             "pictureKey": "key2",
             "comment": "Test-Comment"
         }]
@@ -70,9 +79,18 @@ def test_get_one_tour(client):
     tour = data[0]
     assert len(tour) == 9
     assert tour['id'] == str(id)
-    assert tour['polyline'] == 'POLYLINE(3 5)'
-    assert tour['centerPoint'] == 'POLYLINE(3 5)'
-    assert tour['polygon'] == 'POLYLINE(3 5)'
+    assert tour['polyline'] == {
+        "type": "LineString",
+        "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
+    }
+    assert tour['centerPoint'] == {
+        "type": "LineString",
+        "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
+    }
+    assert tour['polygon'] == {
+        "type": "LineString",
+        "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
+    }
     assert tour['duration'] is not None
     assert tour['amount'] == 5.5
     assert tour['resultPictureKeys'] == ["1", "2", "3"]
@@ -81,14 +99,20 @@ def test_get_one_tour(client):
     firstTourPicture = tour['tourPictures'][0]
     assert len(firstTourPicture) == 4
     assert firstTourPicture['id'] is not None
-    assert firstTourPicture['location'] == 'POINT(1 1)'
+    assert firstTourPicture['location'] == {
+        "type": "Point",
+        "coordinates": [105.742, 21.43]
+    }
     assert firstTourPicture['pictureKey'] == 'key1'
     assert firstTourPicture['comment'] is None
 
     secondTourPicture = tour['tourPictures'][1]
     assert len(secondTourPicture) == 4
     assert secondTourPicture['id'] is not None
-    assert secondTourPicture['location'] == 'POINT(2 2)'
+    assert secondTourPicture['location'] == {
+        "type": "Point",
+        "coordinates": [-20.123, -10.63]
+    }
     assert secondTourPicture['pictureKey'] == 'key2'
     assert secondTourPicture['comment'] == 'Test-Comment'
 

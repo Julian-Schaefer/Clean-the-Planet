@@ -1,5 +1,4 @@
 import 'package:clean_the_planet/constants.dart';
-import 'package:clean_the_planet/core/data/models/tour.dart';
 import 'package:clean_the_planet/core/data/extensions/extensions.dart';
 import 'package:clean_the_planet/core/data/models/tour_statistic.dart';
 import 'package:flutter_map/plugin_api.dart';

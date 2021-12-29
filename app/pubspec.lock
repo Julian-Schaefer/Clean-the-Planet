@@ -483,6 +483,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  geojson_vi:
+    dependency: "direct main"
+    description:
+      name: geojson_vi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.6"
   get_it:
     dependency: "direct main"
     description:
