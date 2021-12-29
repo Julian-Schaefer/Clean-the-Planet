@@ -40,12 +40,9 @@ def getStatistics():
                 if not tour_statistics.get(reverse_location.address):
                     tour_statistics[reverse_location.address] = {
                         "centerPoint":
-                        "POINT(" + str(reverse_location.latitude) + " " +
-                        str(reverse_location.longitude) + ")",
-                        "address":
-                        reverse_location.address,
-                        "count":
-                        1
+                        f'POINT("{str(reverse_location.latitude)} {str(reverse_location.longitude)}',
+                        "address": reverse_location.address,
+                        "count": 1
                     }
                 else:
                     tour_statistics[
