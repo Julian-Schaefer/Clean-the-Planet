@@ -1,10 +1,8 @@
 from flask import Blueprint, request, jsonify
 from geoalchemy2 import functions
 import logging
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+import googlemaps
 from shapely.geometry import Point, Polygon
-import time
 
 from app.db import db
 from app.tour import Tour
@@ -21,8 +19,9 @@ def getStatistics():
         tours_query = db.session.query(
             Tour.id, functions.ST_AsText(Tour.centerPoint)).filter(
                 functions.ST_Contains(
-                    functions.ST_Envelope(functions.ST_GeomFromText(bounds)),
-                    Tour.centerPoint))
+                    functions.ST_Envelope(
+                        functions.ST_SetSRID(functions.ST_GeomFromText(bounds),
+                                             4326)), Tour.centerPoint))
 
         tour_statistics = {}
         reverse_locations = []
@@ -37,17 +36,18 @@ def getStatistics():
                     reverse_locations.append(reverse_location)
 
             if reverse_location:
-                if not tour_statistics.get(reverse_location.address):
-                    tour_statistics[reverse_location.address] = {
+                if not tour_statistics.get(
+                        reverse_location['formatted_address']):
+                    tour_statistics[reverse_location['formatted_address']] = {
                         "centerPoint":
-                        f'POINT("{str(reverse_location.latitude)} {str(reverse_location.longitude)}',
-                        "address": reverse_location.address,
+                        f'POINT({str(reverse_location["geometry"]["location"]["lat"])} {str(reverse_location["geometry"]["location"]["lng"])})',
+                        "address": reverse_location['formatted_address'],
                         "count": 1
                     }
                 else:
-                    tour_statistics[
-                        reverse_location.address]["count"] = tour_statistics[
-                            reverse_location.address]["count"] + 1
+                    tour_statistics[reverse_location['formatted_address']][
+                        "count"] = tour_statistics[
+                            reverse_location['formatted_address']]["count"] + 1
 
         tours = [{
             "id": "asd",
@@ -66,13 +66,13 @@ def getCenterPointReverseLocation(centerPoint, reverse_locations):
     point = Point(lat_lon[0], lat_lon[1])
 
     for reverse_location in reverse_locations:
-        bounds = [
-            float(bound) for bound in reverse_location.raw['boundingbox']
-        ]
-        southWest = (bounds[0], bounds[2])
-        southEast = (bounds[0], bounds[3])
-        northWest = (bounds[1], bounds[2])
-        northEast = (bounds[1], bounds[3])
+        northEastRaw = reverse_location["geometry"]["bounds"]["northeast"]
+        southWestRaw = reverse_location["geometry"]["bounds"]["southwest"]
+
+        southWest = (southWestRaw["lat"], southWestRaw["lng"])
+        northEast = (northEastRaw["lat"], northEastRaw["lng"])
+        southEast = (northEast[0], southWest[1])
+        northWest = (southWest[0], northEast[1])
         boundingBox = Polygon(
             [southWest, southEast, northEast, northWest, southWest])
         if point.within(boundingBox):
@@ -88,25 +88,53 @@ def getLatLngFromPoint(centerPoint):
     return lat_lon
 
 
-nominatim_user_agent = "clean-the-planet"
-geolocator = Nominatim(user_agent=nominatim_user_agent)
+google_maps = googlemaps.Client(key='tbd')
 
 
-def reverse_geocode(lat_lon, zoom):
+def get_zoom_level(zoom):
+    # 3	country
+    # 5	state
+    # 8	county
+    # 10 city
+    # 14 suburb
+    # 16 major streets
+    # 17 major and minor streets
+    # 18 building
+    if zoom == 18:
+        return ["street_address"]
+    elif zoom <= 17 and zoom >= 15:
+        return ["route", "intersection"]
+    elif zoom <= 14 and zoom >= 11:
+        return ["sublocality, locality"]
+    elif zoom <= 10 and zoom >= 9:
+        return ["locality", "political"]
+    elif zoom == 8:
+        return [
+            "administrative_area_level_7", "administrative_area_level_6",
+            "administrative_area_level_5", "administrative_area_level_4",
+            "administrative_area_level_3", "administrative_area_level_2",
+            "administrative_area_level_1"
+        ]
+    elif zoom == 7:
+        return [
+            "administrative_area_level_3", "administrative_area_level_2",
+            "administrative_area_level_1"
+        ]
+    elif zoom == 6:
+        return ["administrative_area_level_2", "administrative_area_level_1"]
+    elif zoom == 5:
+        return ["administrative_area_level_1"]
+    elif zoom <= 4:
+        return ["country"]
+
+
+def reverse_geocode(lat_lon, zoom, lan="de"):
     try:
-        time.sleep(1)
-        location = geolocator.reverse(lat_lon,
-                                      zoom=zoom,
-                                      language="en",
-                                      timeout=5)
+        result_types = get_zoom_level(zoom)
+        reverse_geocode_result = google_maps.reverse_geocode(
+            lat_lon, result_type=result_types, language=lan)
+        location = reverse_geocode_result[0]
         return location
-    except GeocoderTimedOut:
-        logging.info('TIMED OUT: GeocoderTimedOut: Retrying...')
-        return None
-    except GeocoderServiceError as e:
-        logging.info('CONNECTION REFUSED: GeocoderServiceError encountered.')
-        logging.error(e)
-        return None
     except Exception as e:
         logging.info('ERROR: Terminating due to exception {}'.format(e))
         return None

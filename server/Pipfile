@@ -17,6 +17,8 @@ firebase-admin = "*"
 python-dotenv = "*"
 geopy = "*"
 shapely = "*"
+marshmallow = "*"
+googlemaps = "*"
 
 [dev-packages]
 coverage = "*"
@@ -25,4 +27,4 @@ flake8 = "*"
 yapf = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

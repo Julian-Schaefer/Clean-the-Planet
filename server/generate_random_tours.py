@@ -46,3 +46,4 @@ with app.app_context():
 
         db.session.add(tour)
         db.session.commit()
+        print("Added Tour")
