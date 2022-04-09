@@ -19,10 +19,19 @@ class Tour(db.Model):
     result_picture_keys = db.Column(JSONB)
     tour_pictures = db.relationship("TourPicture", cascade="all, delete")
 
-    def __init__(self, id, userId, polyline, centerPoint, duration, amount,
-                 result_picture_keys, tour_pictures):
+    def __init__(self,
+                 id,
+                 polyline,
+                 centerPoint,
+                 duration,
+                 amount,
+                 result_picture_keys,
+                 tour_pictures,
+                 userId=None,
+                 datetime=None):
         self.id = id
         self.userId = userId
+        self.datetime = datetime
         self.polyline = polyline
         self.centerPoint = centerPoint
         self.duration = duration
@@ -45,7 +54,8 @@ class TourPicture(db.Model):
     picture_key = db.Column(db.String())
     comment = db.Column(db.String())
 
-    def __init__(self, tour_id, location, picture_key, comment):
+    def __init__(self, id, tour_id, location, picture_key, comment):
+        self.id = id
         self.tour_id = tour_id
         self.location = location
         self.picture_key = picture_key
