@@ -66,8 +66,8 @@ def getCenterPointReverseLocation(centerPoint, reverse_locations):
     point = Point(lat_lon[0], lat_lon[1])
 
     for reverse_location in reverse_locations:
-        northEastRaw = reverse_location["geometry"]["bounds"]["northeast"]
-        southWestRaw = reverse_location["geometry"]["bounds"]["southwest"]
+        northEastRaw = reverse_location["geometry"]["viewport"]["northeast"]
+        southWestRaw = reverse_location["geometry"]["viewport"]["southwest"]
 
         southWest = (southWestRaw["lat"], southWestRaw["lng"])
         northEast = (northEastRaw["lat"], northEastRaw["lng"])
