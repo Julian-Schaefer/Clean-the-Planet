@@ -1,19 +1,26 @@
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
 import dynamic from 'next/dynamic'
-import { Layout, Button } from 'antd';
-
-const { Header, Footer, Sider, Content } = Layout;
+import { Divider, Grid, Stack } from '@mui/material'
 
 const HeaderComponent = () => {
   return (
     <>
-      <Layout>
-        <Content>
+      <Grid container spacing={2} style={{ backgroundColor: "green", color: "white", paddingLeft: "20px", paddingRight: "20px" }} alignItems="center">
+        <Grid item xs={6}>
           <h1>Clean the Planet</h1>
-        </Content>
-        <Sider><Button>Sign In</Button></Sider>
-      </Layout>
+        </Grid>
+        <Grid item xs={6}>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            spacing={2} divider={<Divider orientation="vertical" flexItem />}>
+            <div>Statistiken</div>
+            <div>Wie funktioniert's?</div>
+            <div>Unsere Mission</div>
+          </Stack>
+        </Grid>
+      </Grid>
     </>)
 }
 
@@ -26,15 +33,8 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Layout>
-        <Header>
-          <HeaderComponent></HeaderComponent>
-
-        </Header>
-        <Content>
-          <MapWithNoSSR></MapWithNoSSR>
-        </Content>
-      </Layout>
+      <HeaderComponent></HeaderComponent>
+      <MapWithNoSSR></MapWithNoSSR>
     </ >
   )
 }
