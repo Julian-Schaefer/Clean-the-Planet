@@ -13,20 +13,9 @@ def create_app(config_class=config.Config):
     if not app.config['TESTING']:
         firebase.setUpFirebase()
 
-    from . import routes
-    app.register_blueprint(routes.bp)
-    from . import statistics
-    app.register_blueprint(statistics.bp)
-    from . import pictures
-    app.register_blueprint(pictures.bp)
-
-    from . import db
-    db.init_app(app)
-
     tokenVerifier = config_class.get_token_verifier()
 
-    @app.before_request
-    def _():
+    def authenticateUser():
         if request.method == "OPTIONS":
             return {"message": "Check succeeded."}, 200
 
@@ -39,5 +28,19 @@ def create_app(config_class=config.Config):
             request.user = user
         except Exception:
             return {"message": "Invalid Token provided."}, 401
+
+    from . import routes
+    routes.bp.before_request(authenticateUser)
+    app.register_blueprint(routes.bp)
+
+    from . import pictures
+    pictures.bp.before_request(authenticateUser)
+    app.register_blueprint(pictures.bp)
+
+    from . import statistics
+    app.register_blueprint(statistics.bp)
+
+    from . import db
+    db.init_app(app)
 
     return app
