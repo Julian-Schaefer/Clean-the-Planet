@@ -4,20 +4,17 @@ import 'leaflet/dist/leaflet.css'
 import React, { useEffect, useState } from 'react';
 
 interface CircleWithNumberProps {
-    width: number;
-    height: number;
+    size: number;
     number: number;
     position: LatLngTuple;
 }
 
 const CircleWithNumber = (props: CircleWithNumberProps) => {
-    const width = props.height / 10;
-    const height = props.height / 10;
     const css = "background-color:#388e3c; color: white; border: 5px #1b5E20 solid; justify-content: center;align-items: center;border-radius: 100%;text-align: center;display: flex;"
-    const html = `<div style="width: ${width}px; height: ${height}px; ${css}">${props.number}</div>`
+    const html = `<div style="width: ${props.size}px; height: ${props.size}px; ${css}">${props.number}</div>`
 
     return <Marker position={props.position} icon={L.divIcon({
-        html, iconSize: [width, height],
+        html, iconSize: [props.size, props.size],
         className: undefined
     })}></Marker>
 }
@@ -136,7 +133,11 @@ function StatisticMarkers() {
     };
 
     if (!statistics) return null;
-    const markers = statistics.map((statistic) => <CircleWithNumber width={width} height={height} number={statistic.count} position={[statistic.centerPoint.lat, statistic.centerPoint.lng]}></CircleWithNumber>)
+
+    const markers = statistics.map((statistic) => {
+        const size = height / statistics.length * statistic.count;
+        return <CircleWithNumber size={size} number={statistic.count} position={[statistic.centerPoint.lat, statistic.centerPoint.lng]}></CircleWithNumber>
+    })
     return <div>{markers}</div>;
 }
 
