@@ -1,6 +1,21 @@
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
 import dynamic from 'next/dynamic'
+import { Layout, Button } from 'antd';
+
+const { Header, Footer, Sider, Content } = Layout;
+
+const HeaderComponent = () => {
+  return (
+    <>
+      <Layout>
+        <Content>
+          <h1>Clean the Planet</h1>
+        </Content>
+        <Sider><Button>Sign In</Button></Sider>
+      </Layout>
+    </>)
+}
 
 const Home: NextPage = () => {
 
@@ -10,9 +25,17 @@ const Home: NextPage = () => {
 
 
   return (
-    <div className={styles.container}>
-      <MapWithNoSSR></MapWithNoSSR>
-    </div >
+    <>
+      <Layout>
+        <Header>
+          <HeaderComponent></HeaderComponent>
+
+        </Header>
+        <Content>
+          <MapWithNoSSR></MapWithNoSSR>
+        </Content>
+      </Layout>
+    </ >
   )
 }
 
